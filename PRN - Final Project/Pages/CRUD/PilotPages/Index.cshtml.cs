@@ -7,23 +7,24 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using BussinessObjects;
 using DataAccessObjects;
+using Services.Interfaces;
 
-namespace PRN___Final_Project.Pages.CRUD.Role
+namespace PRN___Final_Project.Pages.CRUD.PilotPages
 {
     public class IndexModel : PageModel
     {
-        private readonly DataAccessObjects.Fall2024DbContext _context;
+        private readonly IPilotService _plotService;
 
-        public IndexModel(DataAccessObjects.Fall2024DbContext context)
+        public IndexModel(IPilotService pilotService)
         {
-            _context = context;
+            _plotService = pilotService;
         }
 
-        public IList<BussinessObjects.Role> Role { get;set; } = default!;
+        public IEnumerable<Pilot> Pilots { get;set; }
 
         public async Task OnGetAsync()
         {
-            Role = await _context.Roles.ToListAsync();
+            Pilots = await _plotService.GetAllPilotsAsync();
         }
     }
 }

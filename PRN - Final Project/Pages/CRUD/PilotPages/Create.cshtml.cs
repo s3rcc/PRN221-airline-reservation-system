@@ -7,16 +7,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using BussinessObjects;
 using DataAccessObjects;
+using Services.Interfaces;
 
-namespace PRN___Final_Project.Pages.CRUD.Role
+namespace PRN___Final_Project.Pages.CRUD.PilotPages
 {
     public class CreateModel : PageModel
     {
-        private readonly DataAccessObjects.Fall2024DbContext _context;
+        private readonly IPilotService _pilotService;
 
-        public CreateModel(DataAccessObjects.Fall2024DbContext context)
+        public CreateModel(IPilotService pilotService)
         {
-            _context = context;
+            _pilotService = pilotService;
         }
 
         public IActionResult OnGet()
@@ -25,7 +26,7 @@ namespace PRN___Final_Project.Pages.CRUD.Role
         }
 
         [BindProperty]
-        public BussinessObjects.Role Role { get; set; } = default!;
+        public Pilot Pilot { get; set; }
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
@@ -35,8 +36,7 @@ namespace PRN___Final_Project.Pages.CRUD.Role
                 return Page();
             }
 
-            _context.Roles.Add(Role);
-            await _context.SaveChangesAsync();
+           await _pilotService.AddPilotAsync(Pilot);
 
             return RedirectToPage("./Index");
         }

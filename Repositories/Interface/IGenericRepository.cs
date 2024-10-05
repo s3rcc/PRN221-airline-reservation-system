@@ -9,12 +9,12 @@ namespace Repositories.Interface
 {
     public interface IGenericRepository<T> where T : class
     {
-        T GetById(int id);
-        IEnumerable<T> GetAll();
-        IEnumerable<T> Find(Expression<Func<T, bool>> predicate);
-        T FirstOrDefault(Expression<Func<T, bool>> predicate);
-        void Add(T entity);
-        void Update(T entity);
-        void Delete(T entity);
+        Task<T> GetByIdAsync(int id);
+        Task<IEnumerable<T>> GetAllAsync();
+        Task AddAsync(T entity);
+        Task UpdateAsync(T entity);
+        void DeleteAsync(T entity);
+        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
+        Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
     }
 }

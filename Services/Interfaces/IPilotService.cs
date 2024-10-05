@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BussinessObjects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,10 @@ namespace Services.Interfaces
 {
     public interface IPilotService
     {
+        Task<IEnumerable<Pilot>> GetAllPilotsAsync();
+        Task<Pilot> GetPilotByIdAsync(int id);
+        Task AddPilotAsync(Pilot pilot);
+        Task UpdatePilotAsync(Pilot pilot);
+        Task DeletePilotAsync(int id);
     }
 }

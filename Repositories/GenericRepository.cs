@@ -17,41 +17,43 @@ namespace Repositories
         {
             _context = context;
         }
-        public void Add(T entity)
+
+        public async Task AddAsync(T entity)
         {
             if (_context.Entry(entity).State == EntityState.Detached)
             {
                 _context.Set<T>().Attach(entity);
             }
-            _context.Set<T>().Add(entity);
+            await _context.Set<T>().AddAsync(entity);
         }
 
-        public void Delete(T entity)
+        public void DeleteAsync(T entity)
         {
             _context.Set<T>().Remove(entity);
         }
 
-        public IEnumerable<T> Find(Expression<Func<T, bool>> predicate)
+        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
         {
-            return _context.Set<T>().Where(predicate).ToList();
+            return await _context.Set<T>().Where(predicate).ToListAsync();
         }
 
-        public T FirstOrDefault(Expression<Func<T, bool>> predicate)
+        public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
         {
-            return _context.Set<T>().FirstOrDefault(predicate);
+            return await _context.Set<T>()
+                .FirstOrDefaultAsync(predicate);
         }
 
-        public IEnumerable<T> GetAll()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return _context.Set<T>().ToList();
+            return await _context.Set<T>().ToListAsync();
         }
 
-        public T GetById(int id)
+        public async Task<T> GetByIdAsync(int id)
         {
-            return _context.Set<T>().Find(id);
+            return await _context.Set<T>().FindAsync(id);
         }
 
-        public void Update(T entity)
+        public async Task UpdateAsync(T entity)
         {
             if (_context.Entry(entity).State == EntityState.Detached)
             {

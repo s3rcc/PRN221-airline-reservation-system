@@ -35,9 +35,9 @@ namespace Repositories
             return repository;
         }
 
-        public int SaveChanges()
+        public async Task<int> SaveChangeAsync()
         {
-            return _context.SaveChanges();
+            return await _context.SaveChangesAsync();
         }
     }
 }
