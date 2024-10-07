@@ -27,30 +27,104 @@ namespace Repositories
             await _context.Set<T>().AddAsync(entity);
         }
 
+        public async Task AddRangeAsync(IEnumerable<T> entities)
+        {
+            await _context.Set<T>().AddRangeAsync(entities);
+        }
+
         public void DeleteAsync(T entity)
         {
             _context.Set<T>().Remove(entity);
         }
 
-        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+        public void DeleteRangeAsync(IEnumerable<T> entities)
         {
-            return await _context.Set<T>().Where(predicate).ToListAsync();
+            _context.Set<T>().RemoveRange(entities);
         }
 
-        public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
+        public async Task<IEnumerable<T>> FindAsync(
+            Expression<Func<T, bool>> predicate,
+            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+            params Expression<Func<T, object>>[] includes)
         {
-            return await _context.Set<T>()
-                .FirstOrDefaultAsync(predicate);
+            IQueryable<T> query = _context.Set<T>().Where(predicate);
+
+            // Add Includes
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            // Apply OrderBy
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            return await query.ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<T> FirstOrDefaultAsync(
+            Expression<Func<T, bool>> predicate,
+            params Expression<Func<T, object>>[] includes)
         {
-            return await _context.Set<T>().ToListAsync();
+            IQueryable<T> query = _context.Set<T>().Where(predicate);
+
+            // Add Includes
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public async Task<IEnumerable<T>> GetAllAsync(
+            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+            params Expression<Func<T, object>>[] includes)
         {
-            return await _context.Set<T>().FindAsync(id);
+            IQueryable<T> query = _context.Set<T>();
+
+            // Add Includes
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            // Apply OrderBy
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<T> GetByIdAsync(
+            int id,
+            params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            // Add Includes
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            return await query.FirstOrDefaultAsync(entity => EF.Property<int>(entity, "Id") == id); // Assuming 'Id' is the key
         }
 
         public async Task UpdateAsync(T entity)
