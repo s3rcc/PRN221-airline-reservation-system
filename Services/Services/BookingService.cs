@@ -1,4 +1,8 @@
-﻿using Services.Interfaces;
+﻿using BussinessObjects;
+using BussinessObjects.Exceptions;
+using Repositories.Interface;
+using Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +28,7 @@ namespace Services.Services
                 {
                     throw new ErrorException(StatusCodes.Status404NotFound, ErrorCode.NOT_FOUND, "Booking not found.");
                 }
+
 
                 booking.Status = false;
                 await _unitOfWork.Repository<Booking>().UpdateAsync(booking);

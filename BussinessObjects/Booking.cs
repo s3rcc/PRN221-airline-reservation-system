@@ -30,5 +30,4 @@ namespace BussinessObjects
         public Payment Payment { get; set; }
         public ICollection<Ticket> Tickets { get; set; }
     }
-
 }

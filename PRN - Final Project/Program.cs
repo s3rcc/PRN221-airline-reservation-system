@@ -1,6 +1,7 @@
 using BussinessObjects;
 using Services;
 using Microsoft.EntityFrameworkCore;
+using PRN___Final_Project.MiddleWare;
 
 namespace PRN___Final_Project
 {
@@ -20,6 +21,7 @@ namespace PRN___Final_Project
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
+                app.UseMiddleware<ExceptionHandlingMiddleware>();   
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
