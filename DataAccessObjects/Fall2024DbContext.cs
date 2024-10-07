@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DataAccessObjects
 {
-    public class Fall2024DbContext : DbContext
+    public class Fall2024DbContext : IdentityDbContext<User, IdentityRole, string>
     {
         public Fall2024DbContext(DbContextOptions<Fall2024DbContext> options) : base(options) 
         {
@@ -26,7 +26,6 @@ namespace DataAccessObjects
         public DbSet<Location> Locations { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Pilot> Pilots { get; set; }
-        public DbSet<Role> Roles { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Tier> Tiers { get; set; }
 

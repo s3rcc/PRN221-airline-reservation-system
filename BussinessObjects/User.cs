@@ -15,10 +15,7 @@ namespace BussinessObjects
         public string CCCD { get; set; }
 
         public int TierId { get; set; }
-        public int RoleId { get; set; }
-
         public Tier Tier { get; set; }
-        public Role Role { get; set; }
         public ICollection<Booking> Bookings { get; set; }
         public ICollection<Payment> Payments { get; set; }
     }

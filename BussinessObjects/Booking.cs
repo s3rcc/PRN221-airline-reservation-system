@@ -18,7 +18,7 @@ namespace BussinessObjects
         public DateTime BookingDate { get; set; }
         public decimal TotalPrice { get; set; }
         public string PaymentStatus { get; set; }
-        public string Status { get; set; }
+        public bool Status { get; set; }
         public int AdultNum { get; set; }
         public int ChildNum { get; set; }
         public int BabyNum { get; set; }

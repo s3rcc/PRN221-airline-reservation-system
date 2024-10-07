@@ -20,7 +20,7 @@ namespace BussinessObjects
         public DateTime DepartureDateTime { get; set; }
         public DateTime ArrivalDateTime { get; set; }
         public decimal BasePrice { get; set; }
-        public string Status { get; set; }
+        public bool Status { get; set; }
 
         // Navigation
         public AirPlane Plane { get; set; }
