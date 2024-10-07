@@ -12,6 +12,6 @@ namespace BussinessObjects
         [Key]
         public int PilotId { get; set; }
         public string PilotName { get; set; }
-        public string Status { get; set; }
+        public bool Status { get; set; }
     }
 }

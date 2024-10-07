@@ -29,7 +29,8 @@ namespace Services.Services
                     throw new ErrorException(StatusCodes.Status404NotFound, ErrorCode.NOT_FOUND, "Booking not found.");
                 }
 
-                booking.Status = "Cancelled";
+
+                booking.Status = false;
                 await _unitOfWork.Repository<Booking>().UpdateAsync(booking);
                 await _unitOfWork.SaveChangeAsync();
             }
