@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\CRUD\PlanePages\" />
+    <Folder Include="Pages\CRUD\AirPlanePages\" />
   </ItemGroup>
 
 </Project>
