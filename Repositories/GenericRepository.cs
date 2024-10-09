@@ -124,7 +124,7 @@ namespace Repositories
                 }
             }
 
-            return await query.FirstOrDefaultAsync(entity => EF.Property<int>(entity, "Id") == id); // Assuming 'Id' is the key
+            return await query.FirstOrDefaultAsync(entity => EF.Property<int>(entity, "Id") == id);
         }
 
         public async Task UpdateAsync(T entity)
