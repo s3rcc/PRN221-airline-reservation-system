@@ -25,7 +25,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\CRUD\AirPlanePages\" />
+
+    <Folder Include="Pages\CRUD\PlanePages\" />
+
+    <Folder Include="Pages\CRUD\LocationManager\" />
+    <Folder Include="Pages\CRUD\UserManager\" />
+    <Folder Include="Pages\CRUD\TierManager\" />
+    <Folder Include="Pages\CRUD\TicketManager\" />
+
   </ItemGroup>
 
 </Project>
