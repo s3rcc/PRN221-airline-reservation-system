@@ -1,4 +1,5 @@
 ﻿using BussinessObjects;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,7 @@ namespace Services.Interfaces
 {
     public interface IRoleService
     {
+          Task<IEnumerable<RoleManager<User>>> GetAllRolesAsync();
+
     }
 }
