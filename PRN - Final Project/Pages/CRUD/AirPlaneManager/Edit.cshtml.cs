@@ -3,28 +3,28 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using BussinessObjects;
 using Services.Interfaces;
 
-namespace PRN___Final_Project.Pages.CRUD.LocationPages
+namespace PRN___Final_Project.Pages.CRUD.AirPlaneManager
 {
     public class EditModel : PageModel
     {
-        private readonly ILocationService _locationService;
+        private readonly IAirPlaneService _airPlaneService;
 
-        public EditModel(ILocationService locationService)
+        public EditModel(IAirPlaneService airPlaneService)
         {
-            _locationService = locationService;
+            _airPlaneService = airPlaneService;
         }
 
         [BindProperty]
-        public Location Location { get; set; } = default!;
+        public AirPlane AirPlane { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var location = await _locationService.GetLocationByIdAsync(id);
-            if (location == null)
+            var airPlane = await _airPlaneService.GetAirPlaneByIdAsync(id);
+            if (airPlane == null)
             {
                 return NotFound();
             }
-            Location = location;
+            AirPlane = airPlane;
             return Page();
         }
 
@@ -35,7 +35,7 @@ namespace PRN___Final_Project.Pages.CRUD.LocationPages
                 return Page();
             }
 
-            await _locationService.UpdateLocationAsync(Location);
+            await _airPlaneService.UpdateAirPlaneAsync(AirPlane);
 
             return RedirectToPage("./Index");
         }

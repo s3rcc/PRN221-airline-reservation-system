@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using BussinessObjects;
 using Services.Interfaces;
-using Services.Services;
 
 namespace PRN___Final_Project.Pages.CRUD.LocationPages
 {

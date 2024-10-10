@@ -82,7 +82,7 @@ namespace Services.Services
             catch
             {
                 throw new Exception("An error occurred while updating the location.");
-            };
+            }
         }
     }
 }
