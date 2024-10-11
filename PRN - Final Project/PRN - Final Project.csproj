@@ -8,14 +8,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
+
+    <Compile Remove="Pages\CRUD\PlanePages\**" />
+    <Content Remove="Pages\CRUD\PlanePages\**" />
+    <EmbeddedResource Remove="Pages\CRUD\PlanePages\**" />
+    <None Remove="Pages\CRUD\PlanePages\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.6" />
   </ItemGroup>
 
@@ -25,10 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-
-    <Folder Include="Pages\CRUD\PlanePages\" />
-
-    <Folder Include="Pages\CRUD\LocationManager\" />
     <Folder Include="Pages\CRUD\UserManager\" />
     <Folder Include="Pages\CRUD\TierManager\" />
     <Folder Include="Pages\CRUD\TicketManager\" />

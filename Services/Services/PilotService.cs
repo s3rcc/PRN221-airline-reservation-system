@@ -1,12 +1,6 @@
 ﻿using BussinessObjects;
 using Repositories.Interface;
 using Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services.Services
 {
@@ -49,6 +43,18 @@ namespace Services.Services
             }
         }
 
+        public async Task<IEnumerable<Pilot>> GetAllAvailablePilotsAsync()
+        {
+            try
+            {
+                return await _unitOfWork.Repository<Pilot>().FindAsync(predicate: p => p.Status == true);
+            }
+            catch
+            {
+                throw new Exception("An error occurred while retrieving available pilots.");
+            }
+        }
+
         public async Task<IEnumerable<Pilot>> GetAllPilotsAsync()
         {
             try
@@ -86,7 +92,7 @@ namespace Services.Services
             catch
             {
                 throw new Exception("An error occurred while updating the pilot.");
-            };
+            }
         }
     }
 }

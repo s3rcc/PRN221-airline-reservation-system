@@ -7,12 +7,7 @@ using Repositories;
 using Repositories.Interface;
 using Services.Interfaces;
 using Services.Services;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Services
 {

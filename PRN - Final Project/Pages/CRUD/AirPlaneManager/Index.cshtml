@@ -1,0 +1,47 @@
+﻿@page
+@model PRN___Final_Project.Pages.CRUD.AirPlaneManager.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Air Plane Name
+            </th>
+            <th>
+                Vip Seat Number
+            </th>
+            <th>
+                Normal Seat Number
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.AirPlane) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlaneName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VipSeatNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NormalSeatNumber)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.PlaneId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.PlaneId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.PlaneId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

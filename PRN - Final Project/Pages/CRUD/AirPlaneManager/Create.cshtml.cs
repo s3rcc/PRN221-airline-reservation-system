@@ -3,15 +3,15 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using BussinessObjects;
 using Services.Interfaces;
 
-namespace PRN___Final_Project.Pages.CRUD.PilotPages
+namespace PRN___Final_Project.Pages.CRUD.AirPlaneManager
 {
     public class CreateModel : PageModel
     {
-        private readonly IPilotService _pilotService;
+        private readonly IAirPlaneService _airPlaneService;
 
-        public CreateModel(IPilotService pilotService)
+        public CreateModel(IAirPlaneService airPlaneSevice)
         {
-            _pilotService = pilotService;
+            _airPlaneService = airPlaneSevice;
         }
 
         public IActionResult OnGet()
@@ -20,7 +20,7 @@ namespace PRN___Final_Project.Pages.CRUD.PilotPages
         }
 
         [BindProperty]
-        public Pilot Pilot { get; set; } = default!;
+        public AirPlane AirPlane { get; set; } = default!;
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -29,7 +29,7 @@ namespace PRN___Final_Project.Pages.CRUD.PilotPages
                 return Page();
             }
 
-           await _pilotService.AddPilotAsync(Pilot);
+            await _airPlaneService.AddAirPlaneAsync(AirPlane);
 
             return RedirectToPage("./Index");
         }

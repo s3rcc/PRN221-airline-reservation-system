@@ -33,6 +33,32 @@ namespace DataAccessObjects
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Configuring the relationship between Flight and Location (Origin and Destination)
+            modelBuilder.Entity<Flight>()
+                .HasOne(f => f.Origin)
+                .WithMany(l => l.OriginFlights) // Use OriginFlights collection for origin relationships
+                .HasForeignKey(f => f.OriginID)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_Flight_Origin_Location");
+
+            modelBuilder.Entity<Flight>()
+                .HasOne(f => f.Destination)
+                .WithMany(l => l.DestinationFlights) // Use DestinationFlights collection for destination relationships
+                .HasForeignKey(f => f.DestinationID)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_Flight_Destination_Location");
+
+            // Configure other relationships here as needed
+            modelBuilder.Entity<Flight>()
+                .HasOne(f => f.Plane)
+                .WithMany(p => p.Flights)
+                .HasForeignKey(f => f.PlaneId);
+
+            modelBuilder.Entity<Flight>()
+                .HasOne(f => f.Pilot)
+                .WithMany(p => p.Flights)
+                .HasForeignKey(f => f.PilotId);
+
             base.OnModelCreating(modelBuilder);
             var admin = new IdentityRole("admin");
             admin.NormalizedName = "admin" ;

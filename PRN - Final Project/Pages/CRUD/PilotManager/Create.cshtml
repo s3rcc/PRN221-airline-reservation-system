@@ -18,10 +18,10 @@
                 <input asp-for="Pilot.PilotName" class="form-control" />
                 <span asp-validation-for="Pilot.PilotName" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Pilot.Status" class="control-label"></label>
-                <input asp-for="Pilot.Status" class="form-control" />
-                <span asp-validation-for="Pilot.Status" class="text-danger"></span>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Pilot.Status" /> @Html.DisplayNameFor(model => model.Pilot.Status)
+                </label>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

@@ -3,24 +3,24 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using BussinessObjects;
 using Services.Interfaces;
 
-namespace PRN___Final_Project.Pages.CRUD.PilotPages
+namespace PRN___Final_Project.Pages.CRUD.FlightManager
 {
     public class DeleteModel : PageModel
     {
-        private readonly IPilotService _pilotService;
+        private readonly IFlightService _flightService;
 
-        public DeleteModel(IPilotService pilotService)
+        public DeleteModel(IFlightService flightService)
         {
-            _pilotService = pilotService;
+            _flightService = flightService;
         }
 
         [BindProperty]
-        public Pilot Pilot { get; set; } = default!;
+        public Flight Flight { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Pilot = await _pilotService.GetPilotByIdAsync(id);
-            if (Pilot == null)
+            Flight = await _flightService.GetFlightByIdAsync(id);
+            if (Flight == null)
             {
                 return NotFound();
             }
@@ -29,8 +29,9 @@ namespace PRN___Final_Project.Pages.CRUD.PilotPages
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            await _pilotService.DeletePilotAsync(id);
-            return RedirectToPage("Index");
+            await _flightService.DeleteFlightAsync(id);
+
+            return RedirectToPage("./Index");
         }
     }
 }

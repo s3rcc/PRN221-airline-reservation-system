@@ -1,12 +1,7 @@
 ﻿using DataAccessObjects;
 using Microsoft.EntityFrameworkCore;
 using Repositories.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Repositories
 {
@@ -124,7 +119,10 @@ namespace Repositories
                 }
             }
 
-            return await query.FirstOrDefaultAsync(entity => EF.Property<int>(entity, "Id") == id);
+            var keyName = _context.Model.FindEntityType(typeof(T)).FindPrimaryKey().Properties
+                  .Select(x => x.Name).Single();
+
+            return await query.FirstOrDefaultAsync(entity => EF.Property<int>(entity, keyName) == id);
         }
 
         public async Task UpdateAsync(T entity)
