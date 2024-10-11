@@ -1,4 +1,5 @@
 ﻿using DataAccessObjects;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +7,7 @@ using Repositories;
 using Repositories.Interface;
 using Services.Interfaces;
 using Services.Services;
+
 
 namespace Services
 {
@@ -29,6 +31,11 @@ namespace Services
             services.AddScoped<ITicketService, TicketService>();
             services.AddScoped<ITierService, TierService>();
             services.AddScoped<IUserService, UserService>();
+            //services.AddOptions();                                        
+            var mailsettings = configuration.GetSection("MailSettings");  
+            services.Configure<MailSettings>(mailsettings);               
+
+            services.AddTransient<IEmailSender, SendMailService>();
             return services;
         }
     }

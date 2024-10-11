@@ -60,6 +60,15 @@ namespace DataAccessObjects
                 .HasForeignKey(f => f.PilotId);
 
             base.OnModelCreating(modelBuilder);
+            var admin = new IdentityRole("admin");
+            admin.NormalizedName = "admin" ;
+            var staff = new IdentityRole("staff");
+            staff.NormalizedName = "staff";
+            var member = new IdentityRole("member");
+            member.NormalizedName = "member";
+            modelBuilder.Entity<IdentityRole>().HasData(admin,staff,member);
+
         }
     }
 }
+ 

@@ -4,6 +4,7 @@ using DataAccessObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessObjects.Migrations
 {
     [DbContext(typeof(Fall2024DbContext))]
-    partial class Fall2024DbContextModelSnapshot : ModelSnapshot
+    [Migration("20241009063807_Seed-data")]
+    partial class Seeddata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -541,21 +544,19 @@ namespace DataAccessObjects.Migrations
             modelBuilder.Entity("BussinessObjects.Flight", b =>
                 {
                     b.HasOne("BussinessObjects.Location", "Destination")
-                        .WithMany("DestinationFlights")
+                        .WithMany()
                         .HasForeignKey("DestinationID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_Flight_Destination_Location");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BussinessObjects.Location", "Origin")
-                        .WithMany("OriginFlights")
+                        .WithMany()
                         .HasForeignKey("OriginID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("FK_Flight_Origin_Location");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BussinessObjects.Pilot", "Pilot")
-                        .WithMany("Flights")
+                        .WithMany()
                         .HasForeignKey("PilotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -678,18 +679,6 @@ namespace DataAccessObjects.Migrations
                         .IsRequired();
 
                     b.Navigation("Tickets");
-                });
-
-            modelBuilder.Entity("BussinessObjects.Location", b =>
-                {
-                    b.Navigation("DestinationFlights");
-
-                    b.Navigation("OriginFlights");
-                });
-
-            modelBuilder.Entity("BussinessObjects.Pilot", b =>
-                {
-                    b.Navigation("Flights");
                 });
 
             modelBuilder.Entity("BussinessObjects.Tier", b =>
