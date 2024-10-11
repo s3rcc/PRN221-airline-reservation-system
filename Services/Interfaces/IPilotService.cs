@@ -10,6 +10,7 @@ namespace Services.Interfaces
     public interface IPilotService
     {
         Task<IEnumerable<Pilot>> GetAllPilotsAsync();
+        Task<IEnumerable<Pilot>> GetAllAvailablePilotsAsync();
         Task<Pilot> GetPilotByIdAsync(int id);
         Task AddPilotAsync(Pilot pilot);
         Task UpdatePilotAsync(Pilot pilot);

@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using BussinessObjects;
-using DataAccessObjects;
+using Services.Interfaces;
 
 namespace PRN___Final_Project.Pages.CRUD.LocationPages
 {
     public class CreateModel : PageModel
     {
-        private readonly DataAccessObjects.Fall2024DbContext _context;
+        private readonly ILocationService _locationService;
 
-        public CreateModel(DataAccessObjects.Fall2024DbContext context)
+        public CreateModel(ILocationService locationService)
         {
-            _context = context;
+            _locationService = locationService;
         }
 
         public IActionResult OnGet()
@@ -27,7 +22,6 @@ namespace PRN___Final_Project.Pages.CRUD.LocationPages
         [BindProperty]
         public Location Location { get; set; } = default!;
 
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -35,8 +29,7 @@ namespace PRN___Final_Project.Pages.CRUD.LocationPages
                 return Page();
             }
 
-            _context.Locations.Add(Location);
-            await _context.SaveChangesAsync();
+            await _locationService.AddLocationAsync(Location);
 
             return RedirectToPage("./Index");
         }

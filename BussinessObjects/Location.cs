@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BussinessObjects
 {
@@ -11,6 +6,11 @@ namespace BussinessObjects
     {
         [Key]
         public int LocationID { get; set; }
+        [Required(ErrorMessage = "Location name is required!")]
         public string LocationName { get; set; }
+
+        // Navigation property
+        public ICollection<Flight>? OriginFlights { get; set; }
+        public ICollection<Flight>? DestinationFlights { get; set; }
     }
 }
