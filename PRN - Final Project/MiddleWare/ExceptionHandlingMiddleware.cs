@@ -1,6 +1,4 @@
 ﻿using BussinessObjects.Exceptions;
-using Newtonsoft.Json;
-using System.Text.Json;
 
 namespace PRN___Final_Project.MiddleWare
 {
