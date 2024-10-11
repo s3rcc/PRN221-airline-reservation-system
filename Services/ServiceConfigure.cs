@@ -30,7 +30,6 @@ namespace Services
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IPilotService, PilotService>();
-            services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<ITicketService, TicketService>();
             services.AddScoped<ITierService, TierService>();
             services.AddScoped<IUserService, UserService>();

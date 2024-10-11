@@ -16,7 +16,7 @@ namespace PRN___Final_Project.Pages.CRUD.LocationPages
 
         public Location Location { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
             Location = await _locationService.GetLocationByIdAsync(id);
             return Page();

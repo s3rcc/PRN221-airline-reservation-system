@@ -25,7 +25,7 @@ namespace PRN___Final_Project.Pages.CRUD.LocationPages
         [BindProperty]
         public Location Location { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
             var location = await _locationService.GetLocationByIdAsync(id);
             if (location == null)

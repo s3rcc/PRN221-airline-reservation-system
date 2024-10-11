@@ -19,7 +19,7 @@ namespace PRN___Final_Project.Pages.CRUD.LocationPages
         [BindProperty]
         public Location Location { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
             Location = await _locationService.GetLocationByIdAsync(id);
             if (Location == null)
@@ -29,7 +29,7 @@ namespace PRN___Final_Project.Pages.CRUD.LocationPages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        public async Task<IActionResult> OnPostAsync(int id)
         {
             await _locationService.DeleteLocationAsync(id);
             return RedirectToPage("Index");
