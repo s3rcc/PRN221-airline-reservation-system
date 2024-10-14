@@ -1,6 +1,7 @@
 ﻿using BussinessObjects;
 using Repositories.Interface;
 using Services.Interfaces;
+using System.Linq.Expressions;
 
 namespace Services.Services
 {
@@ -42,6 +43,30 @@ namespace Services.Services
             catch
             {
                 throw new Exception("An error occurred while deleting the flight.");
+            }
+        }
+
+        public async Task<IEnumerable<Flight>> FilterFlightsAsync(int originId, int destinationId, DateTime departureTime)
+        {
+            try
+            {
+                return await _unitOfWork.Repository<Flight>().FindAsync(
+                    f => f.OriginID == originId &&
+                         f.DestinationID == destinationId &&
+                         f.DepartureDateTime.Date == departureTime.Date,
+                    includes:
+                    [
+                flight => flight.Plane,
+                flight => flight.Pilot,
+                flight => flight.Origin,
+                flight => flight.Destination
+                    ],
+                    orderBy: flights => flights.OrderBy(f => f.DepartureDateTime)
+                );
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while filtering flights.", ex);
             }
         }
 

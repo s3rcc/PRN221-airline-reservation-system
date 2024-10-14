@@ -36,6 +36,14 @@ namespace Services.Services
             try
             {
                 var location = await _unitOfWork.Repository<Location>().GetByIdAsync(id) ?? throw new KeyNotFoundException("Location not found.");
+
+                var flights = await _unitOfWork.Repository<Flight>().FindAsync(f => (f.OriginID == location.LocationID || f.DestinationID == location.LocationID) && f.Status == true);
+
+                if (flights.Any())
+                {
+                    throw new Exception("Cannot delete the location because there are flights related to it.");
+                }
+
                 _unitOfWork.Repository<Location>().DeleteAsync(location);
                 await _unitOfWork.SaveChangeAsync();
             }

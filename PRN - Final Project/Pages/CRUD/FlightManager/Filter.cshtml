@@ -1,0 +1,94 @@
+﻿@page
+@model PRN___Final_Project.Pages.CRUD.FlightManager.FilterModel
+
+<h2>Filter Flights</h2>
+
+<form method="post">
+    <div class="row mb-3">
+        <div class="col">
+            <label for="origin">Origin</label>
+            <select asp-for="OriginId" class="form-select">
+                @foreach (var location in Model.Locations)
+                {
+                    <option value="@location.LocationID">@location.LocationName</option>
+                }
+            </select>
+        </div>
+
+        <div class="col">
+            <label for="destination">Destination</label>
+            <select asp-for="DestinationId" class="form-select">
+                @foreach (var location in Model.Locations)
+                {
+                    <option value="@location.LocationID">@location.LocationName</option>
+                }
+            </select>
+        </div>
+
+        <div class="col">
+            <label for="departure">Departure Date & Time:</label>
+            <input type="datetime-local" asp-for="DepartureDate" value="@Model.DepartureDate.ToString("yyyy-MM-ddTHH:mm")" class="form-control" />
+        </div>
+
+        <div class="col d-flex align-items-end justify-content-center">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Flight ID
+            </th>
+            <th>
+                Flight Number
+            </th>
+            <th>
+                Departure Time
+            </th>
+            <th>
+                Arrival Time
+            </th>
+            <th>
+                Base Price
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Plane
+            </th>
+            <th>
+                Pilot
+            </th>
+            <th>
+                Origin
+            </th>
+            <th>
+                Destination
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.FilteredFlights != null && Model.FilteredFlights.Any())
+        {
+            @foreach (var flight in Model.FilteredFlights)
+            {
+                <tr>
+                    <td>@flight.FlightId</td>
+                    <td>@flight.FlightNumber</td>
+                    <td>@flight.DepartureDateTime</td>
+                    <td>@flight.ArrivalDateTime</td>
+                    <td>@String.Format("{0:N0} đồng", flight.BasePrice)</td>
+                    <td>@flight.Plane.PlaneName</td>
+                    <td>@flight.Pilot.PilotName</td>
+                    <td>@flight.Origin.LocationName</td>
+                    <td>@flight.Destination.LocationName</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
