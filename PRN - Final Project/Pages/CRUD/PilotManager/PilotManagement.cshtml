@@ -6,7 +6,7 @@
 <h2>Manage Pilots</h2>
 
 <!-- Button to open the modal for adding a new Pilot -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#pilotModal">
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#pilotModal" onclick="clearModal()">
     Add New Pilot
 </button>
 
@@ -30,7 +30,7 @@
                 <td>
                     <!-- Open the modal and pass pilot details -->
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#pilotModal"
-                            onclick="setEditModal(@pilot.PilotId, '@pilot.PilotName', @pilot.Status)">
+                            onclick="setEditModal(@pilot.PilotId, '@pilot.PilotName', @pilot.Status.ToString().ToLower())">
                         Edit
                     </button>
 
@@ -54,14 +54,14 @@
             </div>
             <div class="modal-body">
                 <form method="post">
-                    <input type="hidden" asp-for="Pilot.PilotId" />
+                    <input type="hidden" id="PilotId" asp-for="Pilot.PilotId" />
                     <div class="mb-3">
                         <label asp-for="Pilot.PilotName" class="form-label"></label>
-                        <input asp-for="Pilot.PilotName" class="form-control" required />
+                        <input id="PilotName" asp-for="Pilot.PilotName" class="form-control" required />
                     </div>
                     <div class="mb-3">
                         <label asp-for="Pilot.Status" class="form-label">Status</label>
-                        <input type="checkbox" asp-for="Pilot.Status" />
+                        <input id="Status" type="checkbox" asp-for="Pilot.Status" />
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -105,6 +105,12 @@
 
         function setDeleteModal(id) {
             document.getElementById("deletePilotId").value = id;
+        }
+
+        function clearModal() {
+            document.getElementById("PilotId").value = "";
+            document.getElementById("PilotName").value = "";
+            document.getElementById("Status").checked = false;
         }
     </script>
 }
