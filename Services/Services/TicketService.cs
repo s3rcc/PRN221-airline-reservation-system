@@ -33,12 +33,7 @@ namespace Services.Services
 
         public async Task DeleteTicketAsync(int id)
         {
-            var ticket = await _unitOfWork.Repository<Ticket>().GetByIdAsync(id);
-            if (ticket == null)
-            {
-                throw new ErrorException(StatusCodes.Status404NotFound, ErrorCode.NOT_FOUND, "Ticket not found.");
-            }
-
+            var ticket = await _unitOfWork.Repository<Ticket>().GetByIdAsync(id) ?? throw new ErrorException(StatusCodes.Status404NotFound, ErrorCode.NOT_FOUND, "Ticket not found.");
             _unitOfWork.Repository<Ticket>().DeleteAsync(ticket);
             await _unitOfWork.SaveChangeAsync();
         }
