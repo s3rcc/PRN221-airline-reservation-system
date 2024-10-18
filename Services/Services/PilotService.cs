@@ -23,9 +23,9 @@ namespace Services.Services
                 await _unitOfWork.Repository<Pilot>().AddAsync(pilot);
                 await _unitOfWork.SaveChangeAsync();
             }
-            catch
+            catch (Exception ex)
             {
-                throw new Exception("An error occurred while adding the role.");
+                throw new Exception("An error occurred while adding the pilot.");
             }
         }
 

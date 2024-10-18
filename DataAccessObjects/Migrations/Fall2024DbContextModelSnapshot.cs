@@ -17,7 +17,7 @@ namespace DataAccessObjects.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -118,7 +118,8 @@ namespace DataAccessObjects.Migrations
 
                     b.Property<string>("FlightNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<int>("OriginID")
                         .HasColumnType("int");
@@ -160,6 +161,118 @@ namespace DataAccessObjects.Migrations
                     b.HasKey("LocationID");
 
                     b.ToTable("Locations");
+
+                    b.HasData(
+                        new
+                        {
+                            LocationID = 1,
+                            LocationName = "Hà Nội"
+                        },
+                        new
+                        {
+                            LocationID = 2,
+                            LocationName = "Tp.Hồ Chí Minh"
+                        },
+                        new
+                        {
+                            LocationID = 3,
+                            LocationName = "Đà Nẵng"
+                        },
+                        new
+                        {
+                            LocationID = 4,
+                            LocationName = "Phú Quốc"
+                        },
+                        new
+                        {
+                            LocationID = 5,
+                            LocationName = "Nha Trang"
+                        },
+                        new
+                        {
+                            LocationID = 6,
+                            LocationName = "Buôn Ma Thuột"
+                        },
+                        new
+                        {
+                            LocationID = 7,
+                            LocationName = "Cà Mau"
+                        },
+                        new
+                        {
+                            LocationID = 8,
+                            LocationName = "Cần Thơ"
+                        },
+                        new
+                        {
+                            LocationID = 9,
+                            LocationName = "Chu Lai"
+                        },
+                        new
+                        {
+                            LocationID = 10,
+                            LocationName = "Côn Đảo"
+                        },
+                        new
+                        {
+                            LocationID = 11,
+                            LocationName = "Đà Lạt"
+                        },
+                        new
+                        {
+                            LocationID = 12,
+                            LocationName = "Điện Biên"
+                        },
+                        new
+                        {
+                            LocationID = 13,
+                            LocationName = "Đồng Hới"
+                        },
+                        new
+                        {
+                            LocationID = 14,
+                            LocationName = "Hải Phòng"
+                        },
+                        new
+                        {
+                            LocationID = 15,
+                            LocationName = "Huế"
+                        },
+                        new
+                        {
+                            LocationID = 16,
+                            LocationName = "Pleiku"
+                        },
+                        new
+                        {
+                            LocationID = 17,
+                            LocationName = "Quy Nhơn"
+                        },
+                        new
+                        {
+                            LocationID = 18,
+                            LocationName = "Rạch Giá"
+                        },
+                        new
+                        {
+                            LocationID = 19,
+                            LocationName = "Thanh Hóa"
+                        },
+                        new
+                        {
+                            LocationID = 20,
+                            LocationName = "Tuy Hòa"
+                        },
+                        new
+                        {
+                            LocationID = 21,
+                            LocationName = "Vân Đồn"
+                        },
+                        new
+                        {
+                            LocationID = 22,
+                            LocationName = "Vinh"
+                        });
                 });
 
             modelBuilder.Entity("BussinessObjects.Payment", b =>
@@ -389,19 +502,19 @@ namespace DataAccessObjects.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "30c13631-2048-4ed0-b288-fa46c81a153a",
+                            Id = "79c75b00-1a97-485b-8cfd-a645760f3ef5",
                             Name = "admin",
                             NormalizedName = "admin"
                         },
                         new
                         {
-                            Id = "d2906bd1-bee3-4fa4-8a9a-e0cd08f18fd4",
+                            Id = "578b6fa5-1f12-4995-be53-6dac32255a5f",
                             Name = "staff",
                             NormalizedName = "staff"
                         },
                         new
                         {
-                            Id = "4eeb1113-7e30-4800-9ea8-11b0eca3d46a",
+                            Id = "6675a8fa-d0a7-4cff-ab16-98a641950a7e",
                             Name = "member",
                             NormalizedName = "member"
                         });
