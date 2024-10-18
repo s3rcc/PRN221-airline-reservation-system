@@ -1,4 +1,5 @@
 ﻿using DataAccessObjects;
+using DataAccessObjects.SeedData;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +31,8 @@ namespace Services
             services.AddScoped<ITicketService, TicketService>();
             services.AddScoped<ITierService, TierService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ApplicationDbContextInitialiser>();
+
             //services.AddOptions();                                        
             var mailsettings = configuration.GetSection("MailSettings");  
             services.Configure<MailSettings>(mailsettings);               

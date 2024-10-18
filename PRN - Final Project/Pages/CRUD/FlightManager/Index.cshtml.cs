@@ -48,17 +48,21 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
 
         public async Task<IActionResult> OnPostAsync(Flight flight)
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+
+            await Console.Out.WriteLineAsync("\n\n\n<On Edit>\n\n\n");
+            //if (!ModelState.IsValid)
+            //{
+            //    return Page();
+            //}
 
             if (flight.FlightId == 0)
             {
+                await Console.Out.WriteLineAsync("\n\n\n<On Create New>\n\n\n");
                 await _flightService.AddFlightAsync(flight);
             }
             else
             {
+                await Console.Out.WriteLineAsync("\n\n\n<On Update>\n\n\n");
                 await _flightService.UpdateFlightAsync(flight);
             }
 

@@ -1,15 +1,15 @@
-﻿@page
+﻿@page "/manage-flights"
 @model PRN___Final_Project.Pages.CRUD.FlightManager.FlightManagerModel
 
 @{
-    Layout = "Shared/_AdminLayout";
     ViewData["Title"] = "Manage Flights";
+    Layout = "_DashboardLayout";
 }
 
 <h2>Manage Flights</h2>
 
 <!-- Button to open the modal for adding a new flight -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#flightModal" ">
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#flightModal" onclick="clearModal()">
     Add New Flight
 </button>
 
@@ -39,14 +39,14 @@
                 <td>@item.DepartureDateTime</td>
                 <td>@item.ArrivalDateTime</td>
                 <td>@string.Format("{0:N0} đồng", item.BasePrice)</td>
-                <td>@item.Status</td>
+                <td>@(item.Status ? "On Time" : "Delayed")</td>
                 <td>@item.Plane.PlaneName</td>
                 <td>@item.Pilot.PilotName</td>
                 <td>@item.Origin.LocationName</td>
                 <td>@item.Destination.LocationName</td>
                 <td>
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#flightModal"
-                            onclick="setEditModal(@item.FlightId, '@item.FlightNumber', '@item.DepartureDateTime', '@item.ArrivalDateTime', @item.BasePrice, '@item.Status', '@item.Plane.PlaneId', '@item.Pilot.PilotId', '@item.Origin', '@item.Destination')">
+                            onclick="setEditModal('@item.FlightId', '@item.FlightNumber', '@item.DepartureDateTime', '@item.ArrivalDateTime', @item.BasePrice, '@item.Status', '@item.Plane.PlaneId', '@item.Pilot.PilotId', '@item.Origin.LocationID', '@item.Destination.LocationID')">
                         Edit
                     </button>
                     <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
@@ -180,17 +180,17 @@
             document.getElementById("deleteFlightId").value = id;
         }
 
-        function clearModal(item) {
-            document.getElementById("FlightId").value = item.FlightId;
-            document.getElementById("FlightNumber").value = item.FlightNumber;
-            document.getElementById("DepartureDateTime").value = item.DepartureDateTime;
-            document.getElementById("ArrivalDateTime").value = item.ArrivalDateTime;
-            document.getElementById("BasePrice").value = item.BasePrice;
-            document.getElementById("Status").value = item.Status;
-            document.getElementById("PlaneId").value = item.PlaneId;
-            document.getElementById("PilotId").value = item.PilotId;
-            document.getElementById("OriginId").value = item.OriginId;
-            document.getElementById("DestinationId").value = item.DestinationId;
+        function clearModal() {
+            document.getElementById("FlightId").value = 0;
+            document.getElementById("FlightNumber").value = '';
+            document.getElementById("DepartureDateTime").value = '';
+            document.getElementById("ArrivalDateTime").value = '';
+            document.getElementById("BasePrice").value = '';
+            document.getElementById("Status").value = 'On Time'; // Default status
+            document.getElementById("PlaneId").value = '';
+            document.getElementById("PilotId").value = '';
+            document.getElementById("OriginId").value = '';
+            document.getElementById("DestinationId").value = '';
         }
     </script>
 }

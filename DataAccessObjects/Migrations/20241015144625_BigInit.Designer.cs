@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessObjects.Migrations
 {
     [DbContext(typeof(Fall2024DbContext))]
-    [Migration("20241009063807_Seed-data")]
-    partial class Seeddata
+    [Migration("20241015144625_BigInit")]
+    partial class BigInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -121,7 +121,8 @@ namespace DataAccessObjects.Migrations
 
                     b.Property<string>("FlightNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<int>("OriginID")
                         .HasColumnType("int");
@@ -388,26 +389,6 @@ namespace DataAccessObjects.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "30c13631-2048-4ed0-b288-fa46c81a153a",
-                            Name = "admin",
-                            NormalizedName = "admin"
-                        },
-                        new
-                        {
-                            Id = "d2906bd1-bee3-4fa4-8a9a-e0cd08f18fd4",
-                            Name = "staff",
-                            NormalizedName = "staff"
-                        },
-                        new
-                        {
-                            Id = "4eeb1113-7e30-4800-9ea8-11b0eca3d46a",
-                            Name = "member",
-                            NormalizedName = "member"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -544,19 +525,21 @@ namespace DataAccessObjects.Migrations
             modelBuilder.Entity("BussinessObjects.Flight", b =>
                 {
                     b.HasOne("BussinessObjects.Location", "Destination")
-                        .WithMany()
+                        .WithMany("DestinationFlights")
                         .HasForeignKey("DestinationID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Flight_Destination_Location");
 
                     b.HasOne("BussinessObjects.Location", "Origin")
-                        .WithMany()
+                        .WithMany("OriginFlights")
                         .HasForeignKey("OriginID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Flight_Origin_Location");
 
                     b.HasOne("BussinessObjects.Pilot", "Pilot")
-                        .WithMany()
+                        .WithMany("Flights")
                         .HasForeignKey("PilotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -679,6 +662,18 @@ namespace DataAccessObjects.Migrations
                         .IsRequired();
 
                     b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("BussinessObjects.Location", b =>
+                {
+                    b.Navigation("DestinationFlights");
+
+                    b.Navigation("OriginFlights");
+                });
+
+            modelBuilder.Entity("BussinessObjects.Pilot", b =>
+                {
+                    b.Navigation("Flights");
                 });
 
             modelBuilder.Entity("BussinessObjects.Tier", b =>

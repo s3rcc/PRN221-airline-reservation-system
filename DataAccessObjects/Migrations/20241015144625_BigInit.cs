@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DataAccessObjects.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class BigInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -112,7 +112,7 @@ namespace DataAccessObjects.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PlaneId = table.Column<int>(type: "int", nullable: false),
                     PilotId = table.Column<int>(type: "int", nullable: false),
-                    FlightNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FlightNumber = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     OriginID = table.Column<int>(type: "int", nullable: false),
                     DestinationID = table.Column<int>(type: "int", nullable: false),
                     DepartureDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -124,23 +124,23 @@ namespace DataAccessObjects.Migrations
                 {
                     table.PrimaryKey("PK_Flights", x => x.FlightId);
                     table.ForeignKey(
+                        name: "FK_Flight_Destination_Location",
+                        column: x => x.DestinationID,
+                        principalTable: "Locations",
+                        principalColumn: "LocationID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Flight_Origin_Location",
+                        column: x => x.OriginID,
+                        principalTable: "Locations",
+                        principalColumn: "LocationID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Flights_AirPlanes_PlaneId",
                         column: x => x.PlaneId,
                         principalTable: "AirPlanes",
                         principalColumn: "PlaneId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Flights_Locations_DestinationID",
-                        column: x => x.DestinationID,
-                        principalTable: "Locations",
-                        principalColumn: "LocationID",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_Flights_Locations_OriginID",
-                        column: x => x.OriginID,
-                        principalTable: "Locations",
-                        principalColumn: "LocationID",
-                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Flights_Pilots_PilotId",
                         column: x => x.PilotId,
@@ -333,7 +333,7 @@ namespace DataAccessObjects.Migrations
                         column: x => x.BookingId,
                         principalTable: "Bookings",
                         principalColumn: "BookingId",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -497,10 +497,10 @@ namespace DataAccessObjects.Migrations
                 name: "Tiers");
 
             migrationBuilder.DropTable(
-                name: "AirPlanes");
+                name: "Locations");
 
             migrationBuilder.DropTable(
-                name: "Locations");
+                name: "AirPlanes");
 
             migrationBuilder.DropTable(
                 name: "Pilots");
