@@ -1,23 +1,51 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-using BussinessObjects;
+using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
+using BussinessObjects;
 
-namespace PRN___Final_Project.Pages.CRUD.AirPlaneManager
+namespace PRN___Final_Project.Pages.CRUD.AirPlaneManager;
+
+public class AirPlaneManagementModel : PageModel
 {
-    public class IndexModel : PageModel
+    private readonly IAirPlaneService _airPlaneService;
+
+    public AirPlaneManagementModel(IAirPlaneService airPlaneService)
     {
-        private readonly IAirPlaneService _airPlaneService;
+        _airPlaneService = airPlaneService;
+        AirPlanes = new List<AirPlane>();
+        AirPlane = new AirPlane();
+    }
 
-        public IndexModel(IAirPlaneService airPlaneService)
+    [BindProperty]
+    public AirPlane AirPlane { get; set; }
+    public IEnumerable<AirPlane> AirPlanes { get; set; }
+
+    public async Task OnGetAsync()
+    {
+        AirPlanes = await _airPlaneService.GetAllAirPlanesAsync();
+    }
+
+    public async Task<IActionResult> OnPostAsync()
+    {
+        if (!ModelState.IsValid)
         {
-            _airPlaneService = airPlaneService;
+            return Page();
         }
 
-        public IEnumerable<AirPlane> AirPlane { get;set; } = default!;
-
-        public async Task OnGetAsync()
+        if (AirPlane.PlaneId == 0)
         {
-            AirPlane = await _airPlaneService.GetAllAirPlanesAsync();
+            await _airPlaneService.AddAirPlaneAsync(AirPlane);
         }
+        else
+        {
+            await _airPlaneService.UpdateAirPlaneAsync(AirPlane);
+        }
+        return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnPostDeleteAsync(int id)
+    {
+        await _airPlaneService.DeleteAirPlaneAsync(id);
+        return RedirectToPage();
     }
 }
