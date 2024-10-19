@@ -12,26 +12,23 @@
 </head>
 <body>
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark ">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark d-flex">
         <!-- Navbar Brand-->
         <a class="navbar-brand ps-3" href="/Index">Home</a>
+
         <!-- Sidebar Toggle-->
-        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
-        <!-- Navbar-->
-        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="#!">Edit Profile</a></li>
-                    <li><hr class="dropdown-divider" /></li>
-                    <li>
-                        <form method="post" asp-page="/Logout">
-                            <button class="dropdown-item" type="submit">Logout</button>
-                        </form>
-                    </li>
-                </ul>
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Use ms-auto to align _LoginPartial to the right -->
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item text-light fs-6 fw-light">
+                @await Html.PartialAsync("_LoginPartial")
             </li>
         </ul>
     </nav>
+
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
@@ -64,17 +61,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="sb-sidenav-footer">
-                    <div class="small">Welcome </div>
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <span>@User.Identity.Name</span>
-                    }
-                    else
-                    {
-                        <span>Guest</span>
-                    }
-                </div>
+
             </nav>
         </div>
         <div id="layoutSidenav_content">
