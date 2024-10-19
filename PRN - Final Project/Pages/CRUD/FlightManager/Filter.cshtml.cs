@@ -24,6 +24,8 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
 
         [BindProperty]
         public DateTime DepartureDate { get; set; } = DateTime.Now;
+        [BindProperty]
+        public DateTime? ReturnDate { get; set; } = null;
 
         public IEnumerable<Flight> FilteredFlights { get; set; } = default!;
 
@@ -38,7 +40,7 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
         {
             if (ModelState.IsValid)
             {
-                FilteredFlights = await _flightService.FilterFlightsAsync(OriginId, DestinationId, DepartureDate);
+                FilteredFlights = await _flightService.FilterFlightsAsync(OriginId, DestinationId, DepartureDate, ReturnDate);
             }
 
             Locations = await _locationService.GetAllLocationsAsync();

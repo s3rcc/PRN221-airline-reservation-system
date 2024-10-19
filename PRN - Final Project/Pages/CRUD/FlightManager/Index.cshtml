@@ -14,37 +14,17 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
-                Flight ID
-            </th>
-            <th>
-                Flight Number
-            </th>
-            <th>
-                Departure Time
-            </th>
-            <th>
-                Arrival Time
-            </th>
-            <th>
-                Base Price
-            </th>
-            <th>
-                Status
-            </th>
-            <th>
-                Plane
-            </th>
-            <th>
-                Pilot
-            </th>
-            <th>
-                Origin
-            </th>
-            <th>
-                Destination
-            </th>
-            <th></th>
+            <th>Flight ID</th>
+            <th>Flight Number</th>
+            <th>Departure Time</th>
+            <th>Return Time</th>
+            <th>Duration</th>
+            <th>Base Price</th>
+            <th>Status</th>
+            <th>Plane</th>
+            <th>Pilot</th>
+            <th>Origin</th>
+            <th>Destination</th>
         </tr>
     </thead>
     <tbody>
@@ -62,6 +42,15 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.ArrivalDateTime)
+                </td>
+                <td>
+                    @{
+                        var duration = item.ArrivalDateTime - item.DepartureDateTime;
+                        var durationInMinutes = duration.TotalMinutes;
+                        var hours = (int)(durationInMinutes / 60);
+                        var minutes = (int)(durationInMinutes % 60);
+                        <span>@($"{hours}h {minutes}m")</span>
+                    }
                 </td>
                 <td>
                     @String.Format("{0:N0} đồng", item.BasePrice)
