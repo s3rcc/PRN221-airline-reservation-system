@@ -32,7 +32,7 @@ namespace Services
             services.AddScoped<ITierService, TierService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ApplicationDbContextInitialiser>();
-
+            services.AddHttpContextAccessor();
             //services.AddOptions();                                        
             var mailsettings = configuration.GetSection("MailSettings");  
             services.Configure<MailSettings>(mailsettings);               
