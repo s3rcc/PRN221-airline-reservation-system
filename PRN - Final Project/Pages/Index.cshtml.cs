@@ -22,5 +22,22 @@ namespace PRN___Final_Project.Pages
         {
             Locations = await _locationService.GetAllLocationsAsync();
         }
+
+        public IActionResult OnPost(string originId, string destinationId, DateTime departureDate, DateTime returnDate, int totalPassengers, bool isOneWay)
+        {
+            var flightData = new FlightData
+            {
+                OriginId = int.Parse(originId),
+                DestinationId = int.Parse(destinationId),
+                DepartureDate = departureDate,
+                ReturnDate = returnDate,
+                TotalPassengers = totalPassengers,
+                IsOneWay = isOneWay
+            };
+
+            HttpContext.Session.SetObjectAsJson("FlightData", flightData);
+
+            return RedirectToPage("/CRUD/FlightManager/OutboundFlights");
+        }
     }
 }
