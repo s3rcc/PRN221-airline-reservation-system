@@ -1,10 +1,12 @@
 ﻿using BussinessObjects;
 using Repositories.Interface;
 using Services.Interfaces;
+using BussinessObjects.Exceptions;
+using Microsoft.AspNetCore.Http;
 
 namespace Services.Services
 {
-    public class AirPlaneService : IAirPlaneService
+	public class AirPlaneService : IAirPlaneService
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -84,5 +86,18 @@ namespace Services.Services
                 throw new Exception("An error occurred while updating the air plane.");
             }
         }
-    }
+
+		public async Task<int> GetTotalAirplane()
+		{
+            try
+            {
+                var airPlane = await _unitOfWork.Repository<AirPlane>().GetAllAsync();
+                return airPlane.Count();
+            }
+            catch
+            {
+                throw new ErrorException(StatusCodes.Status500InternalServerError, ErrorCode.INTERNAL_SERVER_ERROR, "Error getting total ariplane");
+            }
+		}
+	}
 }
