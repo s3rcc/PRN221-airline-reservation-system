@@ -3,7 +3,6 @@ using BussinessObjects.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Repositories.Interface;
 using Services.Interfaces;
-using System.Linq.Expressions;
 
 namespace Services.Services
 {
@@ -48,14 +47,14 @@ namespace Services.Services
             }
         }
 
-        public async Task<IEnumerable<Flight>> FilterFlightsAsync(int originId, int destinationId, DateTime departureTime)
+        public async Task<IEnumerable<Flight>> FilterFlightsAsync(int originId, int destinationId, DateTime departureDate, DateTime? returnDate)
         {
             try
             {
                 return await _unitOfWork.Repository<Flight>().FindAsync(
                     f => f.OriginID == originId &&
                          f.DestinationID == destinationId &&
-                         f.DepartureDateTime.Date == departureTime.Date,
+                         f.DepartureDateTime.Date == departureDate.Date,
                     includes:
                     [
                 flight => flight.Plane,

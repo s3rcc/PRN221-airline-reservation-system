@@ -38,34 +38,38 @@
             <div id="tab1">
                 <div class="submit-form">
                     <h4>Check availability for <em>direction</em>:</h4>
-                    <form id="form-submit" action="" method="get">
+                    <form id="form-submit" asp-page="/CRUD/FlightManager/FilteredFlights" method="get">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="from" class="form-label">From:</label>
-                                <select id="from" name="from" class="form-select" required>
+                                <select id="from" name="originId" class="form-select" required>
                                     <option value="">Select a location...</option>
-                                    <option value="Cambodia">Cambodia</option>
-                                    <option value="Hong Kong">Hong Kong</option>
+                                    @foreach (var location in Model.Locations)
+                                    {
+                                        <option value="@location.LocationID">@location.LocationName</option>
+                                    }
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label for="to" class="form-label">To:</label>
-                                <select id="to" name="to" class="form-select" required>
+                                <select id="to" name="destinationId" class="form-select" required>
                                     <option value="">Select a location...</option>
-                                    <option value="Cambodia">Cambodia</option>
-                                    <option value="Hong Kong">Hong Kong</option>
+                                    @foreach (var location in Model.Locations)
+                                    {
+                                        <option value="@location.LocationID">@location.LocationName</option>
+                                    }
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label for="departure" class="form-label">Departure date:</label>
-                                <input type="text" id="departure" name="departure" class="form-control date" placeholder="Select date..." required>
+                                <input type="datetime-local" id="departure" name="departureDate" class="form-control date" required />
                             </div>
                             <div class="col-md-6">
                                 <label for="return" class="form-label">Return date:</label>
-                                <input type="text" id="return" name="return" class="form-control date" placeholder="Select date..." required>
+                                <input type="datetime-local" id="return" name="returnDate" class="form-control date"/>
                             </div>
                             <div class="col-md-6 align-self-end">
-                                <button type="submit" class="btn btn-primary">Order Ticket Now</button>
+                                <button type="submit" class="btn btn-primary">Filter Flights</button>
                             </div>
                         </div>
                     </form>

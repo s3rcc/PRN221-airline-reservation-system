@@ -7,7 +7,7 @@
     <div class="row mb-3">
         <div class="col">
             <label for="origin">Origin</label>
-            <select asp-for="OriginId" class="form-select">
+            <select asp-for="OriginId" class="form-select" required>
                 @foreach (var location in Model.Locations)
                 {
                     <option value="@location.LocationID">@location.LocationName</option>
@@ -17,7 +17,7 @@
 
         <div class="col">
             <label for="destination">Destination</label>
-            <select asp-for="DestinationId" class="form-select">
+            <select asp-for="DestinationId" class="form-select" required>
                 @foreach (var location in Model.Locations)
                 {
                     <option value="@location.LocationID">@location.LocationName</option>
@@ -26,8 +26,13 @@
         </div>
 
         <div class="col">
-            <label for="departure">Departure Date & Time:</label>
-            <input type="datetime-local" asp-for="DepartureDate" value="@Model.DepartureDate.ToString("yyyy-MM-ddTHH:mm")" class="form-control" />
+            <label for="departure">Departure Date:</label>
+            <input type="datetime-local" asp-for="DepartureDate" value="@Model.DepartureDate.ToString("yyyy-MM-ddTHH:mm")" class="form-control" required/>
+        </div>
+
+        <div class="col">
+            <label for="departure">Return Date:</label>
+            <input type="datetime-local" asp-for="ReturnDate" value="@Model.ReturnDate?.ToString("yyyy-MM-ddTHH:mm")" class="form-control"/>
         </div>
 
         <div class="col d-flex align-items-end justify-content-center">
@@ -39,37 +44,16 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
-                Flight ID
-            </th>
-            <th>
-                Flight Number
-            </th>
-            <th>
-                Departure Time
-            </th>
-            <th>
-                Arrival Time
-            </th>
-            <th>
-                Base Price
-            </th>
-            <th>
-                Status
-            </th>
-            <th>
-                Plane
-            </th>
-            <th>
-                Pilot
-            </th>
-            <th>
-                Origin
-            </th>
-            <th>
-                Destination
-            </th>
-            <th></th>
+            <th>Flight ID</th>
+            <th>Flight Number</th>
+            <th>Departure Date</th>
+            <th>Return Date</th>
+            <th>Duration</th>
+            <th>Base Price</th>
+            <th>Plane</th>
+            <th>Pilot</th>
+            <th>Origin</th>
+            <th>Destination</th>
         </tr>
     </thead>
     <tbody>
@@ -82,6 +66,15 @@
                     <td>@flight.FlightNumber</td>
                     <td>@flight.DepartureDateTime</td>
                     <td>@flight.ArrivalDateTime</td>
+                    <td>
+                        @{
+                            var duration = flight.ArrivalDateTime - flight.DepartureDateTime;
+                            var durationInMinutes = duration.TotalMinutes;
+                            var hours = (int)(durationInMinutes / 60);
+                            var minutes = (int)(durationInMinutes % 60);
+                            <span>@($"{hours}h {minutes}m")</span>
+                        }
+                    </td>
                     <td>@String.Format("{0:N0} đồng", flight.BasePrice)</td>
                     <td>@flight.Plane.PlaneName</td>
                     <td>@flight.Pilot.PilotName</td>
