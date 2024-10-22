@@ -1,4 +1,6 @@
 ﻿using BussinessObjects;
+using BussinessObjects.Exceptions;
+using Microsoft.AspNetCore.Http;
 using Repositories.Interface;
 using Services.Interfaces;
 
@@ -80,7 +82,20 @@ namespace Services.Services
             } 
         }
 
-        public async Task UpdatePilotAsync(Pilot pilot)
+		public async Task<int> GetTotalPilot()
+		{
+			try
+			{
+				var pilot = await _unitOfWork.Repository<Pilot>().GetAllAsync();
+				return pilot.Count();
+			}
+			catch
+			{
+				throw new ErrorException(StatusCodes.Status500InternalServerError, ErrorCode.INTERNAL_SERVER_ERROR, "Error getting total pilot");
+			}
+		}
+
+		public async Task UpdatePilotAsync(Pilot pilot)
         {
             try
             {

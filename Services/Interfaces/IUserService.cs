@@ -15,6 +15,7 @@ namespace Services.Interfaces
         Task UpdateUserAsync(User user);
         Task DeleteUserAsync(int id);
         Task<(IEnumerable<User> Users, int TotalCount)> GetAllUsersPagedAsync(int pageNumber, int pageSize);
+        Task<int> GetTotalUser();
 
     }
 }

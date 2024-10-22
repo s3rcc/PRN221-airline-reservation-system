@@ -83,7 +83,44 @@ namespace Services.Services
             return await _unitOfWork.Repository<Booking>().FindAsync(x => x.UserId.Equals(userId));
         }
 
-        public async Task UpdateBookingAsync(Booking booking)
+        public async Task<IEnumerable<Booking>> GetBookings(DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                return await _unitOfWork.Repository<Booking>().FindAsync(x => x.BookingDate >= startDate.Date && x.BookingDate <= endDate);
+            }
+            catch
+            {
+                throw new ErrorException(StatusCodes.Status500InternalServerError, ErrorCode.INTERNAL_SERVER_ERROR, "Error updating booking.");
+            }
+        }
+
+        public async Task<IEnumerable<Booking>> GetBookingsByYear(int year)
+        {
+            try
+            {
+                return await _unitOfWork.Repository<Booking>().FindAsync(x => x.BookingDate.Year == year);
+            }
+            catch
+            {
+                throw new ErrorException(StatusCodes.Status500InternalServerError, ErrorCode.INTERNAL_SERVER_ERROR, "Error updating booking.");
+            }
+        }
+
+		public async Task<int> GetTotalBooking()
+		{
+			try
+			{
+				var booking = await _unitOfWork.Repository<Booking>().GetAllAsync();
+				return booking.Count();
+			}
+			catch
+			{
+				throw new ErrorException(StatusCodes.Status500InternalServerError, ErrorCode.INTERNAL_SERVER_ERROR, "Error getting total bookings");
+			}
+		}
+
+		public async Task UpdateBookingAsync(Booking booking)
         {
             try
             {
