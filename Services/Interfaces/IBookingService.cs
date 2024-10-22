@@ -16,5 +16,8 @@ namespace Services.Interfaces
         Task UpdateBookingAsync(Booking booking);
         Task DeleteBookingAsync(int id);
         Task CancelBookingAsync(int id);
+        Task<IEnumerable<Booking>> GetBookingsByYear(int year);
+        Task<IEnumerable<Booking>> GetBookings(DateTime startDate, DateTime endDate);
+        Task<int> GetTotalBooking();
     }
 }
