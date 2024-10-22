@@ -9,5 +9,6 @@ namespace Services.Interfaces
         Task AddAirPlaneAsync(AirPlane airPlane);
         Task UpdateAirPlaneAsync(AirPlane airPlane);
         Task DeleteAirPlaneAsync(int id);
+        Task<int> GetTotalAirplane(); 
     }
 }
