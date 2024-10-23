@@ -122,19 +122,28 @@
                     <div class="row h-100">
                         <!-- Nút Economy Class -->
                         <div class="col-6 p-0">
-                            <button class="d-flex flex-column justify-content-center align-items-center gap-3 rounded-0 btn btn-primary w-100 h-100"
-                                    onclick="location.href='@Url.Page("/ReturnFlights", new { totalPassengers = Model.TotalPassengers })'">
-                                <span class="display-6 fw-bold">Economy Class</span>
-                                <h4 class="fw-bold">@string.Format("{0:N0} đồng", flight.BasePrice)</h4>
-                            </button>
+                            <form method="post" class="w-100 h-100">
+                                <input type="hidden" name="basePrice" value="@flight.BasePrice" />
+                                <input type="hidden" name="returnFlightId" value="@flight.FlightId" />
+                                <button type="submit" class="d-flex flex-column justify-content-center align-items-center gap-3 rounded-0 btn btn-primary w-100 h-100">
+                                    <span class="display-6 fw-bold">Economy Class</span>
+                                    <h4 class="fw-bold">@string.Format("{0:N0} đồng", flight.BasePrice)</h4>
+                                </button>
+                            </form>
                         </div>
                         <!-- Nút Business Class -->
                         <div class="col-6 p-0">
-                            <button class="d-flex flex-column justify-content-center align-items-center gap-3 rounded-start-0 rounded-end-4 btn btn-success w-100 h-100"
-                                    onclick="location.href='@Url.Page("/ReturnFlights", new { totalPassengers = Model.TotalPassengers })'">
-                                <span class="display-6 fw-bold">Business Class </span>
-                                <h4 class="fw-bold">@string.Format("{0:N0} đồng", flight.BasePrice * 1.4m)</h4>
-                            </button>
+                            <form method="post" class="w-100 h-100">
+                                @{
+                                    decimal businessClassPrice = flight.BasePrice * 1.4m;
+                                }
+                                <input type="hidden" name="basePrice" value="@businessClassPrice" />
+                                <input type="hidden" name="returnFlightId" value="@flight.FlightId" />
+                                <button type="submit" class="d-flex flex-column justify-content-center align-items-center gap-3 rounded-start-0 rounded-end-4 btn btn-success w-100 h-100">
+                                    <span class="display-6 fw-bold">Business Class</span>
+                                    <h4 class="fw-bold">@string.Format("{0:N0} đồng", flight.BasePrice * 1.4m)</h4>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

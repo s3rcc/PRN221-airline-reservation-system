@@ -40,5 +40,11 @@ namespace PRN___Final_Project
         public DateTime ReturnDate { get; set; }
         public int TotalPassengers { get; set; }
         public bool IsOneWay { get; set; }
+        public int OutboundFlightId { get; set; }
+        public int? ReturnFlightId { get; set; }
+        public decimal TotalPrice { get; set; }
+        public int AdultNum { get; set; }
+        public int ChildNum { get; set; }
+        public int BabyNum { get; set; }
     }
 }

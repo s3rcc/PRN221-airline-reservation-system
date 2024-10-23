@@ -45,11 +45,11 @@
                     <div class="mb-3 d-flex align-items-center gap-5">
                         <label class="form-label">Flight type:</label>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tripType" id="oneWay" value="oneWay" checked onclick="toggleReturnDate()">
+                            <input class="form-check-input" type="radio" name="tripType" id="oneWay" value="oneWay" checked onclick="toggleReturnDate(true)">
                             <label class="form-check-label" for="oneWay">One Way</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="tripType" id="roundTrip" value="roundTrip" onclick="toggleReturnDate()">
+                            <input class="form-check-input" type="radio" name="tripType" id="roundTrip" value="roundTrip" onclick="toggleReturnDate(false)">
                             <label class="form-check-label" for="roundTrip">Round Trip</label>
                         </div>
                     </div>
@@ -58,6 +58,9 @@
                     <form id="form-submit" method="post">
                         <input type="hidden" id="isOneWay" name="isOneWay" value="true" />
                         <input type="hidden" id="totalPassengers" name="totalPassengers" value="1" />
+                        <input type="hidden" id="adultNum" name="adultNum" value="1" />
+                        <input type="hidden" id="childNum" name="childNum" value="0" />
+                        <input type="hidden" id="babyNum" name="babyNum" value="0" />
                         <div class="row g-3">
                             <!-- From -->
                             <div class="col-md-6">
@@ -120,11 +123,11 @@
                                             </div>
                                         </li>
                                         <li class="d-flex align-items-center justify-content-between p-4">
-                                            <label class="m-0 pe-3">Infants (under 2 years)</label>
+                                            <label class="m-0 pe-3">Babys (under 2 years)</label>
                                             <div class="d-flex align-items-center">
-                                                <button type="button" class="btn btn-sm btn-outline-secondary m-0" onclick="decreasePassenger('infants')">-</button>
-                                                <span class="px-2" id="infantsCount">0</span>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary m-0" onclick="increasePassenger('infants')">+</button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary m-0" onclick="decreasePassenger('babys')">-</button>
+                                                <span class="px-2" id="babysCount">0</span>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary m-0" onclick="increasePassenger('babys')">+</button>
                                             </div>
                                         </li>
                                     </ul>
@@ -187,25 +190,25 @@
             let count = parseInt(countElement.innerText);
             const adultsCount = parseInt(document.getElementById('adultsCount').innerText);
             const childrenCount = parseInt(document.getElementById('childrenCount').innerText);
-            const infantsCount = parseInt(document.getElementById('infantsCount').innerText);
+            const babysCount = parseInt(document.getElementById('babysCount').innerText);
 
             if (type === 'adults' && count < 9) {
                 countElement.innerText = ++count;
-                resetChildrenAndInfants(); // Reset children and infants when adults increase
+                resetChildrenAndBabys();
             } else if (type === 'adults' && count >= 9) {
                 alert("Maximum of 9 adults allowed.");
             }
 
-            if (type === 'children' && (childrenCount + infantsCount) < (adultsCount * 2)) {
+            if (type === 'children' && (childrenCount + babysCount) < (adultsCount * 2)) {
                 countElement.innerText = ++count;
             } else if (type === 'children') {
-                alert("Total number of children and infants cannot exceed double the number of adults.");
+                alert("Total number of children and babys cannot exceed double the number of adults.");
             }
 
-            if (type === 'infants' && infantsCount < adultsCount) {
+            if (type === 'babys' && babysCount < adultsCount) {
                 countElement.innerText = ++count;
-            } else if (type === 'infants') {
-                alert("Number of infants cannot exceed the number of adults.");
+            } else if (type === 'babys') {
+                alert("Number of babys cannot exceed the number of adults.");
             }
 
             updatePassengerCount();
@@ -216,27 +219,37 @@
             let count = parseInt(countElement.innerText);
             if (count > 0) {
                 countElement.innerText = --count;
-                resetChildrenAndInfants()
+
+                // Only reset children and babies count when adults are increased
+                if (type === 'adults') {
+                    resetChildrenAndBabys();
+                }
+
                 updatePassengerCount();
             }
         }
 
-        // Reset children and infants count to 0
-        function resetChildrenAndInfants() {
+        // Reset children and babys count to 0
+        function resetChildrenAndBabys() {
             document.getElementById('childrenCount').innerText = 0;
-            document.getElementById('infantsCount').innerText = 0;
+            document.getElementById('babysCount').innerText = 0;
         }
 
         // Function to update the total passenger count display
         function updatePassengerCount() {
             const adultsCount = parseInt(document.getElementById('adultsCount').innerText);
             const childrenCount = parseInt(document.getElementById('childrenCount').innerText);
-            const infantsCount = parseInt(document.getElementById('infantsCount').innerText);
-            const totalPassengers = adultsCount + childrenCount + infantsCount;
+            const babysCount = parseInt(document.getElementById('babysCount').innerText);
+            const totalPassengers = adultsCount + childrenCount + babysCount;
 
             document.getElementById('passengerCount').innerText = `${totalPassengers} Passenger(s)`;
 
-            // Update the hidden field value
+            // Update the hidden fields for each passenger type
+            document.getElementById('adultNum').value = adultsCount;
+            document.getElementById('childNum').value = childrenCount;
+            document.getElementById('babyNum').value = babysCount;
+
+            // Update the total passengers hidden field
             document.getElementById('totalPassengers').value = totalPassengers;
         }
 

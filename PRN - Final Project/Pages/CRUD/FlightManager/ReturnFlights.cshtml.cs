@@ -1,4 +1,5 @@
 using BussinessObjects;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Services.Interfaces;
 
@@ -16,7 +17,6 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
         }
 
         public IEnumerable<Flight> Flights { get; set; } = default!;
-        public decimal TotalFare { get; set; }
         public int OriginId { get; set; }
         public int DestinationId { get; set; }
         public DateTime DepartureDate { get; set; }
@@ -24,6 +24,7 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
         public int TotalPassengers { get; set; }
         public string OriginLocation { get; set; }
         public string DestinationLocation { get; set; }
+        public bool IsOneWay {  get; set; }
 
         public async Task OnGetAsync()
         {
@@ -36,6 +37,7 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
                 DepartureDate = flightData.DepartureDate;
                 ReturnDate = flightData.ReturnDate;
                 TotalPassengers = flightData.TotalPassengers;
+                IsOneWay = flightData.IsOneWay;
             }
 
             Flights = await _flightService.FilterFlightsAsync(DestinationId, OriginId, ReturnDate);
@@ -43,13 +45,21 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
             OriginLocation = originLocation.LocationName;
             var destinationLocation = await _locationService.GetLocationByIdAsync(OriginId);
             DestinationLocation = destinationLocation.LocationName;
-
-            TotalFare = CalculateTotalFare(Flights);
         }
 
-        private decimal CalculateTotalFare(IEnumerable<Flight> flights)
+        public IActionResult OnPost(decimal basePrice, int returnFlightId)
         {
-            return flights.Sum(f => f.BasePrice);
+            var flightData = HttpContext.Session.GetObjectFromJson<FlightData>("FlightData");
+
+            if (flightData != null)
+            {
+                flightData.TotalPrice += basePrice * flightData.TotalPassengers;
+                flightData.ReturnFlightId = returnFlightId;
+            }
+
+            HttpContext.Session.SetObjectAsJson("FlightData", flightData);
+
+            return Redirect("/manage-bookings");
         }
     }
 }

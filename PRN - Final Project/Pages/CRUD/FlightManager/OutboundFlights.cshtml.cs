@@ -17,7 +17,6 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
         }
 
         public IEnumerable<Flight> Flights { get; set; } = default!;
-        public decimal TotalFare { get; set; }
         public int OriginId { get; set; }
         public int DestinationId { get; set; }
         public DateTime DepartureDate { get; set; }
@@ -46,13 +45,26 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
             OriginLocation = originLocation.LocationName;
             var destinationLocation = await _locationService.GetLocationByIdAsync(DestinationId);
             DestinationLocation = destinationLocation.LocationName;
-
-            TotalFare = CalculateTotalFare(Flights);
         }
 
-        private decimal CalculateTotalFare(IEnumerable<Flight> flights)
+        public IActionResult OnPost(decimal basePrice, int flightId)
         {
-            return flights.Sum(f => f.BasePrice);
+            var flightData = HttpContext.Session.GetObjectFromJson<FlightData>("FlightData");
+
+            if (flightData != null)
+            {
+                flightData.TotalPrice = basePrice * flightData.TotalPassengers;
+                flightData.OutboundFlightId = flightId;
+            }
+
+            HttpContext.Session.SetObjectAsJson("FlightData", flightData);
+
+            if (flightData.IsOneWay)
+            {
+                return Redirect("/manage-bookings");
+            }
+
+            return RedirectToPage("./ReturnFlights");
         }
     }
 }
