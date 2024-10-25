@@ -22,19 +22,19 @@ namespace PRN___Final_Project.Pages
 
         public IActionResult OnGet(int? bookingId)
         {
-            //if (!User.Identity.IsAuthenticated)
-            //{
-            //    TempData["BookingId"] = bookingId;
-            //    return RedirectToPage("/Account/Login", new { returnUrl = Url.Page("/Payment", new { bookingId }) });
-            //}
-            //if (TempData.ContainsKey("BookingId"))
-            //{
-            //    BookingId = Convert.ToInt32(TempData["BookingId"]);
-            //}
-            //else
-            //{
-            //    BookingId = bookingId.Value;
-            //}
+            if (!User.Identity.IsAuthenticated)
+            {
+                TempData["BookingId"] = bookingId;
+                return RedirectToPage("/Area/Identity/Pages/Account/Login", new { returnUrl = Url.Page("/Payment", new { bookingId }) });
+            }
+            if (TempData.ContainsKey("BookingId"))
+            {
+                BookingId = Convert.ToInt32(TempData["BookingId"]);
+            }
+            else
+            {
+                BookingId = bookingId.Value;
+            }
             return Page();
         }
         public async Task<IActionResult> OnPost()
@@ -42,7 +42,7 @@ namespace PRN___Final_Project.Pages
             if (!User.Identity.IsAuthenticated)
             {
                 TempData["BookingId"] = BookingId;
-                return RedirectToPage("/Identity/Account/Login", new { returnUrl = Url.Page("/Payment", new { bookingId = BookingId }) });
+                return RedirectToPage("/Area/Identity/Pages/Account/Login", new { returnUrl = Url.Page("/Payment", new { bookingId = BookingId }) });
             }
 
             var booking = await _bookingService.GetBookingByIdAsync(BookingId);
@@ -52,11 +52,11 @@ namespace PRN___Final_Project.Pages
                 return Page();
             }
 
-            string paymentUrl = _paymentService.CreatePaymentUrl(HttpContext,booking);
+            string paymentUrl = _paymentService.CreatePaymentUrl(HttpContext, booking);
 
             return Redirect(paymentUrl);
-        
-    }
-      
+
+        }
+
     }
 }

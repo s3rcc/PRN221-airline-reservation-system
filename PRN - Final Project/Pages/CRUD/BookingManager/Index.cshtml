@@ -16,34 +16,34 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Booking[0].BookingDate)
+                Booking Date
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Booking[0].TotalPrice)
+                Total Price
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Booking[0].PaymentStatus)
+                Payment Status
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Booking[0].Status)
+                Status
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Booking[0].AdultNum)
+                AdultNum
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Booking[0].ChildNum)
+                ChildNum
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Booking[0].BabyNum)
+                BabyNum
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Booking[0].User)
+                User
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Booking[0].Flight)
+                Flight
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Booking[0].ReturnFlight)
+                ReturnFlight
             </th>
             <th></th>
         </tr>
@@ -84,7 +84,8 @@
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.BookingId">Edit</a> |
                 <a asp-page="./Details" asp-route-id="@item.BookingId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.BookingId">Delete</a>
+                    <a asp-page="./Delete" asp-route-id="@item.BookingId">Delete</a> |
+                    <a asp-page="/payment" asp-route-id="@item.BookingId">Payment</a>
             </td>
         </tr>
 }

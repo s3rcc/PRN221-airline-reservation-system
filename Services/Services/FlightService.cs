@@ -47,7 +47,7 @@ namespace Services.Services
             }
         }
 
-        public async Task<IEnumerable<Flight>> FilterFlightsAsync(int originId, int destinationId, DateTime departureDate, DateTime? returnDate)
+        public async Task<IEnumerable<Flight>> FilterFlightsAsync(int originId, int destinationId, DateTime departureDate)
         {
             try
             {
@@ -190,5 +190,10 @@ namespace Services.Services
 				throw new ErrorException(StatusCodes.Status500InternalServerError, ErrorCode.INTERNAL_SERVER_ERROR, "Error getting total flight");
 			}
 		}
-	}
+
+        public Task<IEnumerable<Flight>> FilterFlightsAsync(int originId, int destinationId, DateTime departureTime)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

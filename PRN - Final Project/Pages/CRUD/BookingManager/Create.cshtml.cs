@@ -7,30 +7,48 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using BussinessObjects;
 using DataAccessObjects;
+using Services.Interfaces;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace PRN___Final_Project.Pages.CRUD.BookingManager
 {
     public class CreateModel : PageModel
     {
-        private readonly DataAccessObjects.Fall2024DbContext _context;
+        private readonly IBookingService _bookingService;
+        private readonly IUserService _userService;
+        private readonly UserManager<User> _userManager;
 
-        public CreateModel(DataAccessObjects.Fall2024DbContext context)
+        public CreateModel(IBookingService bookingService, IUserService userService, UserManager<User> userManager)
         {
-            _context = context;
-        }
-
-        public IActionResult OnGet()
-        {
-        ViewData["FlightId"] = new SelectList(_context.Flights, "FlightId", "FlightNumber");
-        ViewData["ReturnFlightId"] = new SelectList(_context.Flights, "FlightId", "FlightNumber");
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
-            return Page();
+            _bookingService = bookingService;
+            _userService = userService;
+            _userManager = userManager;
+            Booking = new Booking();
         }
 
         [BindProperty]
         public Booking Booking { get; set; } = default!;
 
-        // For more information, see https://aka.ms/RazorPagesCRUD.
+        public FlightData FlightData { get; set; } = default!;
+
+        public async Task<IActionResult> OnGetAsync()
+        {
+            FlightData = HttpContext.Session.GetObjectFromJson<FlightData>("FlightData");
+            //var user = await _userManager.GetUserAsync(User);
+            Booking.FlightId = FlightData.OutboundFlightId;
+            Booking.ReturnFlightId = FlightData.ReturnFlightId;
+            Booking.TotalPrice = FlightData.TotalPrice;
+            Booking.BookingDate = DateTime.Now;
+            Booking.AdultNum = FlightData.AdultNum;
+            Booking.ChildNum = FlightData.ChildNum;
+            Booking.BabyNum = FlightData.BabyNum;
+            Booking.UserId = "abcd";
+            Booking.PaymentStatus = "UnPaid";
+            Booking.Status = true;
+            return Page();
+        }
+
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -38,9 +56,7 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
                 return Page();
             }
 
-            _context.Bookings.Add(Booking);
-            await _context.SaveChangesAsync();
-
+            await _bookingService.CreateBookingAsync(Booking);
             return RedirectToPage("./Index");
         }
     }

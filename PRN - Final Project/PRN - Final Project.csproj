@@ -21,6 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Pages\CRUD\FlightManager\FlightDetails.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -39,6 +43,18 @@
 
   <ItemGroup>
     <Folder Include="Pages\CRUD\UserManager\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Pages\CRUD\FlightManager\FlightDetails.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\CRUD\FlightManager\FlightDetails.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\CRUD\FlightManager\FlightDetails.cshtml" />
   </ItemGroup>
 
 </Project>

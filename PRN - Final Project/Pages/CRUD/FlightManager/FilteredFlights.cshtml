@@ -4,49 +4,48 @@
     ViewData["Title"] = "Filtered Flights";
 }
 
-<h2>Available Flights</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Flight ID</th>
-            <th>Flight Number</th>
-            <th>Departure Date</th>
-            <th>Return Date</th>
-            <th>Duration</th>
-            <th>Base Price</th>
-            <th>Plane</th>
-            <th>Pilot</th>
-            <th>Origin</th>
-            <th>Destination</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model.Flights != null && Model.Flights.Any())
+@if (Model.OutboundFlights.Any())
+{
+    <h3>Outbound Flights</h3>
+    <ul>
+        @foreach (var flight in Model.OutboundFlights)
         {
-            @foreach (var flight in Model.Flights)
-            {
-                <tr>
-                    <td>@flight.FlightId</td>
-                    <td>@flight.FlightNumber</td>
-                    <td>@flight.DepartureDateTime</td>
-                    <td>@flight.ArrivalDateTime</td>
-                    <td>
-                        @{
-                            var duration = flight.ArrivalDateTime - flight.DepartureDateTime;
-                            var durationInMinutes = duration.TotalMinutes;
-                            var hours = (int)(durationInMinutes / 60);
-                            var minutes = (int)(durationInMinutes % 60);
-                            <span>@($"{hours}h {minutes}m")</span>
-                        }
-                    </td>
-                    <td>@String.Format("{0:N0} đồng", flight.BasePrice)</td>
-                    <td>@flight.Plane.PlaneName</td>
-                    <td>@flight.Pilot.PilotName</td>
-                    <td>@flight.Origin.LocationName</td>
-                    <td>@flight.Destination.LocationName</td>
-                </tr>
-            }
+            <li>
+                @flight.FlightNumber - @flight.DepartureDateTime
+                <form method="post" asp-page="NextPageForReturnFlight">
+                    <input type="hidden" name="flightId" value="@flight.FlightId" />
+                    <button type="submit">Select</button>
+                </form>
+            </li>
         }
-    </tbody>
-</table>
+    </ul>
+
+    <div class="footer">
+        <p>Total Fare: @Model.TotalFare.ToString("C")</p>
+        @if (Model.ReturnFlights.Any())
+        {
+            <form method="get" asp-page="ReturnFlightsPage">
+                <input type="hidden" name="returnDate" value="@Model.ReturnFlights.First().DepartureDateTime.ToString("yyyy-MM-dd")" />
+                <button type="submit">Choose Return Flight</button>
+            </form>
+        }
+    </div>
+}
+
+@if (Model.ReturnFlights.Any())
+{
+    <h3>Return Flights</h3>
+    <ul>
+        @foreach (var flight in Model.ReturnFlights)
+        {
+            <li>
+                @flight.FlightNumber - @flight.DepartureDateTime
+                <form method="post" asp-page="PaymentPage">
+                    <input type="hidden" name="flightId" value="@flight.FlightId" />
+                    <button type="submit">Book Flight</button>
+                </form>
+            </li>
+        }
+    </ul>
+}
 

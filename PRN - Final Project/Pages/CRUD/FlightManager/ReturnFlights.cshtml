@@ -1,0 +1,155 @@
+﻿@page
+@model PRN___Final_Project.Pages.CRUD.FlightManager.ReturnFlightsModel
+@{
+    ViewData["Title"] = "Return Flights";
+}
+
+<h1 class="display-3 fw-bold py-5">Return Flights</h1>
+
+<div class="card rounded-4 shadow p-4">
+    <div class="row g-0">
+        <!-- Cột 1: Origin và Destination -->
+        <div class="px-5 col d-flex justify-content-center align-items-center">
+            <div class="row w-100">
+                <!-- Cột 1.1: Origin -->
+                <div class="col-4 d-flex flex-column justify-content-center align-items-center">
+                    <span class="display-6 fw-bold">@Model.DestinationLocation</span>
+                </div>
+
+                <!-- Cột 1.2: Thanh ngang -->
+                <div class="col-4 d-flex flex-column justify-content-center align-items-center">
+                    <span>................................... <i class="fa fa-plane"></i></span>
+                    <span><i class="fa fa-plane" style="transform: scaleX(-1);"></i> ...................................</span>
+                </div>
+
+                <!-- Cột 1.3: Destination -->
+                <div class="col-4 d-flex flex-column justify-content-center align-items-center">
+                    <span class="display-6 fw-bold">@Model.OriginLocation</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thanh dọc chia giữa Cột 1 và Cột 2 -->
+        <div class="col-auto d-flex justify-content-center align-items-center">
+            <div style="border-left: 2px solid #ccc; height: 100%;"></div>
+        </div>
+
+        <!-- Cột 2: Thông tin chuyến bay -->
+        <div class="col d-flex justify-content-center align-items-center">
+            <div class="row w-100">
+                <!-- Cột 2.1: Outbound flight -->
+                <div class="col d-flex flex-column justify-content-center align-items-center">
+                    <p class="h3 fw-bold">Outbound Flight</p>
+                    <p>@Model.DepartureDate.ToString("dddd, dd MMM")</p>
+                </div>
+
+                <!-- Cột 2.2: Return flight -->
+                <div class="col d-flex flex-column justify-content-center align-items-center">
+                    <p class="h3 fw-bold">Return Flight</p>
+                    <p>@Model.ReturnDate.ToString("dddd, dd MMM")</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thanh dọc chia giữa Cột 2 và Cột 3 -->
+        <div class="col-auto d-flex justify-content-center align-items-center">
+            <div style="border-left: 2px solid #ccc; height: 100%;"></div>
+        </div>
+
+        <!-- Cột 3: Số lượng hành khách -->
+        <div class="col d-flex justify-content-center align-items-center">
+            <div class="row w-100">
+                <div class="col-12 d-flex flex-column justify-content-center align-items-center">
+                    <p class="h3 fw-bold">Passengers</p>
+                    <p>@Model.TotalPassengers <i class="fa fa-user"></i></p> <!-- Biểu tượng người -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row py-5">
+    @foreach (var flight in Model.Flights)
+    {
+        <div class="card mb-3 rounded-4 shadow" style="max-width: 100%;">
+            <div class="row g-0">
+                <!-- Cột 1: Thời gian khởi hành và điểm đến -->
+                <div class="p-5 col d-flex justify-content-center align-items-center">
+                    <div class="row w-100">
+                        <!-- Cột 1: DepartureDate và Origin -->
+                        <div class="col-4 d-flex flex-column justify-content-center align-items-center">
+                            <h1 class="fw-bold">@flight.DepartureDateTime.ToString("HH:mm")</h1>
+                            <h4>@flight.Origin.LocationName</h4>
+                        </div>
+
+                        <!-- Cột 2: Thanh ngang -->
+                        <div class="col-4 d-flex justify-content-center align-items-center">
+                            <span>...................................</span>
+                        </div>
+
+                        <!-- Cột 3: ArrivalDate và Destination -->
+                        <div class="col-4 d-flex flex-column justify-content-center align-items-center">
+                            <h1 class="fw-bold">@flight.ArrivalDateTime.ToString("HH:mm")</h1>
+                            <h4>@flight.Destination.LocationName</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thanh dọc ngăn cách giữa cột 1 và cột 2 -->
+                <div class="col-auto d-flex justify-content-center align-items-center">
+                    <div style="border-left: 2px solid #ccc; height: 75%;"></div>
+                </div>
+
+                <!-- Cột 2: Duration và Plane Name -->
+                <div class="p-5 col d-flex flex-column justify-content-center">
+                    <p>
+                        <i class="fa fa-hourglass-half"></i>
+                        @{
+                            var duration = flight.ArrivalDateTime - flight.DepartureDateTime;
+                            var hours = (int)duration.TotalHours;
+                            var minutes = duration.Minutes;
+                            <span>@($"{hours}h {minutes}m")</span>
+                        }
+                    </p>
+                    <p>
+                        <i class="fa fa-plane"></i>
+                        @flight.Plane.PlaneName
+                    </p>
+                </div>
+
+                <!-- Cột 3: Các nút Economy và Business Class -->
+                <div class="col-md-4 d-flex flex-column">
+                    <div class="row h-100">
+                        <!-- Nút Economy Class -->
+                        <div class="col-6 p-0">
+                            <form method="post" class="w-100 h-100">
+                                <input type="hidden" name="basePrice" value="@flight.BasePrice" />
+                                <input type="hidden" name="returnFlightId" value="@flight.FlightId" />
+                                <button type="submit" class="d-flex flex-column justify-content-center align-items-center gap-3 rounded-0 btn btn-primary w-100 h-100">
+                                    <span class="display-6 fw-bold">Economy Class</span>
+                                    <h4 class="fw-bold">@string.Format("{0:N0} đồng", flight.BasePrice)</h4>
+                                </button>
+                            </form>
+                        </div>
+                        <!-- Nút Business Class -->
+                        <div class="col-6 p-0">
+                            <form method="post" class="w-100 h-100">
+                                @{
+                                    decimal businessClassPrice = flight.BasePrice * 1.4m;
+                                }
+                                <input type="hidden" name="basePrice" value="@businessClassPrice" />
+                                <input type="hidden" name="returnFlightId" value="@flight.FlightId" />
+                                <button type="submit" class="d-flex flex-column justify-content-center align-items-center gap-3 rounded-start-0 rounded-end-4 btn btn-success w-100 h-100">
+                                    <span class="display-6 fw-bold">Business Class</span>
+                                    <h4 class="fw-bold">@string.Format("{0:N0} đồng", flight.BasePrice * 1.4m)</h4>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
