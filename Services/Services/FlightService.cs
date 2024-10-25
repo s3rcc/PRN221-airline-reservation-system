@@ -191,9 +191,5 @@ namespace Services.Services
 			}
 		}
 
-        public Task<IEnumerable<Flight>> FilterFlightsAsync(int originId, int destinationId, DateTime departureTime)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
