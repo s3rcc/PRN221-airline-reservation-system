@@ -24,10 +24,10 @@ namespace BussinessObjects
         public int BabyNum { get; set; }
 
         // Navigation
-        public User User { get; set; }
-        public Flight Flight { get; set; }
-        public Flight ReturnFlight { get; set; }
-        public Payment Payment { get; set; }
-        public ICollection<Ticket> Tickets { get; set; }
+        public User? User { get; set; }
+        public Flight? Flight { get; set; }
+        public Flight? ReturnFlight { get; set; }
+        public Payment? Payment { get; set; }
+        public ICollection<Ticket>? Tickets { get; set; }
     }
 }

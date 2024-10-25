@@ -47,7 +47,7 @@ namespace Services.Services
             }
         }
 
-        public async Task<IEnumerable<Flight>> FilterFlightsAsync(int originId, int destinationId, DateTime departureDate, DateTime? returnDate)
+        public async Task<IEnumerable<Flight>> FilterFlightsAsync(int originId, int destinationId, DateTime departureDate)
         {
             try
             {

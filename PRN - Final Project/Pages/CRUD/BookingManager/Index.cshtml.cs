@@ -1,32 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using BussinessObjects;
-using DataAccessObjects;
+using Services.Interfaces;
 
 namespace PRN___Final_Project.Pages.CRUD.BookingManager
 {
     public class IndexModel : PageModel
     {
-        private readonly DataAccessObjects.Fall2024DbContext _context;
+        private readonly IBookingService _bookingService;
 
-        public IndexModel(DataAccessObjects.Fall2024DbContext context)
+        public IndexModel(IBookingService bookingService)
         {
-            _context = context;
+            _bookingService = bookingService;
         }
 
-        public IList<Booking> Booking { get;set; } = default!;
+        public IEnumerable<Booking> Booking { get;set; } = default!;
 
         public async Task OnGetAsync()
         {
-            Booking = await _context.Bookings
-                .Include(b => b.Flight)
-                .Include(b => b.ReturnFlight)
-                .Include(b => b.User).ToListAsync();
+            Booking = await _bookingService.GetAllBookingsAsync();
         }
     }
 }
