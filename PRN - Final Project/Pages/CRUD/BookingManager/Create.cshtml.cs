@@ -35,7 +35,7 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
         public async Task<IActionResult> OnGetAsync()
         {
             FlightData = HttpContext.Session.GetObjectFromJson<FlightData>("FlightData");
-            //var user = await _userManager.GetUserAsync(User);
+            var user = await _userManager.GetUserAsync(User);
             Booking.FlightId = FlightData.OutboundFlightId;
             Booking.ReturnFlightId = FlightData.ReturnFlightId;
             Booking.TotalPrice = FlightData.TotalPrice;
@@ -43,7 +43,7 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
             Booking.AdultNum = FlightData.AdultNum;
             Booking.ChildNum = FlightData.ChildNum;
             Booking.BabyNum = FlightData.BabyNum;
-            Booking.UserId = "abcd";
+            Booking.UserId = user.Id;
             Booking.PaymentStatus = "UnPaid";
             Booking.Status = true;
             return Page();
