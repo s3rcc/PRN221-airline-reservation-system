@@ -22,10 +22,14 @@ namespace PRN___Final_Project.Pages
 
         public IActionResult OnGet(int? bookingId)
         {
-            if (!User.Identity.IsAuthenticated)
+            //if (!User.Identity.IsAuthenticated)
+            //{
+            //    TempData["BookingId"] = bookingId;
+            //    return RedirectToPage("/Area/Identity/Pages/Account/Login", new { returnUrl = Url.Page("/Payment", new { bookingId }) });
+            //}
+            if(BookingId == null)
             {
-                TempData["BookingId"] = bookingId;
-                return RedirectToPage("/Area/Identity/Pages/Account/Login", new { returnUrl = Url.Page("/Payment", new { bookingId }) });
+                ModelState.AddModelError(string.Empty, "Không tìm th?y thông tin Booking v?i");
             }
             if (TempData.ContainsKey("BookingId"))
             {
