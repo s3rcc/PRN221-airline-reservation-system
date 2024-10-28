@@ -23,7 +23,7 @@
             <th>Carry Luggage</th>
             <th>Baggage</th>
             <th>Class Type</th>
-            <th>Payment Status</th>
+            <th>BookingId</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -37,10 +37,10 @@
                 <td>@ticket.Carryluggage</td>
                 <td>@ticket.Baggage</td>
                 <td>@ticket.ClassType</td>
-                <td>@ticket.Booking.PaymentStatus</td>
+                <td>@ticket.Booking?.PaymentStatus</td>
                 <td>
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#ticketModal"
-                            onclick="setEditModal(@ticket.TicketId, '@ticket.SeatNumber', '@ticket.TicketType', '@ticket.IssuedDate.ToString("yyyy-MM-dd")', @ticket.Carryluggage, @ticket.Baggage, '@ticket.ClassType', '@ticket.Booking.PaymentStatus')">
+                            onclick="setEditModal(@ticket.TicketId, '@ticket.SeatNumber', '@ticket.TicketType', '@ticket.IssuedDate.ToString("yyyy-MM-dd")', @ticket.Carryluggage, @ticket.Baggage, '@ticket.ClassType', '@ticket.BookingId)">
                         Edit
                     </button>
 

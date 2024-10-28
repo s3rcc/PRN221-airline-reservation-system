@@ -43,10 +43,25 @@
                 <td>@booking.BabyNum</td>
                 <td>@booking.UserId</td>
                 <td>@booking.FlightId</td>
+                <td>@booking.ClassType</td>
                 <td>@booking.ReturnFlightId</td>
+                <td>@booking.ReturnClassType</td>
                 <td>
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#bookingModal"
-                            onclick="setEditModal(@booking.BookingId, '@booking.BookingDate', @booking.TotalPrice, '@booking.PaymentStatus', '@booking.Status', @booking.AdultNum, @booking.ChildNum, @booking.BabyNum, @booking.UserId, @booking.Flight.FlightNumber, @booking.ReturnFlight?.FlightNumber)">
+                            onclick="setEditModal(
+                        @booking.BookingId, '
+                        @booking.BookingDate',
+                        @booking.TotalPrice, '
+                        @booking.PaymentStatus', '
+                        @booking.Status',
+                        @booking.AdultNum,
+                        @booking.ChildNum,
+                        @booking.BabyNum,
+                        @booking.UserId,
+                        @booking.Flight?.FlightId,
+                        @booking.ClassType, 
+                        @booking.ReturnFlightId,
+                        @booking.ReturnClassType)">
                         Edit
                     </button>
 
@@ -127,10 +142,20 @@
                         <select id="FlightId" asp-for="Booking.FlightId" class="form-control" asp-items="ViewBag.Flights" required></select>
                     </div>
 
+                    <div class="mb-3">
+                        <label asp-for="Booking.ClassType" class="form-label">Class Type</label>
+                        <input id="ClassType" asp-for="Booking.ClassType" class="form-control"></input>
+                    </div>
+
                     <!-- Return Flight ID (if applicable) -->
                     <div class="mb-3">
                         <label asp-for="Booking.ReturnFlightId" class="form-label">Return Flight (Optional)</label>
                         <select id="ReturnFlightId" asp-for="Booking.ReturnFlightId" class="form-control" asp-items="ViewBag.ReturnFlights"></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Booking.ReturnClassType" class="form-label">Return Class Type</label>
+                        <input id="ReturnClassType" asp-for="Booking.ReturnClassType" class="form-control"></input>
                     </div>
 
                     <!-- Modal footer with buttons -->
@@ -169,7 +194,7 @@
 
 @section Scripts {
     <script>
-        function setEditModal(id, date, totalPrice, paymentStatus, status, adultNum, childNum, babyNum, userId, flightId, returnFlightId) {
+        function setEditModal(id, date, totalPrice, paymentStatus, status, adultNum, childNum, babyNum, userId, flightId, classType, returnFlightId, returnClassType) {
             document.getElementById("BookingId").value = id;
             document.getElementById("BookingDate").value = date;
             document.getElementById("TotalPrice").value = totalPrice;
@@ -180,7 +205,10 @@
             document.getElementById("BabyNum").value = babyNum;
             document.getElementById("UserId").value = userId;
             document.getElementById("FlightId").value = flightId;
+            document.getElementById("ClassType").value = classType;
             document.getElementById("ReturnFlightId").value = returnFlightId || "";
+            document.getElementById("ReturnClassType").value = flightId;
+
         }
 
         function setDeleteModal(id) {
