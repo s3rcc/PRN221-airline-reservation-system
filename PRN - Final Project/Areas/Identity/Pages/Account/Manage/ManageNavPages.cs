@@ -19,11 +19,19 @@ namespace  PRN___Final_Project.Areas.Identity.Pages.Account.Manage
 
         public static string ChangePassword => "ChangePassword";
 
+        public static string ListBooking => "ListBooking";
+
+        public static string ListTicket => "ListTicket";
+
         public static string IndexNavClass(ViewContext viewContext) => PageNavClass(viewContext, Index);
 
         public static string EmailNavClass(ViewContext viewContext) => PageNavClass(viewContext, Email);
 
         public static string ChangePasswordNavClass(ViewContext viewContext) => PageNavClass(viewContext, ChangePassword);
+
+        public static string ListBookingNavClass(ViewContext viewContext) => PageNavClass(viewContext, ListBooking);
+
+        public static string ListTicketNavClass(ViewContext viewContext) => PageNavClass(viewContext, ListTicket);
 
         public static string PageNavClass(ViewContext viewContext, string page)
         {

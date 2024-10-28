@@ -19,6 +19,7 @@
             <th>Flight Number</th>
             <th>Departure Time</th>
             <th>Arrival Time</th>
+            <th>Duration</th>
             <th>Base Price</th>
             <th>Status</th>
             <th>Plane</th>
@@ -36,6 +37,15 @@
                 <td>@item.FlightNumber</td>
                 <td>@item.DepartureDateTime</td>
                 <td>@item.ArrivalDateTime</td>
+                <td>
+                    @{
+                        var duration = item.ArrivalDateTime - item.DepartureDateTime;
+                        var durationInMinutes = duration.TotalMinutes;
+                        var hours = (int)(durationInMinutes / 60);
+                        var minutes = (int)(durationInMinutes % 60);
+                        <span>@($"{hours}h {minutes}m")</span>
+                    }
+                </td>
                 <td>@string.Format("{0:N0} đồng", item.BasePrice)</td>
                 <td>@(item.Status ? "On Time" : "Delayed")</td>
                 <td>@item.Plane.PlaneName</td>
@@ -44,7 +54,7 @@
                 <td>@item.Destination.LocationName</td>
                 <td>
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#flightModal"
-                            onclick="setEditModal('@item.FlightId', '@item.FlightNumber', '@item.DepartureDateTime', '@item.ArrivalDateTime', @item.BasePrice, '@item.Status', '@item.Plane.PlaneId', '@item.Pilot.PilotId', '@item.Origin.LocationID', '@item.Destination.LocationID')">
+                            onclick="setEditModal('@item.FlightId', '@item.FlightNumber', '@item.DepartureDateTime.ToString("yyyy-MM-ddTHH:mm:ss")', '@item.ArrivalDateTime.ToString("yyyy-MM-ddTHH:mm:ss")', @item.BasePrice, @(item.Status.ToString().ToLower()), '@item.Plane.PlaneId', '@item.Pilot.PilotId', '@item.Origin.LocationID', '@item.Destination.LocationID')">
                         Edit
                     </button>
                     <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
@@ -167,7 +177,7 @@
             document.getElementById("DepartureDateTime").value = departure;
             document.getElementById("ArrivalDateTime").value = arrival;
             document.getElementById("BasePrice").value = price;
-            document.getElementById("Status").value = status;
+            document.getElementById("Status").checked = (status === 'true');
             document.getElementById("PlaneId").value = planeId;
             document.getElementById("PilotId").value = pilotId;
             document.getElementById("OriginId").value = originId;

@@ -1,7 +1,8 @@
 ﻿using BussinessObjects;
+using BussinessObjects.Exceptions;
+using Microsoft.AspNetCore.Http;
 using Repositories.Interface;
 using Services.Interfaces;
-using System.Linq.Expressions;
 
 namespace Services.Services
 {
@@ -46,14 +47,14 @@ namespace Services.Services
             }
         }
 
-        public async Task<IEnumerable<Flight>> FilterFlightsAsync(int originId, int destinationId, DateTime departureTime)
+        public async Task<IEnumerable<Flight>> FilterFlightsAsync(int originId, int destinationId, DateTime departureDate)
         {
             try
             {
                 return await _unitOfWork.Repository<Flight>().FindAsync(
                     f => f.OriginID == originId &&
                          f.DestinationID == destinationId &&
-                         f.DepartureDateTime.Date == departureTime.Date,
+                         f.DepartureDateTime.Date == departureDate.Date,
                     includes:
                     [
                 flight => flight.Plane,
@@ -106,6 +107,42 @@ namespace Services.Services
             }
         }
 
+        public async Task<IEnumerable<Flight>> GetFlightsByMonth(DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                return await _unitOfWork.Repository<Flight>().FindAsync(x => x.DepartureDateTime >= startDate.Date && x.DepartureDateTime <= endDate.Date, includes:
+                    [
+                    flight => flight.Plane,
+                flight => flight.Pilot,
+                flight => flight.Origin,
+                flight => flight.Destination
+                    ]);
+            }
+            catch
+            {
+                throw new Exception("An error occured while retrieving flights.");
+            }
+        }
+
+        public async Task<IEnumerable<Flight>> GetFlightsByYear(int year)
+        {
+            try
+            {
+                return await _unitOfWork.Repository<Flight>().FindAsync(x => x.DepartureDateTime.Year == year ,includes:
+                    [
+                    flight => flight.Plane,
+                flight => flight.Pilot,
+                flight => flight.Origin,
+                flight => flight.Destination
+                    ]);
+            }
+            catch
+            {
+                throw new Exception("An error occured while retrieving flights.");
+            }
+        }
+
         public async Task<Flight> GetFlightByIdAsync(int id)
         {
             try
@@ -125,6 +162,7 @@ namespace Services.Services
             }
         }
 
+
         public async Task UpdateFlightAsync(Flight flight)
         {
             try
@@ -139,5 +177,19 @@ namespace Services.Services
                 throw new Exception("An error occurred while updating the flight.");
             }
         }
+
+		public async Task<int> GetTotalFlight()
+		{
+			try
+			{
+				var flight = await _unitOfWork.Repository<Flight>().GetAllAsync();
+				return flight.Count();
+			}
+			catch
+			{
+				throw new ErrorException(StatusCodes.Status500InternalServerError, ErrorCode.INTERNAL_SERVER_ERROR, "Error getting total flight");
+			}
+		}
+
     }
 }

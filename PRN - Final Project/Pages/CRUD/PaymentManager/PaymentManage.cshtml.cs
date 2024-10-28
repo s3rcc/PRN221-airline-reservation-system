@@ -24,7 +24,7 @@ namespace PRN___Final_Project.Pages.CRUD.PaymentManager
 
         public async Task OnGetAsync()
         {
-            Payments = await _paymentService.GetAllPaymentsAsync();  
+            Payments = await _paymentService.GetAllPayments();  
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -38,7 +38,7 @@ namespace PRN___Final_Project.Pages.CRUD.PaymentManager
 
             if (Payment.PaymentId == 0)
             {
-                await _paymentService.AddPaymentAsync(Payment);  
+                await _paymentService.CreatePaymentAsync(Payment);  
             }
             else
             {
@@ -51,7 +51,7 @@ namespace PRN___Final_Project.Pages.CRUD.PaymentManager
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
-            await _paymentService.DeletePaymentAsync(id);  
+            //await _paymentService.De(id);  
             return RedirectToPage();
         }
     }

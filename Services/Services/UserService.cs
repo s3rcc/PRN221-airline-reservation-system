@@ -1,4 +1,6 @@
 ﻿using BussinessObjects;
+using BussinessObjects.Exceptions;
+using Microsoft.AspNetCore.Http;
 using Repositories.Interface;
 using Services.Interfaces;
 
@@ -75,7 +77,20 @@ namespace Services.Services
             }
         }
 
-        public async Task<User> GetUserByIdAsync(int id)
+		public async Task<int> GetTotalUser()
+		{
+			try
+			{
+				var user = await _unitOfWork.Repository<User>().GetAllAsync();
+				return user.Count();
+			}
+			catch
+			{
+				throw new ErrorException(StatusCodes.Status500InternalServerError, ErrorCode.INTERNAL_SERVER_ERROR, "Error getting total user");
+			}
+		}
+
+		public async Task<User> GetUserByIdAsync(int id)
         {
             try
             {

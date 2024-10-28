@@ -23,23 +23,8 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
         {
             _userManager = userManager;
         }
-
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public string Email { get; set; }
-
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public bool DisplayConfirmAccountLink { get; set; }
-
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public string EmailConfirmationUrl { get; set; }
         public string UrlContinue { set; get; }
 
@@ -57,7 +42,8 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
                 return NotFound($"Unable to load user with email '{email}'.");
             }
             if (user.EmailConfirmed) {
-                 return RedirectToPage(returnUrl ?? Url.Page("/Index"));
+                 //return RedirectToPage(returnUrl ?? Url.Page("/Index"));
+                 return RedirectToPage("/Index");
 
             }
             Email = email;

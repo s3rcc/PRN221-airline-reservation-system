@@ -65,10 +65,18 @@ namespace DataAccessObjects.Migrations
                     b.Property<int>("ChildNum")
                         .HasColumnType("int");
 
+                    b.Property<string>("ClassType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("FlightId")
                         .HasColumnType("int");
 
                     b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReturnClassType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -655,8 +663,7 @@ namespace DataAccessObjects.Migrations
 
             modelBuilder.Entity("BussinessObjects.Booking", b =>
                 {
-                    b.Navigation("Payment")
-                        .IsRequired();
+                    b.Navigation("Payment");
 
                     b.Navigation("Tickets");
                 });

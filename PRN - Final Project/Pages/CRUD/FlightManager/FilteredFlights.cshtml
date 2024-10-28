@@ -1,0 +1,51 @@
+﻿@page
+@model PRN___Final_Project.Pages.CRUD.FlightManager.FilteredFlightsModel
+@{
+    ViewData["Title"] = "Filtered Flights";
+}
+
+@if (Model.OutboundFlights.Any())
+{
+    <h3>Outbound Flights</h3>
+    <ul>
+        @foreach (var flight in Model.OutboundFlights)
+        {
+            <li>
+                @flight.FlightNumber - @flight.DepartureDateTime
+                <form method="post" asp-page="NextPageForReturnFlight">
+                    <input type="hidden" name="flightId" value="@flight.FlightId" />
+                    <button type="submit">Select</button>
+                </form>
+            </li>
+        }
+    </ul>
+
+    <div class="footer">
+        <p>Total Fare: @Model.TotalFare.ToString("C")</p>
+        @if (Model.ReturnFlights.Any())
+        {
+            <form method="get" asp-page="ReturnFlightsPage">
+                <input type="hidden" name="returnDate" value="@Model.ReturnFlights.First().DepartureDateTime.ToString("yyyy-MM-dd")" />
+                <button type="submit">Choose Return Flight</button>
+            </form>
+        }
+    </div>
+}
+
+@if (Model.ReturnFlights.Any())
+{
+    <h3>Return Flights</h3>
+    <ul>
+        @foreach (var flight in Model.ReturnFlights)
+        {
+            <li>
+                @flight.FlightNumber - @flight.DepartureDateTime
+                <form method="post" asp-page="PaymentPage">
+                    <input type="hidden" name="flightId" value="@flight.FlightId" />
+                    <button type="submit">Book Flight</button>
+                </form>
+            </li>
+        }
+    </ul>
+}
+

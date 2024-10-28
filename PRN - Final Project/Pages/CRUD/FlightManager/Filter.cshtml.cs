@@ -24,6 +24,8 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
 
         [BindProperty]
         public DateTime DepartureDate { get; set; } = DateTime.Now;
+        [BindProperty]
+        public DateTime? ReturnDate { get; set; } = null;
 
         public IEnumerable<Flight> FilteredFlights { get; set; } = default!;
 
