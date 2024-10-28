@@ -27,9 +27,25 @@ namespace Services.Services
             _ticketService = ticketService;
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            throw new NotImplementedException();
+            _logger.LogInformation("Booking Cleanup Service is starting.");
+
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    await CleanupUnpaidBookingsAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error occurred during booking cleanup.");
+                }
+
+                await Task.Delay(_checkInterval, stoppingToken); // Wait for the next execution
+            }
+
+            _logger.LogInformation("Booking Cleanup Service is stopping.");
         }
 
         private async Task CleanupUnpaidBookingsAsync()
