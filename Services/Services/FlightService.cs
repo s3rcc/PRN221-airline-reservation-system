@@ -190,5 +190,6 @@ namespace Services.Services
 				throw new ErrorException(StatusCodes.Status500InternalServerError, ErrorCode.INTERNAL_SERVER_ERROR, "Error getting total flight");
 			}
 		}
-	}
+
+    }
 }

@@ -155,11 +155,15 @@ p {
 
 
 .banner {
+	flex-grow: 1;
 	background-image: url(../img/bg2.png);
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-position: center center;
 	text-align: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .banner .left-side {
