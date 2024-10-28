@@ -36,6 +36,12 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
         {
             FlightData = HttpContext.Session.GetObjectFromJson<FlightData>("FlightData");
             var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                HttpContext.Session.Clear();
+                return Redirect("/login/");
+            }
             Booking.FlightId = FlightData.OutboundFlightId;
             Booking.ReturnFlightId = FlightData.ReturnFlightId;
             Booking.TotalPrice = FlightData.TotalPrice;
@@ -46,6 +52,8 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
             Booking.UserId = user.Id;
             Booking.PaymentStatus = "UnPaid";
             Booking.Status = true;
+            Booking.ClassType = FlightData.ClassType;
+            Booking.ReturnClassType = FlightData.ReturnClassType;
             return Page();
         }
 
@@ -57,6 +65,7 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
             }
 
             await _bookingService.CreateBookingAsync(Booking);
+            HttpContext.Session.Remove("FlightData");
             return RedirectToPage("./Index");
         }
     }

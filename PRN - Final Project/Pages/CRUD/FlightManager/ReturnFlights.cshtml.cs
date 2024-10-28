@@ -25,6 +25,8 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
         public string OriginLocation { get; set; }
         public string DestinationLocation { get; set; }
         public bool IsOneWay {  get; set; }
+        public string ClassType { get; set; }
+        public string ReturnClassType { get; set; }
 
         public async Task OnGetAsync()
         {
@@ -47,19 +49,20 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
             DestinationLocation = destinationLocation.LocationName;
         }
 
-        public IActionResult OnPost(decimal basePrice, int returnFlightId)
+        public IActionResult OnPost(decimal basePrice, int returnFlightId, string returnClassType)
         {
             var flightData = HttpContext.Session.GetObjectFromJson<FlightData>("FlightData");
 
             if (flightData != null)
             {
-                flightData.TotalPrice += basePrice * flightData.TotalPassengers;
+                flightData.TotalPrice += (basePrice * (flightData.AdultNum + flightData.ChildNum * 0.9m + flightData.BabyNum * 0.1m));
                 flightData.ReturnFlightId = returnFlightId;
+                flightData.ReturnClassType = returnClassType;
             }
 
             HttpContext.Session.SetObjectAsJson("FlightData", flightData);
 
-            return Redirect("/manage-bookings");
+            return Redirect("/create-booking");
         }
     }
 }
