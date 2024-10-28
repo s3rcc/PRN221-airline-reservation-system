@@ -10,14 +10,9 @@
   <ItemGroup>
 
     <Compile Remove="Pages\CRUD\PlanePages\**" />
-
-    <Compile Remove="Pages\CRUD\TierManager\**" />
     <Content Remove="Pages\CRUD\PlanePages\**" />
-    <Content Remove="Pages\CRUD\TierManager\**" />
     <EmbeddedResource Remove="Pages\CRUD\PlanePages\**" />
-    <EmbeddedResource Remove="Pages\CRUD\TierManager\**" />
     <None Remove="Pages\CRUD\PlanePages\**" />
-    <None Remove="Pages\CRUD\TierManager\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,10 +31,6 @@
   <ItemGroup>
     <ProjectReference Include="..\BussinessObjects\BussinessObjects.csproj" />
     <ProjectReference Include="..\Services\Services.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Pages\CRUD\UserManager\" />
   </ItemGroup>
 
 </Project>

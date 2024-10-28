@@ -1,11 +1,6 @@
 ﻿using BussinessObjects;
 using Repositories.Interface;
 using Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services.Services
 {
@@ -95,6 +90,7 @@ namespace Services.Services
 
         public async Task UpdateUserAsync(User user)
         {
+
             try
             {
                 if (user == null) throw new ArgumentNullException(nameof(user));
@@ -104,7 +100,7 @@ namespace Services.Services
             }
             catch
             {
-                throw new Exception("An error occurred while updating the pilot.");
+                throw new Exception("An error occurred while updating the user.");
             };
         }
     }

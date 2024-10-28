@@ -1,72 +1,173 @@
-﻿@page
+﻿@page "/manage-tickets"
 @model PRN___Final_Project.Pages.CRUD.TicketManager.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Manage Tickets";
 }
 
-<h1>Index</h1>
+<h2>Manage Tickets</h2>
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
+<!-- Button to open the modal for adding a new Ticket -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ticketModal" onclick="clearModal()">
+    Add New Ticket
+</button>
+
+<!-- Ticket List -->
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Ticket[0].SeatNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ticket[0].TicketType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ticket[0].IssuedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ticket[0].Carryluggage)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ticket[0].Baggage)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ticket[0].ClassType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ticket[0].Booking)
-            </th>
-            <th></th>
+            <th>Seat Number</th>
+            <th>Ticket Type</th>
+            <th>Issued Date</th>
+            <th>Carry Luggage</th>
+            <th>Baggage</th>
+            <th>Class Type</th>
+            <th>Payment Status</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Ticket) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.SeatNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TicketType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IssuedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Carryluggage)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Baggage)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ClassType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Booking.PaymentStatus)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.TicketId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.TicketId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.TicketId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var ticket in Model.Tickets)
+        {
+            <tr>
+                <td>@ticket.SeatNumber</td>
+                <td>@ticket.TicketType</td>
+                <td>@ticket.IssuedDate.ToString("MM/dd/yyyy")</td>
+                <td>@ticket.Carryluggage</td>
+                <td>@ticket.Baggage</td>
+                <td>@ticket.ClassType</td>
+                <td>@ticket.Booking.PaymentStatus</td>
+                <td>
+                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#ticketModal"
+                            onclick="setEditModal(@ticket.TicketId, '@ticket.SeatNumber', '@ticket.TicketType', '@ticket.IssuedDate.ToString("yyyy-MM-dd")', @ticket.Carryluggage, @ticket.Baggage, '@ticket.ClassType', '@ticket.Booking.PaymentStatus')">
+                        Edit
+                    </button>
+
+                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
+                            onclick="setDeleteModal(@ticket.TicketId)">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<!-- Create/Edit Modal -->
+<div class="modal fade" id="ticketModal" tabindex="-1" aria-labelledby="ticketModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ticketModalLabel">Add/Edit Ticket</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    <!-- Hidden field for TicketId -->
+                    <input type="hidden" id="TicketId" asp-for="Ticket.TicketId" />
+
+                    <!-- Seat Number -->
+                    <div class="mb-3">
+                        <label asp-for="Ticket.SeatNumber" class="form-label">Seat Number</label>
+                        <input id="SeatNumber" asp-for="Ticket.SeatNumber" class="form-control" required />
+                    </div>
+
+                    <!-- Ticket Type -->
+                    <div class="mb-3">
+                        <label asp-for="Ticket.TicketType" class="form-label">Ticket Type</label>
+                        <input id="TicketType" asp-for="Ticket.TicketType" class="form-control" required />
+                    </div>
+
+                    <!-- Issued Date -->
+                    <div class="mb-3">
+                        <label asp-for="Ticket.IssuedDate" class="form-label">Issued Date</label>
+                        <input id="IssuedDate" asp-for="Ticket.IssuedDate" class="form-control" type="date" required />
+                    </div>
+
+                    <!-- Carry Luggage -->
+                    <div class="mb-3">
+                        <label asp-for="Ticket.Carryluggage" class="form-label">Carry Luggage</label>
+                        <input id="Carryluggage" asp-for="Ticket.Carryluggage" class="form-control" type="number" required />
+                    </div>
+
+                    <!-- Baggage -->
+                    <div class="mb-3">
+                        <label asp-for="Ticket.Baggage" class="form-label">Baggage</label>
+                        <input id="Baggage" asp-for="Ticket.Baggage" class="form-control" type="number" required />
+                    </div>
+
+                    <!-- Class Type -->
+                    <div class="mb-3">
+                        <label asp-for="Ticket.ClassType" class="form-label">Class Type</label>
+                        <input id="ClassType" asp-for="Ticket.ClassType" class="form-control" required />
+                    </div>
+
+                    <!-- Payment Status -->
+                    <div class="mb-3">
+                        <label asp-for="Ticket.Booking.PaymentStatus" class="form-label">Payment Status</label>
+                        <input id="PaymentStatus" asp-for="Ticket.Booking.PaymentStatus" class="form-control" required />
+                    </div>
+
+                    <!-- Modal footer with buttons -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this ticket?
+            </div>
+            <div class="modal-footer">
+                <form method="post" asp-page-handler="Delete">
+                    <input type="hidden" name="id" id="deleteTicketId" />
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function setEditModal(id, seatNumber, ticketType, issuedDate, carryLuggage, baggage, classType, paymentStatus) {
+            document.getElementById("TicketId").value = id;
+            document.getElementById("SeatNumber").value = seatNumber;
+            document.getElementById("TicketType").value = ticketType;
+            document.getElementById("IssuedDate").value = issuedDate;
+            document.getElementById("Carryluggage").value = carryLuggage;
+            document.getElementById("Baggage").value = baggage;
+            document.getElementById("ClassType").value = classType;
+            document.getElementById("PaymentStatus").value = paymentStatus;
+        }
+
+        function setDeleteModal(id) {
+            document.getElementById("deleteTicketId").value = id;
+        }
+
+        function clearModal() {
+            document.getElementById("TicketId").value = 0;
+            document.getElementById("SeatNumber").value = "";
+            document.getElementById("TicketType").value = "";
+            document.getElementById("IssuedDate").value = "";
+            document.getElementById("Carryluggage").value = "";
+            document.getElementById("Baggage").value = "";
+            document.getElementById("ClassType").value = "";
+            document.getElementById("PaymentStatus").value = "";
+        }
+    </script>
+}
