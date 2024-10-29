@@ -19,5 +19,6 @@ namespace Services.Interfaces
         Task<IEnumerable<Booking>> GetBookingsByYear(int year);
         Task<IEnumerable<Booking>> GetBookings(DateTime startDate, DateTime endDate);
         Task<int> GetTotalBooking();
+        Task<IEnumerable<Booking>> GetBookingByFlightIdAsync(int flightId);
     }
 }

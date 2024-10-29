@@ -1,6 +1,7 @@
 ﻿using BussinessObjects;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Build.Framework;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Services.Interfaces;
@@ -14,14 +15,12 @@ namespace Services.Services
 {
     public class BookingReminderService : BackgroundService
     {
-        private readonly IBookingService _bookingService;
-        private readonly IEmailSender _emailSender;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<BookingReminderService> _logger;
         private readonly TimeSpan _checkInterval = TimeSpan.FromHours(24);
-        public BookingReminderService(IBookingService bookingService, IEmailSender emailSender, ILogger<BookingReminderService> logger)
+        public BookingReminderService(IServiceProvider serviceProvider, ILogger<BookingReminderService> logger)
         {
-            _bookingService = bookingService;
-            _emailSender = emailSender;
+            _serviceProvider = serviceProvider;
             _logger = logger;
         }
 
@@ -48,25 +47,31 @@ namespace Services.Services
 
         private async Task SendBookingRemindersAsync()
         {
-            var unpaidBookings = await _bookingService.GetAllBookingsAsync();
-
-            foreach (var booking in unpaidBookings)
+            using (var scope = _serviceProvider.CreateScope())
             {
-                // Check if the booking is unpaid and nearing the deadline
-                if (booking.PaymentStatus != "Paid")
-                {
-                    var daysSinceBooking = (DateTime.Now - booking.BookingDate).Days;
+                var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+                var emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender>();
 
-                    if (daysSinceBooking == 7 || daysSinceBooking == 5 || daysSinceBooking == 3)
+                var unpaidBookings = await bookingService.GetAllBookingsAsync();
+
+                foreach (var booking in unpaidBookings)
+                {
+                    // Check if the booking is unpaid and nearing the deadline
+                    if (booking.PaymentStatus != "Paid")
                     {
-                        // Send reminder email
-                        await SendReminderEmailAsync(booking);
+                        var daysSinceBooking = (DateTime.Now - booking.BookingDate).Days;
+
+                        if (daysSinceBooking == 7 || daysSinceBooking == 5 || daysSinceBooking == 3)
+                        {
+                            // Send reminder email
+                            await SendReminderEmailAsync(booking, emailSender);
+                        }
                     }
                 }
             }
         }
 
-        private async Task SendReminderEmailAsync(Booking booking)
+        private async Task SendReminderEmailAsync(Booking booking, IEmailSender _emailSender)
         {
             var user = booking.User; // Assuming User is included in the Booking entity
 
