@@ -46,5 +46,7 @@ namespace PRN___Final_Project
         public int AdultNum { get; set; }
         public int ChildNum { get; set; }
         public int BabyNum { get; set; }
+        public string ClassType { get; set; }
+        public string? ReturnClassType { get; set; }
     }
 }
