@@ -69,7 +69,7 @@ namespace Services.Services
 
         public async Task<IEnumerable<Booking>> GetAllBookingsAsync()
         {
-            return await _unitOfWork.Repository<Booking>().GetAllAsync();
+            return await _unitOfWork.Repository<Booking>().GetAllAsync(includes: x => x.User);
         }
 
         public async Task<Booking> GetBookingByIdAsync(int id)
