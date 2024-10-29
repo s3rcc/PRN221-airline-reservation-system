@@ -2,48 +2,80 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Services.Interfaces;
+using System;
 
 namespace PRN___Final_Project.Pages.CRUD.PilotManager
 {
     public class PilotManagementModel : PageModel
     {
         private readonly IPilotService _pilotService;
+
         public PilotManagementModel(IPilotService pilotService)
         {
             _pilotService = pilotService;
             Pilots = new List<Pilot>();
             Pilot = new Pilot();
 
+            StatusMessage = Noti.GetMsg();
+            IsSuccess = Noti.IsSuccess;
         }
+
         [BindProperty]
         public Pilot Pilot { get; set; }
         public IEnumerable<Pilot> Pilots { get; set; }
+
+        // New properties to track messages
+        public string StatusMessage { get; set; } = string.Empty;
+        public bool IsSuccess { get; set; } = true;
+
         public async Task OnGetAsync()
         {
             Pilots = await _pilotService.GetAllPilotsAsync();
         }
+
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
-            Console.WriteLine($"Pilot Name: {Pilot.PilotName}, Status: {Pilot.Status}");
 
-            if (Pilot.PilotId == 0)
+            var rs = string.Empty;
+            var action = string.Empty;
+
+            try
             {
-                await _pilotService.AddPilotAsync(Pilot);
+                if (Pilot.PilotId == 0)
+                {
+                    rs = await _pilotService.AddPilotAsync(Pilot);
+                    action = "Create";
+                }
+                else
+                {
+                    rs = await _pilotService.UpdatePilotAsync(Pilot);
+                    action = "Update";
+                }
+
+                Noti.SetByResult(action, "pilot", rs);
             }
-            else
+            catch (Exception ex)
             {
-                await _pilotService.UpdatePilotAsync(Pilot);
+                Noti.SetFail($"Error: {ex.Message}");
             }
+
+            // Redirect to the same page with status messages
             return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
-            await _pilotService.DeletePilotAsync(id);
+            var rs = await _pilotService.DeletePilotAsync(id);
+
+            if(rs == null)
+                rs = "Pilot deleted successfully.";
+
+            Noti.SetFail(rs);
+
             return RedirectToPage();
         }
     }

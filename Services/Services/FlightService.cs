@@ -15,7 +15,7 @@ namespace Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task AddFlightAsync(Flight flight)
+        public async Task<string> AddFlightAsync(Flight flight)
         {
             try
             {
@@ -24,26 +24,50 @@ namespace Services.Services
                     throw new ArgumentNullException(nameof(flight));
                 }
 
-                await _unitOfWork.Repository<Flight>().AddAsync(flight);
-                await _unitOfWork.SaveChangeAsync();
+                var rs = await ValidateFlight(flight);
+
+                if (rs == null)
+                {
+                    await _unitOfWork.Repository<Flight>().AddAsync(flight);
+                    await _unitOfWork.SaveChangeAsync();
+                }
+
+                return rs;
             }
             catch
             {
-                throw new Exception("An error occurred while adding the airplane.");
+                return ("An error occurred while adding the airplane.");
             }
         }
 
-        public async Task DeleteFlightAsync(int id)
+        public async Task<bool> IsCanDelete(int id)
+        {
+            try
+            {
+                var flight = await _unitOfWork.Repository<Flight>().GetByIdAsync(id) ?? throw new KeyNotFoundException("Flight not found.");
+                _unitOfWork.Repository<Flight>().DeleteAsync(flight);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<string> DeleteFlightAsync(int id)
         {
             try
             {
                 var flight = await _unitOfWork.Repository<Flight>().GetByIdAsync(id) ?? throw new KeyNotFoundException("Flight not found.");
                 _unitOfWork.Repository<Flight>().DeleteAsync(flight);
                 await _unitOfWork.SaveChangeAsync();
+
+                return null;
             }
             catch
             {
-                throw new Exception("An error occurred while deleting the flight.");
+                return ("An error occurred while deleting the flight.");
             }
         }
 
@@ -163,18 +187,24 @@ namespace Services.Services
         }
 
 
-        public async Task UpdateFlightAsync(Flight flight)
+        public async Task<string> UpdateFlightAsync(Flight flight)
         {
             try
             {
                 if (flight == null) throw new ArgumentNullException(nameof(flight));
+                var rs = await ValidateFlight(flight);
+                
+                if (rs == null)
+                {
+                    await _unitOfWork.Repository<Flight>().UpdateAsync(flight);
+                    await _unitOfWork.SaveChangeAsync();
+                }
 
-                await _unitOfWork.Repository<Flight>().UpdateAsync(flight);
-                await _unitOfWork.SaveChangeAsync();
+                return rs;
             }
             catch
             {
-                throw new Exception("An error occurred while updating the flight.");
+                return ("An error occurred while updating the flight.");
             }
         }
 
@@ -191,5 +221,34 @@ namespace Services.Services
 			}
 		}
 
+        private async Task<string> ValidateFlight(Flight flight)
+        {
+            var existingFlight = await _unitOfWork.Repository<Flight>()
+                .FindAsync(f => f.FlightNumber == flight.FlightNumber.Trim());
+            if (existingFlight.Any())
+            {
+                return "Flight number must be unique.";
+            }
+
+            // Check if OriginID and DestinationID are different
+            if (flight.OriginID == flight.DestinationID)
+            {
+                return "Origin and Destination must be different.";
+            }
+
+            // Check if DepartureDateTime is less than ArrivalDateTime
+            if (flight.DepartureDateTime >= flight.ArrivalDateTime)
+            {
+                return "Departure time must be earlier than arrival time.";
+            }
+
+            // Check if BasePrice is greater than zero
+            if (flight.BasePrice <= 0)
+            {
+                return "Base price must be greater than zero.";
+            }
+
+            return null;
+        }
     }
 }

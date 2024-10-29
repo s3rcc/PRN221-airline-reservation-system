@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Services.Services
 {
-	public class AirPlaneService : IAirPlaneService
+    public class AirPlaneService : IAirPlaneService
     {
         private readonly IUnitOfWork _unitOfWork;
 
@@ -33,19 +33,36 @@ namespace Services.Services
             }
         }
 
-        public async Task DeleteAirPlaneAsync(int id)
+        public async Task<string> DeleteAirPlaneAsync(int id)
         {
             try
             {
-                var airPlane = await _unitOfWork.Repository<AirPlane>().GetByIdAsync(id) ?? throw new KeyNotFoundException("Air plane not found.");
+                var airPlane = await _unitOfWork.Repository<AirPlane>().GetByIdAsync(id);
+
+                if (airPlane == null)
+                {
+                    throw new KeyNotFoundException("Airplane not found.");
+                }
+
                 _unitOfWork.Repository<AirPlane>().DeleteAsync(airPlane);
                 await _unitOfWork.SaveChangeAsync();
+
+                return null;
             }
-            catch
+            //catch (KeyNotFoundException ex)
+            //{
+            //    return ex.Message; 
+            //}
+            //catch (InvalidOperationException ex)
+            //{
+            //    return "The plane is in use, try again next time!";
+            //}
+            catch (Exception ex)
             {
-                throw new Exception("An error occurred while deleting the air plane.");
+                return "The plane is in use, try again in next time!";
             }
         }
+
 
         public async Task<IEnumerable<AirPlane>> GetAllAirPlanesAsync()
         {
@@ -87,8 +104,8 @@ namespace Services.Services
             }
         }
 
-		public async Task<int> GetTotalAirplane()
-		{
+        public async Task<int> GetTotalAirplane()
+        {
             try
             {
                 var airPlane = await _unitOfWork.Repository<AirPlane>().GetAllAsync();
@@ -98,6 +115,6 @@ namespace Services.Services
             {
                 throw new ErrorException(StatusCodes.Status500InternalServerError, ErrorCode.INTERNAL_SERVER_ERROR, "Error getting total ariplane");
             }
-		}
-	}
+        }
+    }
 }

@@ -24,6 +24,9 @@ namespace MyProject.Pages.CRUD.UserManager
         public IEnumerable<User> Users { get; set; }
         public IEnumerable<Tier> Tiers { get; set; }
 
+        // Add properties for message display
+        public string Message { get; set; }
+        public bool IsSuccess { get; set; }
 
         public async Task OnGetAsync()
         {
@@ -47,20 +50,33 @@ namespace MyProject.Pages.CRUD.UserManager
             else
             {
                 await Console.Out.WriteLineAsync("___ Update ___");
-                await _userService.UpdateUserAsync(User);
+
+                try
+                {
+                    await _userService.ChangeUserTier(int.Parse(User.Id), User.Tier);
+                    Message = "Change user tier successfully!";
+                    IsSuccess = true;
+                    await Console.Out.WriteLineAsync("\n\n\n +++");
+                }
+                catch
+                {
+                    Message = "Error change user tier!";
+                    IsSuccess = false;
+                    await Console.Out.WriteLineAsync("\n\n\n ---");
+                }
                 await Console.Out.WriteLineAsync("### Update ###");
             }
             await Console.Out.WriteLineAsync("### Post ###");
 
-            return RedirectToPage();
+            return RedirectToPage(new { successMessage = Message, isSuccess = IsSuccess }); ;
         }
 
-        public async Task<IActionResult> OnPostDeleteAsync(int id)
-        {
-            await Console.Out.WriteLineAsync("\n\n\n\n=== Get id: "+ id);
+        //public async Task<IActionResult> OnPostDeleteAsync(int id)
+        //{
+        //    await Console.Out.WriteLineAsync("\n\n\n\n=== Get id: "+ id);
 
-            await _userService.DeleteUserAsync(id);
-            return RedirectToPage();
-        }
+        //    await _userService.DeleteUserAsync(id);
+        //    return RedirectToPage();
+        //}
     }
 }

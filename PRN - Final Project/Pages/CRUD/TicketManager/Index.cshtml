@@ -8,10 +8,10 @@
 
 <h2>Manage Tickets</h2>
 
-<!-- Button to open the modal for adding a new Ticket -->
+@* <!-- Button to open the modal for adding a new Ticket -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ticketModal" onclick="clearModal()">
     Add New Ticket
-</button>
+</button> *@
 
 <!-- Ticket List -->
 <table class="table">
@@ -24,8 +24,8 @@
             <th>Baggage</th>
             <th>Class Type</th>
             <th>BookingId</th>
-            <th>Actions</th>
-        </tr>
+@*             <th>Actions</th>
+ *@        </tr>
     </thead>
     <tbody>
         @foreach (var ticket in Model.Tickets)
@@ -37,8 +37,8 @@
                 <td>@ticket.Carryluggage</td>
                 <td>@ticket.Baggage</td>
                 <td>@ticket.ClassType</td>
-                <td>@ticket.Booking?.PaymentStatus</td>
-                <td>
+                <td>@ticket.BookingId</td>
+@*                 <td>
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#ticketModal"
                             onclick="setEditModal(@ticket.TicketId, '@ticket.SeatNumber', '@ticket.TicketType', '@ticket.IssuedDate.ToString("yyyy-MM-dd")', @ticket.Carryluggage, @ticket.Baggage, '@ticket.ClassType', '@ticket.BookingId)">
                         Edit
@@ -48,7 +48,7 @@
                             onclick="setDeleteModal(@ticket.TicketId)">
                         Delete
                     </button>
-                </td>
+                </td> *@
             </tr>
         }
     </tbody>

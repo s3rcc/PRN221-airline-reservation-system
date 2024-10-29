@@ -1,7 +1,9 @@
 ﻿using BussinessObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Shared;
 using Services.Interfaces;
+using System;
 
 
 namespace PRN___Final_Project.Pages.CRUD.FlightManager
@@ -17,6 +19,9 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
         public IEnumerable<AirPlane> Planes { get; set; }
         public IEnumerable<Pilot> Pilots { get; set; }
         public IEnumerable<Location> Locations { get; set; }
+
+        public string StatusMessage { get; set; } = string.Empty;
+        public bool IsSuccess { get; set; } = true;
 
         private readonly IFlightService _flightService;
         private readonly IAirPlaneService _planeService;
@@ -36,6 +41,10 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
             Planes = new List<AirPlane>();
             Pilots = new List<Pilot>();
             Locations = new List<Location>();
+
+            StatusMessage = Noti.GetMsg();
+            IsSuccess = Noti.IsSuccess;
+
         }
 
         public async Task OnGetAsync()
@@ -53,24 +62,32 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
             //{
             //    return Page();
             //}
+            var rs = string.Empty;
+            var action = string.Empty;
 
             if (flight.FlightId == 0)
             {
                 await Console.Out.WriteLineAsync("\n\n\n<On Create New>\n\n\n");
-                await _flightService.AddFlightAsync(flight);
+                rs = await _flightService.AddFlightAsync(flight);
+                action = "Create";
             }
             else
             {
                 await Console.Out.WriteLineAsync("\n\n\n<On Update>\n\n\n");
-                await _flightService.UpdateFlightAsync(flight);
+                rs = await _flightService.UpdateFlightAsync(flight);
+                action = "Update";
             }
+
+            Noti.SetByResult(action, "flight", rs);
 
             return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
-            await _flightService.DeleteFlightAsync(id);
+            var rs = await _flightService.DeleteFlightAsync(id);
+
+            Noti.SetByResult("Delete", "flight", rs);
             return RedirectToPage();
         }
     }
