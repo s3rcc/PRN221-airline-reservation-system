@@ -4,7 +4,12 @@
 @{
     ViewData["Title"] = "ĐĂNG NHẬP";
 }
-
+@if (TempData.ContainsKey("ErrorMessage"))
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
 <h1>@ViewData["Title"]</h1>
 <div class="row">
     <div class="col-md-6 mx-auto">

@@ -47,6 +47,10 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
 
         public IActionResult OnGet(string code = null)
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToPage("/Index");
+            }
             if (code == null)
             {
                 return BadRequest("A code must be supplied for password reset.");
