@@ -293,7 +293,6 @@ namespace DataAccessObjects.SeedData
 
 
         #endregion Flights
-
         #region User
         private async Task SeedUsersAsync()
         {
@@ -401,7 +400,7 @@ namespace DataAccessObjects.SeedData
                     BabyNum = random.Next(0, 1),
                     Status = true,
                     TotalPrice = flight.BasePrice * (1 + random.Next(0, 2) * 0.5m),
-                    ReturnClassType = "Haha"
+                    ReturnClassType = random.Next(0, 2) == 0 ? "Economy" : "Business"
                 }
                 );
                 booking.Add(new Booking
@@ -417,7 +416,7 @@ namespace DataAccessObjects.SeedData
                     BabyNum = random.Next(0, 1),
                     Status = true,
                     TotalPrice = flight.BasePrice * (1 + random.Next(0, 2) * 0.5m),
-                    ReturnClassType = "Lol"
+                    ReturnClassType = random.Next(0, 2) == 0 ? "Economy" : "Business"
                 }
           );
             }
@@ -460,6 +459,5 @@ namespace DataAccessObjects.SeedData
             }
         }
         #endregion Tickets
-
     }
 }
