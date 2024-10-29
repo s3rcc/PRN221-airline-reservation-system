@@ -1,0 +1,72 @@
+﻿@page "/user/list-booking"
+@model ListBookingModel
+@{
+    ViewData["Title"] = "Danh sách Booking";
+    ViewData["ActivePage"] = ManageNavPages.ListBooking;
+}
+
+<h3>@ViewData["Title"]</h3>
+
+<!-- Filter Dropdown -->
+<div class="mb-3">
+    <select id="paymentStatusFilter" class="form-select" style="width: 200px;" onchange="filterTable()">
+        <option value="">All</option>
+        <option value="Paid">Paid</option>
+        <option value="Pending">Pending</option>
+        <option value="Cancelled">Cancelled</option>
+    </select>
+</div>
+
+
+@if (Model.Bookings != null && Model.Bookings.Any())
+{
+    <table class="table" id="bookingsTable">
+        <thead>
+            <tr>
+                <th>Booking ID</th>
+                <th>Date</th>
+                <th>Payment Status</th>
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var booking in Model.Bookings)
+            {
+                <tr data-payment-status="@booking.PaymentStatus">
+                    <td>@booking.BookingId</td>
+                    <td>@booking.BookingDate.ToShortDateString()</td>
+                    <td>@booking.PaymentStatus</td>
+                    <td>@booking.TotalPrice</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <tr>
+        <td colspan="4" class="text-center">No bookings found.</td>
+    </tr>
+}
+
+
+@section Scripts {
+    <script>
+        function filterTable() {
+            const filterValue = document.getElementById('paymentStatusFilter').value;
+            const table = document.getElementById('bookingsTable');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) { // Start from 1 to skip the header
+                const row = rows[i];
+                const paymentStatus = row.getAttribute('data-payment-status');
+
+                if (filterValue === "" || paymentStatus === filterValue) {
+                    row.style.display = ""; // Show row
+                } else {
+                    row.style.display = "none"; // Hide row
+                }
+            }
+        }
+    </script>
+}

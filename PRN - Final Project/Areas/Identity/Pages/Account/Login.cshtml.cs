@@ -70,6 +70,14 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
             if (_signInManager.IsSignedIn(User)) return Redirect("Index");
             if (ModelState.IsValid)
             {
+                var user = await _userManager.FindByEmailAsync(Input.Email);
+
+                if (user != null && !user.EmailConfirmed)
+                {
+                    ModelState.AddModelError(string.Empty, "Tài khoản của bạn chưa được xác thực email. Vui lòng kiểm tra hộp thư và xác nhận tài khoản.");
+                    return Page();
+                }
+
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
@@ -78,7 +86,7 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Thông tin đăng nhập không chính xác.");
                     return Page();
                 }
             }

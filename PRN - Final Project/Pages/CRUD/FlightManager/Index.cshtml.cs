@@ -49,7 +49,6 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
         public async Task<IActionResult> OnPostAsync(Flight flight)
         {
 
-            await Console.Out.WriteLineAsync("\n\n\n<On Edit>\n\n\n");
             //if (!ModelState.IsValid)
             //{
             //    return Page();
