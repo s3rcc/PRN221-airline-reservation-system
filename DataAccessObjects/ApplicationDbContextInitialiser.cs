@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DataAccessObjects.SeedData
@@ -74,6 +75,9 @@ namespace DataAccessObjects.SeedData
             await SeedPilotsAsync();
             await SeedPlanesAsync();
             await SeedFlightsAsync();
+            await SeedUsersAsync();
+            await SeedBookingsAsync();
+
             _logger.LogInformation("Data seeding completed.");
         }
 
@@ -148,7 +152,7 @@ namespace DataAccessObjects.SeedData
     new Location { LocationName = "Ninh Thuận" },
     new Location { LocationName = "Phú Thọ" },
     new Location { LocationName = "Phú Yên" },
-    new Location {  LocationName = "Quảng Bình" },
+    new Location { LocationName = "Quảng Bình" },
     new Location { LocationName = "Quảng Nam" },
     new Location { LocationName = "Quảng Ngãi" },
     new Location { LocationName = "Quảng Ninh" },
@@ -174,7 +178,7 @@ namespace DataAccessObjects.SeedData
         private async Task SeedPilotsAsync()
         {
 
-                var pilots = new List<Pilot>
+            var pilots = new List<Pilot>
         {
             new Pilot { PilotName = "Nguyễn Văn A", Status = true },
             new Pilot { PilotName = "Lê Văn B", Status = true },
@@ -198,7 +202,7 @@ namespace DataAccessObjects.SeedData
         private async Task SeedPlanesAsync()
         {
 
-                var planes = new List<AirPlane>
+            var planes = new List<AirPlane>
         {
             new AirPlane { PlaneName = "Boeing 737", VipSeatNumber = 20, NormalSeatNumber = 150 },
             new AirPlane { PlaneName = "Airbus A320", VipSeatNumber = 15, NormalSeatNumber = 160 },
@@ -240,40 +244,40 @@ namespace DataAccessObjects.SeedData
         {
             // Kiểm tra xem có chuyến bay nào đã tồn tại chưa
 
-                var flights = new List<Flight>();
-                // Lấy ngày hiện tại
-                DateTime currentDate = DateTime.Now;
-                DateTime endDate = new DateTime(2024, 11, 20);
+            var flights = new List<Flight>();
+            // Lấy ngày hiện tại
+            DateTime currentDate = DateTime.Now;
+            DateTime endDate = new DateTime(2024, 11, 20);
 
-                // Random giá vé và trạng thái
-                var random = new Random();
-                var locations = _context.Locations.ToList(); // Lấy tất cả địa điểm từ database
-                var planes = _context.AirPlanes.ToList(); // Lấy tất cả máy bay từ database
-                var pilots = _context.Pilots.ToList(); // Lấy tất cả phi công từ database
+            // Random giá vé và trạng thái
+            var random = new Random();
+            var locations = _context.Locations.ToList(); // Lấy tất cả địa điểm từ database
+            var planes = _context.AirPlanes.ToList(); // Lấy tất cả máy bay từ database
+            var pilots = _context.Pilots.ToList(); // Lấy tất cả phi công từ database
 
-                for (DateTime date = currentDate.Date; date <= endDate.Date; date = date.AddDays(1))
+            for (DateTime date = currentDate.Date; date <= endDate.Date; date = date.AddDays(1))
+            {
+                for (int i = 0; i < 3; i++) // Tạo 3 chuyến bay mỗi ngày
                 {
-                    for (int i = 0; i < 3; i++) // Tạo 3 chuyến bay mỗi ngày
-                    {
-                        // Random giờ khởi hành giữa 6h và 20h
-                        DateTime departureTime = date.AddHours(6 + i * 4); // Các chuyến cách nhau 4 tiếng
-                        DateTime arrivalTime = departureTime.AddHours(2 + random.Next(1, 3)); // Giả sử thời gian bay từ 2-4 giờ
+                    // Random giờ khởi hành giữa 6h và 20h
+                    DateTime departureTime = date.AddHours(6 + i * 4); // Các chuyến cách nhau 4 tiếng
+                    DateTime arrivalTime = departureTime.AddHours(2 + random.Next(1, 3)); // Giả sử thời gian bay từ 2-4 giờ
 
-                        // Tạo chuyến bay cho mỗi ngày
-                        flights.Add(new Flight
-                        {
-                            FlightNumber = $"VN{random.Next(100, 999)}", // Tạo số chuyến bay ngẫu nhiên
-                            PlaneId = planes[random.Next(planes.Count)].PlaneId,
-                            PilotId = pilots[random.Next(pilots.Count)].PilotId,
-                            OriginID = locations[random.Next(locations.Count)].LocationID, // Chọn ngẫu nhiên điểm khởi hành
-                            DestinationID = locations[random.Next(locations.Count)].LocationID, // Chọn ngẫu nhiên điểm đến
-                            DepartureDateTime = departureTime, // Giờ khởi hành ngẫu nhiên trong ngày
-                            ArrivalDateTime = arrivalTime, // Giờ đến sau khoảng thời gian bay
-                            BasePrice = random.Next(100, 500) + random.Next(0, 99) / 100m, // Giá vé ngẫu nhiên từ 1 triệu đến 5 triệu
-                            Status = true
-                        });
-                    }
+                    // Tạo chuyến bay cho mỗi ngày
+                    flights.Add(new Flight
+                    {
+                        FlightNumber = $"VN{random.Next(100, 999)}", // Tạo số chuyến bay ngẫu nhiên
+                        PlaneId = planes[random.Next(planes.Count)].PlaneId,
+                        PilotId = pilots[random.Next(pilots.Count)].PilotId,
+                        OriginID = locations[random.Next(locations.Count)].LocationID, // Chọn ngẫu nhiên điểm khởi hành
+                        DestinationID = locations[random.Next(locations.Count)].LocationID, // Chọn ngẫu nhiên điểm đến
+                        DepartureDateTime = departureTime, // Giờ khởi hành ngẫu nhiên trong ngày
+                        ArrivalDateTime = arrivalTime, // Giờ đến sau khoảng thời gian bay
+                        BasePrice = random.Next(100, 500) + random.Next(0, 99) / 100m, // Giá vé ngẫu nhiên từ 1 tr đến 5 tr
+                        Status = true
+                    });
                 }
+            }
             if (!_context.Flights.Any())
             {
                 // Thêm chuyến bay vào database
@@ -285,8 +289,140 @@ namespace DataAccessObjects.SeedData
 
 
         #endregion Flights
+        #region User
+        private async Task SeedUsersAsync()
+        {
+            var users = new List<(User User, string Role)>
+    {
+        (new User
+            {
+                UserName = "admin@example.com",
+                Email = "admin@example.com",
+                Gender = "Male",
+                DoB = new DateTime(1980, 1, 1),
+                CCCD = "123451116789",
+                TierId = 1,
+                EmailConfirmed = true,
+            }, "Admin"),
+        (new User
+            {
+                UserName = "staff@example.com",
+                Email = "staff@example.com",
+                Gender = "Female",
+                DoB = new DateTime(1990, 2, 1),
+                CCCD = "987654111321",
+                TierId = 2,
+                EmailConfirmed= true,
+            }, "Staff"),
+        (new User
+        {
+                UserName = "staff2@example.com",
+                Email = "staff2@example.com",
+                Gender = "Female",
+                DoB = new DateTime(1990, 2, 1),
+                CCCD = "987654111321",
+                TierId = 2,
+                EmailConfirmed= true,
+        },"Staff"),
+        (new User
+            {
+                UserName = "member@example.com",
+                Email = "member@example.com",
+                Gender = "Male",
+                DoB = new DateTime(2000, 3, 1),
+                CCCD = "456711189123",
+                TierId = 3,
+                EmailConfirmed= true,
+            }, "Member"),
+                (new User
+            {
+                UserName = "member2@example.com",
+                Email = "member2@example.com",
+                Gender = "Male",
+                DoB = new DateTime(2000, 3, 1),
+                CCCD = "456711189123",
+                TierId = 3,
+                  EmailConfirmed= true,
+            }, "Member")
+    };
 
+            foreach (var (user, role) in users)
+            {
+                var existingUser = await _userManager.FindByEmailAsync(user.Email);
+                if (existingUser is null)
+                {
+                    var result = await _userManager.CreateAsync(user, "123456");
+                    if (result.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(user, role);
+                        _logger.LogInformation($"User {user.Email} created and assigned to role {role}.");
+                    }
+                    else
+                    {
+                        _logger.LogError($"Failed to create user {user.Email}: {string.Join(", ", result.Errors.Select(e => e.Description))}");
 
+                    }
+
+                }
+            }
+        }
+        #endregion User
+        #region Booking
+        private async Task SeedBookingsAsync()
+        {
+            var users = await _context.Users.Take(5).ToListAsync();
+            var flights = await _context.Flights.ToListAsync();
+            var random = new Random();
+            var booking = new List<Booking>();
+            for (var i = 0; i < 20; i++)
+            {
+                var user = users[random.Next(users.Count)];
+                var flight = flights[random.Next(flights.Count)];
+                Flight returnFlight;
+                do
+                {
+                    returnFlight = flights[random.Next(flights.Count)];
+                } while (returnFlight.OriginID == flight.DestinationID);
+                booking.Add(new Booking
+                {
+                    UserId = user.Id,
+                    FlightId = flight.FlightId,
+                    BookingDate = DateTime.UtcNow.AddDays(-random.Next(1, 30)),
+                    PaymentStatus = random.Next(0, 2) == 0 ? "Paid" : "Pending",
+                    ClassType = random.Next(0, 2) == 0 ? "Economy" : "Business",
+                    AdultNum = random.Next(1, 3),
+                    ChildNum = random.Next(0, 2),
+                    BabyNum = random.Next(0, 1),
+                    Status = true,
+                    TotalPrice = flight.BasePrice * (1 + random.Next(0, 2) * 0.5m),
+
+                }
+                );
+                booking.Add(new Booking
+                {
+                    UserId = user.Id,
+                    FlightId = flight.FlightId,
+                    ReturnFlightId = returnFlight.FlightId,
+                    BookingDate = DateTime.UtcNow.AddDays(-random.Next(1, 30)),
+                    PaymentStatus = random.Next(0, 2) == 0 ? "Paid" : "Pending",
+                    ClassType = random.Next(0, 2) == 0 ? "Economy" : "Business",
+                    AdultNum = random.Next(1, 3),
+                    ChildNum = random.Next(0, 2),
+                    BabyNum = random.Next(0, 1),
+                    Status = true,
+                    TotalPrice = flight.BasePrice * (1 + random.Next(0, 2) * 0.5m),
+
+                }
+          );
+            }
+            if (!_context.Bookings.Any())
+            {
+                await _context.Bookings.AddRangeAsync(booking);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Bookings seeded successfully.");
+            }
+        }
+        #endregion Booking
 
     }
 }
