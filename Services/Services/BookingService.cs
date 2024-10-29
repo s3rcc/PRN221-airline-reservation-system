@@ -72,6 +72,12 @@ namespace Services.Services
             return await _unitOfWork.Repository<Booking>().GetAllAsync();
         }
 
+        public async Task<IEnumerable<Booking>> GetBookingByFlightIdAsync(int flightId)
+        {
+            var booking = await _unitOfWork.Repository<Booking>().FindAsync(x => x.FlightId == flightId && x.Status == true);
+            return booking;
+        }
+
         public async Task<Booking> GetBookingByIdAsync(int id)
         {
             var booking = await _unitOfWork.Repository<Booking>().GetByIdAsync(id) ?? throw new ErrorException(StatusCodes.Status404NotFound, ErrorCode.NOT_FOUND, "");
