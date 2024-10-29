@@ -1,0 +1,56 @@
+﻿@page "/user/list-ticket"
+@model ListTicketModel
+@{
+    ViewData["Title"] = "Danh sách Ticket";
+    ViewData["ActivePage"] = ManageNavPages.ListTicket;
+}
+
+<h3>@ViewData["Title"]</h3>
+@* <partial name="_StatusMessage" for="StatusMessage" />
+ *@
+<div class="row">
+    <div class="col-md-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Ticket ID</th>
+                    <th>Booking ID</th>
+                    <th>Seat Number</th>
+                    <th>Ticket Type</th>
+                    <th>Issued Date</th>
+                    <th>Carry luggage</th>
+                    <th>Baggage</th>
+                    <th>Class Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Tickets != null && Model.Tickets.Any())
+                {
+                    foreach (var ticket in Model.Tickets)
+                    {
+                        <tr>
+                            <td>@ticket.TicketId</td>
+                            <td>@ticket.BookingId</td>
+                            <td>@ticket.SeatNumber</td>
+                            <td>@ticket.TicketType</td>
+                            <td>@ticket.IssuedDate.ToShortDateString()</td>
+                            <td>@ticket.Carryluggage</td>
+                            <td>@ticket.Baggage</td>
+                            <td>@ticket.ClassType</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center">No tickets found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

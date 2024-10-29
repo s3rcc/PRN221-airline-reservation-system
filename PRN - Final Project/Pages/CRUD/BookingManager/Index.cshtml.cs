@@ -1,23 +1,55 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using BussinessObjects;
+using DataAccessObjects;
 using Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace PRN___Final_Project.Pages.CRUD.BookingManager
 {
     public class IndexModel : PageModel
     {
-        private readonly IBookingService _bookingService;
+        private readonly IBookingService _service;
 
-        public IndexModel(IBookingService bookingService)
+        public IndexModel(IBookingService service)
         {
-            _bookingService = bookingService;
+            _service = service;
+            Booking = new();
+            Bookings = new List<Booking>();
         }
 
-        public IEnumerable<Booking> Booking { get;set; } = default!;
+        [BindProperty]
+        public Booking Booking { get; set; }
+
+        public IEnumerable<Booking> Bookings { get; set; }   
 
         public async Task OnGetAsync()
         {
-            Booking = await _bookingService.GetAllBookingsAsync();
+            Bookings = await _service.GetAllBookingsAsync();
+        }
+
+        public async Task<IActionResult> OnPostAsync()
+        {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
+            if (Booking.BookingId == 0)
+            {
+                await _service.CreateBookingAsync(Booking);
+            }
+            else
+            {
+                await _service.UpdateBookingAsync(Booking);
+            }
+
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            await _service.DeleteBookingAsync(id);
+            return RedirectToPage();
         }
     }
 }

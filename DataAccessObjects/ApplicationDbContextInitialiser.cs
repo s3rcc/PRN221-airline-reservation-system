@@ -77,6 +77,7 @@ namespace DataAccessObjects.SeedData
             await SeedFlightsAsync();
             await SeedUsersAsync();
             await SeedBookingsAsync();
+            await SeedTicketsAsync();
 
             _logger.LogInformation("Data seeding completed.");
         }
@@ -174,6 +175,7 @@ namespace DataAccessObjects.SeedData
             }
         }
         #endregion Locations
+
         #region Pilots
         private async Task SeedPilotsAsync()
         {
@@ -220,6 +222,7 @@ namespace DataAccessObjects.SeedData
             }
         }
         #endregion Planes
+
         #region Tiers
         private async Task SeedTiersAsync()
         {
@@ -239,6 +242,7 @@ namespace DataAccessObjects.SeedData
             }
         }
         #endregion Tiers
+
         #region Flights
         private async Task SeedFlightsAsync()
         {
@@ -367,6 +371,7 @@ namespace DataAccessObjects.SeedData
             }
         }
         #endregion User
+
         #region Booking
         private async Task SeedBookingsAsync()
         {
@@ -395,7 +400,7 @@ namespace DataAccessObjects.SeedData
                     BabyNum = random.Next(0, 1),
                     Status = true,
                     TotalPrice = flight.BasePrice * (1 + random.Next(0, 2) * 0.5m),
-
+                    ReturnClassType = random.Next(0, 2) == 0 ? "Economy" : "Business"
                 }
                 );
                 booking.Add(new Booking
@@ -411,7 +416,7 @@ namespace DataAccessObjects.SeedData
                     BabyNum = random.Next(0, 1),
                     Status = true,
                     TotalPrice = flight.BasePrice * (1 + random.Next(0, 2) * 0.5m),
-
+                    ReturnClassType = random.Next(0, 2) == 0 ? "Economy" : "Business"
                 }
           );
             }
@@ -424,5 +429,35 @@ namespace DataAccessObjects.SeedData
         }
         #endregion Booking
 
+        #region Tickets
+        private async Task SeedTicketsAsync()
+        {
+            var random = new Random();
+            var bookings = await _context.Bookings.ToListAsync(); // Get all bookings from database
+
+            var tickets = new List<Ticket>();
+
+            foreach (var booking in bookings)
+            {
+                tickets.Add(new Ticket
+                {
+                    SeatNumber = $"A{random.Next(1, 30)}", // Random seat number
+                    TicketType = random.Next(0, 2) == 0 ? "One-way" : "Round-trip", // Random ticket type
+                    IssuedDate = DateTime.UtcNow.AddDays(-random.Next(1, 15)), // Issued date within the last two weeks
+                    Carryluggage = random.Next(5, 10), // Random carry luggage weight in kg
+                    Baggage = random.Next(15, 30), // Random baggage weight in kg
+                    ClassType = random.Next(0, 2) == 0 ? "Economy" : "Business", // Random class type
+                    BookingId = booking.BookingId // Link ticket to a booking
+                });
+            }
+
+            if (!_context.Tickets.Any())
+            {
+                await _context.Tickets.AddRangeAsync(tickets);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Tickets seeded successfully.");
+            }
+        }
+        #endregion Tickets
     }
 }

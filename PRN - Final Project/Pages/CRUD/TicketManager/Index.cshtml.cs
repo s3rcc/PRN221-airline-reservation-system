@@ -1,30 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
+using Services.Interfaces;
 using BussinessObjects;
-using DataAccessObjects;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PRN___Final_Project.Pages.CRUD.TicketManager
 {
     public class IndexModel : PageModel
     {
-        private readonly DataAccessObjects.Fall2024DbContext _context;
+        private readonly ITicketService _ticketService;
 
-        public IndexModel(DataAccessObjects.Fall2024DbContext context)
+        public IndexModel(ITicketService ticketService)
         {
-            _context = context;
+            _ticketService = ticketService;
+            Tickets = new List<Ticket>();
+            Ticket = new Ticket();
         }
 
-        public IList<Ticket> Ticket { get;set; } = default!;
+        [BindProperty]
+        public Ticket Ticket { get; set; }
+
+        public IEnumerable<Ticket> Tickets { get; set; }
 
         public async Task OnGetAsync()
         {
-            Ticket = await _context.Tickets
-                .Include(t => t.Booking).ToListAsync();
+            Tickets = await _ticketService.GetAllTicketsAsync();
+        }
+
+        public async Task<IActionResult> OnPostAsync()
+        {
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
+            if (Ticket.TicketId == 0)
+            {
+                await _ticketService.CreateTicketAsync(Ticket);
+            }
+            else
+            {
+                await _ticketService.UpdateTicketAsync(Ticket);
+            }
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            await _ticketService.DeleteTicketAsync(id);
+            return RedirectToPage();
         }
     }
 }
