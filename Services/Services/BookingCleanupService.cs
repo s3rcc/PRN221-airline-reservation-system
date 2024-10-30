@@ -92,39 +92,46 @@ namespace Services.Services
             foreach (var booking in unpaidBooking)
             {
                 var flight = await _flightService.GetFlightByIdAsync(booking.FlightId);
-
+                bool shouldDeleteBooking = false;
+                // Remove unpaid booking if the flight is set
                 if (flight.DepartureDateTime < DateTime.Now && booking.PaymentStatus != "Paid")
                 {
-                    await _bookingService.DeleteBookingAsync(booking.BookingId);
+                    shouldDeleteBooking = true;
                     _logger.LogInformation($"Deleted unpaid booking with ID: {booking.BookingId} (flight already departed)");
+                }
+
+                // Remove unpaid booking if the seat is not available
+                int requiredSeats = booking.AdultNum + booking.ChildNum + booking.BabyNum;
+                if (IsSeatUnavailable(flight, booking.ClassType, requiredSeats))
+                {
+                    shouldDeleteBooking = true;
+                    _logger.LogInformation($"Booking ID: {booking.BookingId} will be deleted (not enough seats for flight).");
+                }
+
+                // Condition 3: Check return flight if it exists
+                if (booking.ReturnFlightId != null)
+                {
+                    var returnFlight = await _flightService.GetReturnFlightByIdAsync(booking.ReturnFlightId.Value);
+                    if (IsSeatUnavailable(returnFlight, booking.ReturnClassType, requiredSeats))
+                    {
+                        shouldDeleteBooking = true;
+                        _logger.LogInformation($"Booking ID: {booking.BookingId} will be deleted (not enough seats for return flight).");
+                    }
+                }
+
+                // If any of the conditions are met, delete the booking
+                if (shouldDeleteBooking)
+                {
+                    await _bookingService.DeleteBookingAsync(booking.BookingId);
+                    _logger.LogInformation($"Deleted unpaid booking with ID: {booking.BookingId}");
                 }
             }
         }
 
-        private async Task CleanupUnpaidBookingsOutOfSeatAsync(IBookingService _bookingService, IFlightService _flightService)
+        private bool IsSeatUnavailable(Flight flight, string classType, int requiredSeats)
         {
-            var allFlights = await _flightService.GetAllFlightsAsync();
-
-            foreach (var flight in allFlights)
-            {
-                int totalSeats = flight.Plane.VipSeatNumber + flight.Plane.NormalSeatNumber;
-
-                var bookingsFlight = await _bookingService.GetBookingByFlightIdAsync(flight.FlightId);
-
-                int totalBookedSeats = bookingsFlight.Sum(b => b.AdultNum + b.ChildNum + b.BabyNum);
-
-                // Check if the flight is overbooked or if there are unpaid bookings
-                if (totalBookedSeats >= totalSeats)
-                {
-                    var unpaidBookings = bookingsFlight.Where(b => b.PaymentStatus != "Paid");
-
-                    foreach (var booking in unpaidBookings)
-                    {
-                        // Cancel the unpaid booking
-                        await _bookingService.DeleteBookingAsync(booking.BookingId);
-                    }
-                }
-            }
+            return (classType == "Normal" && flight.AvailableNormalSeat < requiredSeats) ||
+                   (classType == "Vip" && flight.AvailableVipSeat < requiredSeats);
         }
     }
 }
