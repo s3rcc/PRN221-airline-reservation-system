@@ -8,12 +8,10 @@
 
 <h2>Manage Flights</h2>
 
-<!-- Button to open the modal for adding a new flight -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#flightModal" onclick="clearModal()">
     Add New Flight
 </button>
 
-<!-- Flight List -->
 <table class="table">
     <thead>
         <tr>
@@ -205,12 +203,12 @@
             document.getElementById("ArrivalDateTime").value = '';
             document.getElementById("BasePrice").value = '';
             document.getElementById("Status").value = 'On Time'; // Default status
-            document.getElementById("PlaneId").value = '';
-            document.getElementById("PilotId").value = '';
+            document.getElementById("PlaneId").value = 0;
+            document.getElementById("PilotId").value = 0;
             document.getElementById("AvailableNormalSeat").value = null;
             document.getElementById("AvailableVipSeat").value = null;
-            document.getElementById("OriginId").value = '';
-            document.getElementById("DestinationId").value = '';
+            document.getElementById("OriginId").value = 0;
+            document.getElementById("DestinationId").value = 0;
         }
     </script>
 }

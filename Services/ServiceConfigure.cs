@@ -32,10 +32,15 @@ namespace Services
             services.AddScoped<ITierService, TierService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ApplicationDbContextInitialiser>();
+            // Background Services
+            services.AddHostedService<BookingCleanupService>();
+            services.AddHostedService<BookingCleanupService>();
+
             services.AddHttpContextAccessor();
             //services.AddOptions();                                        
             var mailsettings = configuration.GetSection("MailSettings");  
             services.Configure<MailSettings>(mailsettings);               
+
 
             services.AddTransient<IEmailSender, SendMailService>();
             return services;

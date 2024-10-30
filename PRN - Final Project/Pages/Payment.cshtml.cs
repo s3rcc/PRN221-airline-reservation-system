@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Services.Interfaces;
 using System;
+using System.CodeDom;
 
 namespace PRN___Final_Project.Pages
 {
@@ -20,35 +21,26 @@ namespace PRN___Final_Project.Pages
         [BindProperty]
         public int BookingId { get; set; }
 
-        public IActionResult OnGet(int? bookingId)
+        public async Task<IActionResult> OnGet(int? id)
         {
-            //if (!User.Identity.IsAuthenticated)
-            //{
-            //    TempData["BookingId"] = bookingId;
-            //    return RedirectToPage("/Area/Identity/Pages/Account/Login", new { returnUrl = Url.Page("/Payment", new { bookingId }) });
-            //}
-            if(BookingId == null)
+            if (!User.Identity.IsAuthenticated)
             {
-                ModelState.AddModelError(string.Empty, "Không tìm th?y thông tin Booking v?i");
+                TempData["BookingId"] = id;
+                return Redirect($"/Login?returnUrl=/Payment?bookingId={id}");
             }
             if (TempData.ContainsKey("BookingId"))
             {
                 BookingId = Convert.ToInt32(TempData["BookingId"]);
             }
+            else if (id.HasValue)
+            {
+                BookingId = id.Value;
+            }
             else
             {
-                BookingId = bookingId.Value;
-            }
-            return Page();
-        }
-        public async Task<IActionResult> OnPost()
-        {
-            if (!User.Identity.IsAuthenticated)
-            {
-                TempData["BookingId"] = BookingId;
-                return RedirectToPage("/Area/Identity/Pages/Account/Login", new { returnUrl = Url.Page("/Payment", new { bookingId = BookingId }) });
-            }
+                return RedirectToPage("/Errors/404");
 
+            }
             var booking = await _bookingService.GetBookingByIdAsync(BookingId);
             if (booking == null)
             {
@@ -61,6 +53,7 @@ namespace PRN___Final_Project.Pages
             return Redirect(paymentUrl);
 
         }
+
 
     }
 }

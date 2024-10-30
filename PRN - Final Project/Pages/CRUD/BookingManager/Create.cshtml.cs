@@ -35,7 +35,17 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
         public async Task<IActionResult> OnGetAsync()
         {
             FlightData = HttpContext.Session.GetObjectFromJson<FlightData>("FlightData");
+            if (FlightData == null)
+            {
+                return RedirectToPage("/Errors/404");
+            }
             var user = await _userManager.GetUserAsync(User);
+            if (!User.Identity.IsAuthenticated)
+            {
+                TempData["ErrorMessage"] = "Bạn cần đăng nhập để tiếp tục.";
+                return Redirect($"/Login?returnUrl=/CRUD/BookingManager/Create");
+            }
+            TempData.Remove("ErrorMessage");
             Booking.FlightId = FlightData.OutboundFlightId;
             Booking.ReturnFlightId = FlightData.ReturnFlightId;
             Booking.TotalPrice = FlightData.TotalPrice;
@@ -46,6 +56,8 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
             Booking.UserId = user.Id;
             Booking.PaymentStatus = "UnPaid";
             Booking.Status = true;
+            Booking.ClassType = FlightData.ClassType;
+            Booking.ReturnClassType = FlightData.ReturnClassType;
             return Page();
         }
 
@@ -55,9 +67,16 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
             {
                 return Page();
             }
+            HttpContext.Session.Remove("FlightData");
+            Booking.BookingId = await _bookingService.CreateBookingAsync(Booking);
+            if (Booking.BookingId > 0)
+            {
+                return RedirectToPage("/Payment", new { id = Booking.BookingId });
+            }
+            ModelState.AddModelError(string.Empty, "Không thể tạo booking. Vui lòng thử lại.");
+            return Page();
 
-            await _bookingService.CreateBookingAsync(Booking);
-            return RedirectToPage("./Index");
         }
     }
+
 }

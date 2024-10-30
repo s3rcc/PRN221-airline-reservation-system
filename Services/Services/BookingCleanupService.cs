@@ -1,5 +1,6 @@
 ﻿using BussinessObjects;
 using Microsoft.Build.Framework;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Services.Interfaces;
@@ -13,42 +14,78 @@ namespace Services.Services
 {
     public class BookingCleanupService : BackgroundService
     {
-        private readonly IBookingService _bookingService;
-        private readonly IFlightService _flightService;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<BookingCleanupService> _logger;
-        private readonly ITicketService _ticketService;
-        private readonly TimeSpan _checkInterval = TimeSpan.FromHours(1);
+        private readonly TimeSpan _outOfSeatCheckInterval = TimeSpan.FromMinutes(5);
+        private readonly TimeSpan _unpaidBookingCheckInterval = TimeSpan.FromDays(1);
 
-        public BookingCleanupService(IBookingService bookingService, IFlightService flightService, ILogger<BookingCleanupService> logger, ITicketService ticketService)
+        public BookingCleanupService(IServiceProvider serviceProvider,ILogger<BookingCleanupService> logger)
         {
-            _bookingService = bookingService;
-            _flightService = flightService;
+            _serviceProvider = serviceProvider;
             _logger = logger;
-            _ticketService = ticketService;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Booking Cleanup Service is starting.");
 
+            // Run both tasks concurrently
+            var unpaidBookingsTask = RunUnpaidBookingCleanupAsync(stoppingToken);
+            var outOfSeatBookingsTask = RunOutOfSeatCleanupAsync(stoppingToken);
+
+            await Task.WhenAll(unpaidBookingsTask, outOfSeatBookingsTask);
+        }
+
+        private async Task RunUnpaidBookingCleanupAsync(CancellationToken stoppingToken)
+        {
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    await CleanupUnpaidBookingsAsync();
+                    _logger.LogInformation("Starting unpaid booking cleanup...");
+                    using (var scope = _serviceProvider.CreateScope())
+                    {
+                        var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+                        var flightService = scope.ServiceProvider.GetRequiredService<IFlightService>();
+
+                        await CleanupUnpaidBookingsAsync(bookingService, flightService);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error occurred during booking cleanup.");
+                    _logger.LogError(ex, "Error occurred during unpaid booking cleanup.");
                 }
 
-                await Task.Delay(_checkInterval, stoppingToken); // Wait for the next execution
+                // Wait for 1 day before running again
+                await Task.Delay(_unpaidBookingCheckInterval, stoppingToken);
             }
-
-            _logger.LogInformation("Booking Cleanup Service is stopping.");
         }
 
-        private async Task CleanupUnpaidBookingsAsync()
+        private async Task RunOutOfSeatCleanupAsync(CancellationToken stoppingToken)
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    _logger.LogInformation("Starting out-of-seat booking cleanup...");
+                    using (var scope = _serviceProvider.CreateScope())
+                    {
+                        var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+                        var flightService = scope.ServiceProvider.GetRequiredService<IFlightService>();
+
+                        await CleanupUnpaidBookingsOutOfSeatAsync(bookingService, flightService);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error occurred during out-of-seat booking cleanup.");
+                }
+
+                // Wait for 5 minutes before running again
+                await Task.Delay(_outOfSeatCheckInterval, stoppingToken);
+            }
+        }
+        private async Task CleanupUnpaidBookingsAsync(IBookingService _bookingService, IFlightService _flightService)
         {
             var unpaidBooking = await _bookingService.GetAllBookingsAsync();
 
