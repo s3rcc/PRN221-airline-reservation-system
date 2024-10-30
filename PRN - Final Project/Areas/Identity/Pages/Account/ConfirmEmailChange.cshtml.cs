@@ -35,6 +35,10 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnGetAsync(string userId, string email, string code)
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToPage("/Index");
+            }
             if (userId == null || email == null || code == null)
             {
                 return RedirectToPage("/Index");

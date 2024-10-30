@@ -39,6 +39,10 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToPage("/Index");
+            }
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(Input.Email);

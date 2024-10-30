@@ -63,7 +63,7 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
 
             if (flightData.IsOneWay)
             {
-                return Redirect("/create-booking");
+                return RedirectToPage("/CRUD/BookingManager/Create");
             }
 
             return RedirectToPage("./ReturnFlights");
