@@ -23,7 +23,8 @@
             <th>Carry Luggage</th>
             <th>Baggage</th>
             <th>Class Type</th>
-            <th>BookingId</th>
+            <th>Booking Id</th>
+            <th>Booking Status</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -37,6 +38,7 @@
                 <td>@ticket.Carryluggage</td>
                 <td>@ticket.Baggage</td>
                 <td>@ticket.ClassType</td>
+                <td>@ticket.BookingId</td>
                 <td>@ticket.Booking?.PaymentStatus</td>
                 <td>
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#ticketModal"

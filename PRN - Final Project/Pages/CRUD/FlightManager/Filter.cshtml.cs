@@ -40,7 +40,7 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
         {
             if (ModelState.IsValid)
             {
-                FilteredFlights = await _flightService.FilterFlightsAsync(OriginId, DestinationId, DepartureDate);
+                //FilteredFlights = await _flightService.FilterFlightsAsync(OriginId, DestinationId, DepartureDate);
             }
 
             Locations = await _locationService.GetAllLocationsAsync();
