@@ -18,14 +18,15 @@ namespace Services.Services
     {
         private readonly IConfiguration _configuration;
         private readonly IBookingService _bookingService;
+        private readonly IFlightService _flightService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public PaymentService( IConfiguration configuration, IBookingService bookingService, IUnitOfWork unitOfWork)
+        public PaymentService( IConfiguration configuration, IBookingService bookingService, IUnitOfWork unitOfWork, IFlightService flightService)
         {
             _configuration = configuration;
             _bookingService = bookingService;
             _unitOfWork = unitOfWork;
-
+            _flightService = flightService;
         }
         public string CreatePaymentUrl(HttpContext context,Booking booking)
         {
@@ -60,6 +61,7 @@ namespace Services.Services
                 vnpay.AddResponseData(key, queryParameters[key]!);
 
             }
+            // Validate the VNPAY signature
             string vnpHashSecret = _configuration["VnpaySettings:vnp_HashSecret"]!;
             string inputHash = vnpay.GetResponseData("vnp_SecureHash");
             bool isValidSignature = vnpay.ValidateSignature(inputHash, vnpHashSecret);
@@ -68,13 +70,42 @@ namespace Services.Services
                 throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Chữ ký không hợp lệ!");
             }
             string responseCode = vnpay.GetResponseData("vnp_ResponseCode");
-            if (responseCode == "00")
+            if (responseCode == "00") // Successful payment
             {
                 int bookingId = int.Parse(vnpay.GetResponseData("vnp_TxnRef"));
                 var booking = await _bookingService.GetBookingByIdAsync(bookingId);
+                
+
                 if (booking == null)
                 {
                     throw new ErrorException(StatusCodes.Status404NotFound, ErrorCode.NOT_FOUND, "Không tìm thấy booking.");
+                }
+
+                // Retrieve the flight and validate available seats
+                var flight = await _flightService.GetFlightByIdAsync(booking.FlightId);
+                int requiredSeats = booking.AdultNum + booking.ChildNum + booking.BabyNum;
+
+                if (booking.ClassType.Equals("Normal") && flight.AvailableNormalSeat < requiredSeats)
+                {
+                    throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Không đủ ghế thường.");
+                }
+                if (booking.ClassType.Equals("VIP") && flight.AvailableVipSeat < requiredSeats)
+                {
+                    throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Không đủ ghế VIP.");
+                }
+
+                // Check for return flight seat availability if applicable
+                if (booking.ReturnFlightId != null)
+                {
+                    var returnFlight = await _flightService.GetFlightByIdAsync(booking.ReturnFlightId.Value);
+                    if (booking.ReturnClassType.Equals("Normal") && returnFlight.AvailableNormalSeat < requiredSeats)
+                    {
+                        throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Không đủ ghế thường cho chuyến bay về.");
+                    }
+                    if (booking.ReturnClassType.Equals("VIP") && returnFlight.AvailableVipSeat < requiredSeats)
+                    {
+                        throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Không đủ ghế VIP cho chuyến bay về.");
+                    }
                 }
 
                 Payment payment = new Payment
@@ -84,9 +115,36 @@ namespace Services.Services
                     Amount = booking.TotalPrice,
                     PaymentDate = DateTime.Now
                 };
-                booking.PaymentStatus = "Success";
+                booking.PaymentStatus = "Paid";
                 await CreatePaymentAsync(payment);
                 await _bookingService.UpdateBookingAsync(booking);
+
+                // Reduce seat for flight
+                if (booking.ClassType.Equals("Normal"))
+                {
+                    flight.AvailableNormalSeat -= requiredSeats;
+                }
+                else
+                {
+                    flight.AvailableVipSeat -= requiredSeats;
+                }
+                await _flightService.UpdateFlightAsync(flight);
+                // Reduce seat for return flight
+                if (booking.ReturnFlightId != null)
+                {
+
+                    var returnFlight = await _flightService.GetReturnFlightByIdAsync(booking.ReturnFlightId);
+                    if(booking.ReturnClassType.Equals("Normal"))
+                    {
+                        returnFlight.AvailableNormalSeat -= requiredSeats;
+                    }
+                    else
+                    {
+                        returnFlight.AvailableVipSeat -= requiredSeats;
+                    }
+                    await _flightService.UpdateFlightAsync(returnFlight);
+                }
+                await _unitOfWork.SaveChangeAsync();
 
             }
             else
@@ -99,8 +157,9 @@ namespace Services.Services
                 {
                     throw new ErrorException(StatusCodes.Status404NotFound, ErrorCode.NOT_FOUND, "Không tìm thấy booking.");
                 }
-                booking.PaymentStatus = "Failed";
+                booking.PaymentStatus = "Unpaid";
                 await _bookingService.UpdateBookingAsync(booking);
+                await _unitOfWork.SaveChangeAsync();
                 throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.FAILED, $"Thanh toán không thành công, mã lỗi: {responseCode}");
             }
 

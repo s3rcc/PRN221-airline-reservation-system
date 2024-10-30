@@ -4,6 +4,7 @@ using DataAccessObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessObjects.Migrations
 {
     [DbContext(typeof(Fall2024DbContext))]
-    partial class Fall2024DbContextModelSnapshot : ModelSnapshot
+    [Migration("20241029155809_FixFlight")]
+    partial class FixFlight
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -114,12 +117,6 @@ namespace DataAccessObjects.Migrations
                     b.Property<DateTime>("ArrivalDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("AvailableNormalSeat")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("AvailableVipSeat")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("BasePrice")
                         .HasColumnType("decimal(18,2)");
 
@@ -145,6 +142,12 @@ namespace DataAccessObjects.Migrations
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
+
+                    b.Property<int?>("availableNormalSeat")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("availableVipSeat")
+                        .HasColumnType("int");
 
                     b.HasKey("FlightId");
 

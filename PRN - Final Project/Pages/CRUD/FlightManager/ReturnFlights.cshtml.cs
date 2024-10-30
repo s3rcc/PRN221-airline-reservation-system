@@ -40,7 +40,7 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
                 IsOneWay = flightData.IsOneWay;
             }
 
-            Flights = await _flightService.FilterFlightsAsync(DestinationId, OriginId, ReturnDate);
+            Flights = await _flightService.FilterFlightsAsync(DestinationId, OriginId, ReturnDate, TotalPassengers);
             var originLocation = await _locationService.GetLocationByIdAsync(DestinationId);
             OriginLocation = originLocation.LocationName;
             var destinationLocation = await _locationService.GetLocationByIdAsync(OriginId);

@@ -26,6 +26,8 @@
             <th>Status</th>
             <th>Plane</th>
             <th>Pilot</th>
+            <th>Available Normal Seats</th>
+            <th>Available Vip Seats</th>
             <th>Origin</th>
             <th>Destination</th>
             <th>Actions</th>
@@ -52,11 +54,13 @@
                 <td>@(item.Status ? "On Time" : "Delayed")</td>
                 <td>@item.Plane.PlaneName</td>
                 <td>@item.Pilot.PilotName</td>
+                <td>@item.AvailableNormalSeat</td>
+                <td>@item.AvailableVipSeat</td>
                 <td>@item.Origin.LocationName</td>
                 <td>@item.Destination.LocationName</td>
                 <td>
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#flightModal"
-                            onclick="setEditModal('@item.FlightId', '@item.FlightNumber', '@item.DepartureDateTime.ToString("yyyy-MM-ddTHH:mm:ss")', '@item.ArrivalDateTime.ToString("yyyy-MM-ddTHH:mm:ss")', @item.BasePrice, @(item.Status.ToString().ToLower()), '@item.Plane.PlaneId', '@item.Pilot.PilotId', '@item.Origin.LocationID', '@item.Destination.LocationID')">
+                            onclick="setEditModal('@item.FlightId', '@item.FlightNumber', '@item.DepartureDateTime.ToString("yyyy-MM-ddTHH:mm:ss")', '@item.ArrivalDateTime.ToString("yyyy-MM-ddTHH:mm:ss")', '@item.BasePrice', '@(item.Status.ToString().ToLower())', '@item.Plane.PlaneId', '@item.Pilot.PilotId', '@item.AvailableNormalSeat', '@item.AvailableVipSeat', '@item.Origin.LocationID', '@item.Destination.LocationID')">
                         Edit
                     </button>
                     <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
@@ -80,6 +84,8 @@
             <div class="modal-body">
                 <form method="post">
                     <input type="hidden" id="FlightId" asp-for="Flight.FlightId" />
+                    <input type="hidden" id="availableNormalSeat" asp-for="Flight.AvailableNormalSeat" />
+                    <input type="hidden" id="availableVipSeat" asp-for="Flight.AvailableVipSeat" />
                     <div class="mb-3">
                         <label asp-for="Flight.FlightNumber" class="form-label">Flight Number</label>
                         <input id="FlightNumber" asp-for="Flight.FlightNumber" class="form-control" required />
@@ -173,7 +179,7 @@
 
 @section Scripts {
     <script>
-        function setEditModal(id, flightNumber, departure, arrival, price, status, planeId, pilotId, originId, destinationId) {
+        function setEditModal(id, flightNumber, departure, arrival, price, status, planeId, pilotId, availableNormalSeat, availableVipSeat, originId, destinationId) {
             document.getElementById("FlightId").value = id;
             document.getElementById("FlightNumber").value = flightNumber;
             document.getElementById("DepartureDateTime").value = departure;
@@ -182,6 +188,8 @@
             document.getElementById("Status").checked = (status === 'true');
             document.getElementById("PlaneId").value = planeId;
             document.getElementById("PilotId").value = pilotId;
+            document.getElementById("AvailableNormalSeat").value = availableNormalSeat;
+            document.getElementById("AvailableVipSeat").value = availableVipSeat;
             document.getElementById("OriginId").value = originId;
             document.getElementById("DestinationId").value = destinationId;
         }
@@ -199,6 +207,8 @@
             document.getElementById("Status").value = 'On Time'; // Default status
             document.getElementById("PlaneId").value = '';
             document.getElementById("PilotId").value = '';
+            document.getElementById("AvailableNormalSeat").value = null;
+            document.getElementById("AvailableVipSeat").value = null;
             document.getElementById("OriginId").value = '';
             document.getElementById("DestinationId").value = '';
         }

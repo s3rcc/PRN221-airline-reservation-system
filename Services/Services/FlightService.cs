@@ -23,7 +23,10 @@ namespace Services.Services
                 {
                     throw new ArgumentNullException(nameof(flight));
                 }
-
+                var plane = await _unitOfWork.Repository<AirPlane>().GetByIdAsync(flight
+                    .PlaneId);
+                flight.AvailableNormalSeat = plane.NormalSeatNumber;
+                flight.AvailableVipSeat = plane.VipSeatNumber;
                 await _unitOfWork.Repository<Flight>().AddAsync(flight);
                 await _unitOfWork.SaveChangeAsync();
             }
@@ -47,14 +50,15 @@ namespace Services.Services
             }
         }
 
-        public async Task<IEnumerable<Flight>> FilterFlightsAsync(int originId, int destinationId, DateTime departureDate)
+        public async Task<IEnumerable<Flight>> FilterFlightsAsync(int originId, int destinationId, DateTime departureDate, int totalPassengers)
         {
             try
             {
                 return await _unitOfWork.Repository<Flight>().FindAsync(
                     f => f.OriginID == originId &&
                          f.DestinationID == destinationId &&
-                         f.DepartureDateTime.Date == departureDate.Date,
+                         f.DepartureDateTime.Date == departureDate.Date &&
+                 (f.AvailableNormalSeat >= totalPassengers || f.AvailableVipSeat >= totalPassengers),
                     includes:
                     [
                 flight => flight.Plane,
@@ -75,7 +79,8 @@ namespace Services.Services
         {
             try
             {
-                return await _unitOfWork.Repository<Flight>().FindAsync(f => f.Status == true, includes:
+                return await _unitOfWork.Repository<Flight>().FindAsync(f => f.Status, 
+                includes:
             [
                 flight => flight.Plane,
                 flight => flight.Pilot,
@@ -191,5 +196,23 @@ namespace Services.Services
 			}
 		}
 
+        public async Task<Flight> GetReturnFlightByIdAsync(int? id)
+        {
+            try
+            {
+                var flight = await _unitOfWork.Repository<Flight>().FirstOrDefaultAsync(x => x.FlightId == id, includes:
+            [
+                flight => flight.Plane,
+                flight => flight.Pilot,
+                flight => flight.Origin,
+                flight => flight.Destination
+            ]);
+                return flight;
+            }
+            catch
+            {
+                throw new Exception("An error occurred while retrieving the flight.");
+            }
+        }
     }
 }
