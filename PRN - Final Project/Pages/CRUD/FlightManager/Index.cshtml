@@ -93,14 +93,19 @@
                     <div class="mb-3">
                         <label asp-for="Flight.BasePrice" class="form-label">Base Price</label>
                         <input id="BasePrice" asp-for="Flight.BasePrice" class="form-control" required />
+                        <span asp-validation-for="Flight.BasePrice" class="text-danger"></span> <!-- Hiển thị thông báo lỗi -->
+
                     </div>
                     <div class="mb-3">
-                        <label asp-for="Flight.Status" class="form-label"></label>
+                        <label asp-for="Flight.Status" class="form-label">Flight Status</label>
                         <select id="Status" asp-for="Flight.Status" class="form-select" required>
-                            <option value="On Time">On Time</option>
-                            <option value="Delayed">Delayed</option>
+                            <option value="">-- Select Status --</option>
+                            <option value="true">On Time</option>
+                            <option value="false">Delayed</option>
                         </select>
+                        <span asp-validation-for="Flight.Status" class="text-danger"></span> <!-- Hiển thị thông báo lỗi -->
                     </div>
+
                     <div class="mb-3">
                         <label asp-for="Flight.PlaneId" class="form-label">Plane Name</label>
                         <select id="PlaneId" asp-for="Flight.PlaneId" class="form-select" required>
@@ -195,7 +200,7 @@
             document.getElementById("DepartureDateTime").value = departure;
             document.getElementById("ArrivalDateTime").value = arrival;
             document.getElementById("BasePrice").value = price;
-            document.getElementById("Status").checked = (status === 'true');
+            document.getElementById("Status").checked = status;
             document.getElementById("PlaneId").value = planeId;
             document.getElementById("PilotId").value = pilotId;
             document.getElementById("OriginId").value = originId;
@@ -234,5 +239,9 @@
             }
         }
 
+        $(document).ready(function () {
+            // Kích hoạt xác thực phía client
+            $('form').validate();
+        });
     </script>
 }

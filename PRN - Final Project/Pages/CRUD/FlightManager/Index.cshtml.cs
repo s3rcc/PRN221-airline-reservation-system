@@ -1,9 +1,7 @@
 ﻿using BussinessObjects;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Shared;
 using Services.Interfaces;
-using System;
 
 
 namespace PRN___Final_Project.Pages.CRUD.FlightManager
@@ -13,6 +11,8 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
         [BindProperty]
         public Flight newFlight { get; } = new();
 
+        [TempData]
+        public string ValidMsg { get; set; }
         [BindProperty]
         public Flight Flight { get; set; }
         public IEnumerable<Flight> Flights { get; set; }
@@ -77,7 +77,7 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
                 rs = await _flightService.UpdateFlightAsync(flight);
                 action = "Update";
             }
-
+            ValidMsg = rs;
             Noti.SetByResult(action, "flight", rs);
 
             return RedirectToPage();

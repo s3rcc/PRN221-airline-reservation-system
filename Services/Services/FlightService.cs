@@ -1,8 +1,10 @@
 ﻿using BussinessObjects;
 using BussinessObjects.Exceptions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Repositories.Interface;
 using Services.Interfaces;
+using System.Linq.Expressions;
 
 namespace Services.Services
 {
@@ -24,7 +26,7 @@ namespace Services.Services
                     throw new ArgumentNullException(nameof(flight));
                 }
 
-                var rs = await ValidateFlight(flight);
+                var rs = await ValidateFlight(flight, true);
 
                 if (rs == null)
                 {
@@ -186,14 +188,13 @@ namespace Services.Services
             }
         }
 
-
         public async Task<string> UpdateFlightAsync(Flight flight)
         {
             try
             {
                 if (flight == null) throw new ArgumentNullException(nameof(flight));
-                var rs = await ValidateFlight(flight);
-                
+                var rs = await ValidateFlight(flight, false);
+
                 if (rs == null)
                 {
                     await _unitOfWork.Repository<Flight>().UpdateAsync(flight);
@@ -221,34 +222,27 @@ namespace Services.Services
 			}
 		}
 
-        private async Task<string> ValidateFlight(Flight flight)
+        private async Task<string> ValidateFlight(Flight flight, bool isCreate)
         {
-            var existingFlight = await _unitOfWork.Repository<Flight>()
-                .FindAsync(f => f.FlightNumber == flight.FlightNumber.Trim());
-            if (existingFlight.Any())
-            {
+            var flightExists = await _unitOfWork.Repository<Flight>()
+                .AnyAsync(f => f.FlightNumber == flight.FlightNumber.Trim(), true);
+
+            if (flightExists && isCreate)
                 return "Flight number must be unique.";
-            }
 
-            // Check if OriginID and DestinationID are different
             if (flight.OriginID == flight.DestinationID)
-            {
                 return "Origin and Destination must be different.";
-            }
 
-            // Check if DepartureDateTime is less than ArrivalDateTime
             if (flight.DepartureDateTime >= flight.ArrivalDateTime)
-            {
                 return "Departure time must be earlier than arrival time.";
-            }
 
-            // Check if BasePrice is greater than zero
             if (flight.BasePrice <= 0)
-            {
                 return "Base price must be greater than zero.";
-            }
 
             return null;
         }
+
+
+
     }
 }

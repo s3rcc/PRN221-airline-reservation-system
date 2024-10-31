@@ -27,5 +27,7 @@ namespace Repositories.Interface
         Task<T> FirstOrDefaultAsync(
             Expression<Func<T, bool>> predicate,
             params Expression<Func<T, object>>[] includes);
+
+        Task<bool> AnyAsync(Expression<Func<T, bool>> expression, bool asNoTracking = true);
     }
 }
