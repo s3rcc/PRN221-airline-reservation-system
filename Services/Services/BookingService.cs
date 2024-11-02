@@ -40,12 +40,13 @@ namespace Services.Services
             }
         }
 
-        public async Task CreateBookingAsync(Booking booking)
+        public async Task<int> CreateBookingAsync(Booking booking)
         {
             try
             {
                 await _unitOfWork.Repository<Booking>().AddAsync(booking);
                 await _unitOfWork.SaveChangeAsync();
+                return booking.BookingId;
             }
             catch
             {
@@ -86,8 +87,10 @@ namespace Services.Services
 
         public async Task<IEnumerable<Booking>> GetBookingByUserIdAsync(string userId)
         {
-            return await _unitOfWork.Repository<Booking>().FindAsync(x => x.UserId.Equals(userId));
+            var booking = await _unitOfWork.Repository<Booking>().FindAsync(x => x.UserId.Equals(userId));
+            return booking;
         }
+
 
         public async Task<IEnumerable<Booking>> GetBookings(DateTime startDate, DateTime endDate)
         {

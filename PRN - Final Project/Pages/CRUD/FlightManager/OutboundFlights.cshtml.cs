@@ -41,7 +41,7 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
                 IsOneWay = flightData.IsOneWay;
             }
 
-            Flights = await _flightService.FilterFlightsAsync(OriginId, DestinationId, DepartureDate);
+            Flights = await _flightService.FilterFlightsAsync(OriginId, DestinationId, DepartureDate, TotalPassengers);
             var originLocation = await _locationService.GetLocationByIdAsync(OriginId);
             OriginLocation = originLocation.LocationName;
             var destinationLocation = await _locationService.GetLocationByIdAsync(DestinationId);
@@ -63,7 +63,7 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
 
             if (flightData.IsOneWay)
             {
-                return Redirect("/create-booking");
+                return RedirectToPage("/CRUD/BookingManager/Create");
             }
 
             return RedirectToPage("./ReturnFlights");

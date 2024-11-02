@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Services.Interfaces;
 using System;
+using System.CodeDom;
 
 namespace PRN___Final_Project.Pages
 {
@@ -27,7 +28,6 @@ namespace PRN___Final_Project.Pages
                 TempData["BookingId"] = id;
                 return Redirect($"/Login?returnUrl=/Payment?bookingId={id}");
             }
-
             if (TempData.ContainsKey("BookingId"))
             {
                 BookingId = Convert.ToInt32(TempData["BookingId"]);

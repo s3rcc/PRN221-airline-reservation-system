@@ -94,9 +94,12 @@
                     <button type="submit" class="btn btn-primary">Create Booking</button>
                 </div>
             </form>
-            <div class="mt-3">
-                <a asp-page="Index" class="btn btn-secondary">Back to List</a>
-            </div>
+         <div>
+                @if (!string.IsNullOrEmpty(Request.Headers["Referer"]))
+                {
+            <a href="@Request.Headers["Referer"]">Back to Previous Page</a>
+                }
+</div>
         </div>
     </div>
 </div>
