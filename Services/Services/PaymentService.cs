@@ -87,7 +87,7 @@ namespace Services.Services
                 {
                     throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Không đủ ghế thường.");
                 }
-                if (booking.ClassType.Equals("VIP") && flight.AvailableVipSeat < requiredSeats)
+                if (booking.ClassType.Equals("Vip") && flight.AvailableVipSeat < requiredSeats)
                 {
                     throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Không đủ ghế VIP.");
                 }
@@ -100,7 +100,7 @@ namespace Services.Services
                     {
                         throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Không đủ ghế thường cho chuyến bay về.");
                     }
-                    if (booking.ReturnClassType.Equals("VIP") && returnFlight.AvailableVipSeat < requiredSeats)
+                    if (booking.ReturnClassType.Equals("Vip") && returnFlight.AvailableVipSeat < requiredSeats)
                     {
                         throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Không đủ ghế VIP cho chuyến bay về.");
                     }
