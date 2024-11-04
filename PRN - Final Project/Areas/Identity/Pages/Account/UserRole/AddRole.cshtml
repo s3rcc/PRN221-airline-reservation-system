@@ -1,30 +1,36 @@
 ﻿@page "admin/assign-user-role/{id}"
 @model AddRoleModel
 @{
-    ViewData["Title"] = "Gán role";
+    ViewData["Title"] = "Assign Role";
 }
 
-<h3>Thiết lập role cho user: @Model.user.UserName</h3>
-<partial name="_StatusMessage" for="StatusMessage" />
+<div class="container mt-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Assign Role for User: @Model.user.UserName</h3>
+        </div>
+        <div class="card-body">
+            <partial name="_StatusMessage" for="StatusMessage" />
 
-<div class="row">
-    <div class="col-md-6">
-        <form id="set-password-form" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <label asp-for="RoleNames" class="form-label"></label>
-                @Html.ListBoxFor(mbox => mbox.RoleNames, Model.allRoles, new
-                {
-                id = "id-select-roles",
-                @class ="form-control"
-                })
+            <form id="assign-role-form" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
-                <span asp-validation-for="RoleNames" class="text-danger"></span>
-            </div>
+                <div class="form-group mb-3">
+                    <label asp-for="RoleNames" class="form-label fw-bold">Select Roles</label>
+                    @Html.ListBoxFor(mbox => mbox.RoleNames, Model.allRoles, new
+                        {
+                            id = "id-select-roles",
+                            @class = "form-control form-select"
+                        })
+                    <span asp-validation-for="RoleNames" class="text-danger"></span>
+                </div>
 
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Cập nhật</button>
-            <a class="w-100 btn btn-lg btn-primary" asp-page="./Index">Danh sách thành viên</a>
-        </form>
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="submit" class="btn btn-success btn-lg">Update Roles</button>
+                    <a class="btn btn-secondary btn-lg" asp-page="./Index">Back to Member List</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
