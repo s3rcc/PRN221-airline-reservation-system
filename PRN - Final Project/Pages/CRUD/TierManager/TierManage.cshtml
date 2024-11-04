@@ -9,9 +9,9 @@
 <h2>Manage Tiers</h2>
 
 <!-- Nút để mở modal cho việc thêm mới Tier -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tierModal" onclick="clearTierModal()">
+@* <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tierModal" onclick="clearTierModal()">
     Add New Tier
-</button>
+</button> *@
 
 <!-- Danh sách Tier -->
 <table class="table mt-3">
@@ -37,10 +37,10 @@
                             onclick="setEditTierModal('@tier.TierId', '@tier.TierName', '@tier.PriorityLevel', '@tier.Discount', '@tier.Description')">
                         Edit
                     </button>
-                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteTierConfirmModal"
+@*                     <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteTierConfirmModal"
                             onclick="setDeleteTierModal('@tier.TierId')">
                         Delete
-                    </button>
+                    </button> *@
                 </td>
             </tr>
         }
@@ -107,6 +107,24 @@
     </div>
 </div>
 
+<div class="modal fade" id="statusMessageModal" tabindex="-1" aria-labelledby="statusMessageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header @(Model.IsSuccess ? "bg-success text-white" : "bg-danger text-white")">
+                <h5 class="modal-title" id="statusMessageModalLabel">@((Model.IsSuccess ? "Success" : "Error"))</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="statusMessageText"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary @(Model.IsSuccess ? "bg-success" : "bg-danger")" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @section Scripts {
     <script>
         function setEditTierModal(id, name, priorityLevel, discount, description) {
@@ -128,5 +146,21 @@
             document.getElementById("Discount").value = "";
             document.getElementById("Description").value = "";
         }
+
+        window.onload = function () {
+            var statusMessage = '@Model.StatusMessage';
+            var isSuccess = '@Model.IsSuccess'.toLowerCase() === 'true';
+
+            if (statusMessage) {
+                document.getElementById('statusMessageText').innerText = statusMessage;
+
+                // Set the modal title dynamically
+                document.getElementById('statusMessageModalLabel').innerText = isSuccess ? "Success" : "Error";
+
+                var modal = new bootstrap.Modal(document.getElementById('statusMessageModal'));
+                modal.show();
+            }
+        }
+
     </script>
 }
