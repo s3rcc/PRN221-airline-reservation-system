@@ -29,10 +29,8 @@
             <span class="row-number" style="margin-right: 10px;">@row</span>
             @for (int col = 0; col < 6; col++)
             {
-                // Generate seat label (e.g., V1A, N1B, etc.)
                 string seatNumber = (vipSeatsLeft > 0 ? "V" : "N") + $"{row}{(char)('A' + col)}";
                 string realSeatNumber = $"{row}{(char)('A' + col)}";
-
                 bool isBooked = Model.BookedSeats.Contains(realSeatNumber);
 
                 if (isBooked)
@@ -41,23 +39,38 @@
                         &nbsp;
                     </button>
                 }
-                else if (vipSeatsLeft > 0 && allowedClassType == vipClassType)
+
+                else if (vipSeatsLeft > 0)
+
                 {
-                    <button type="button" class="seat btn btn-outline-primary seat-vip" data-seat-number="@seatNumber" data-seat-type="vip" onclick="toggleSeat(this)">
-                        &nbsp;
-                    </button>
+                    if (allowedClassType == "Business")
+                    {
+                        <button type="button" class="seat btn btn-outline-primary seat-vip" data-seat-number="@seatNumber" data-seat-type="Business" onclick="toggleSeat(this)">
+                            &nbsp;
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" class="seat btn btn-dark disabled" disabled>&nbsp;</button>
+                    }
+
                     vipSeatsLeft--;
                 }
-                else if (normalSeatsLeft > 0 && allowedClassType == normalClassType)
+
+                else if (normalSeatsLeft > 0)
+
                 {
-                    <button type="button" class="seat btn btn-outline-secondary seat-normal" data-seat-number="@seatNumber" data-seat-type="normal" onclick="toggleSeat(this)">
-                        &nbsp;
-                    </button>
+                    if (allowedClassType == "Economy")
+                    {
+                        <button type="button" class="seat btn btn-outline-secondary seat-normal" data-seat-number="@seatNumber" data-seat-type="Economy" onclick="toggleSeat(this)">
+                            &nbsp;
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" class="seat btn btn-dark disabled" disabled>&nbsp;</button>
+                    }
                     normalSeatsLeft--;
-                }
-                else
-                {
-                    <button type="button" class="seat btn btn-outline-secondary disabled" disabled>&nbsp;</button>
                 }
 
                 if (col == 2)
@@ -89,39 +102,27 @@
     let selectedSeats = []; // Array to hold the selected seat numbers
 
     function toggleSeat(seatButton) {
-        const seatNumber = seatButton.getAttribute("data-seat-number"); // Get the seat number from the button's attribute
+        const seatNumber = seatButton.getAttribute("data-seat-number");
+        const seatType = seatButton.getAttribute("data-seat-type");
+
+        if (seatType !== "@Model.AllowedClassType") {
+            return; // Prevent selecting seats not allowed by class type
+        }
 
         if (seatButton.classList.contains('selected')) {
             // Deselect seat
             seatButton.classList.remove('selected');
-            if (seatButton.dataset.seatType === 'vip') {
-                seatButton.classList.remove('btn-blue');
-                seatButton.classList.add('btn-outline-primary');
-            } else {
-                seatButton.classList.remove('btn-gray');
-                seatButton.classList.add('btn-outline-secondary');
-            }
-            // Remove the seat number from the selectedSeats array
+            seatButton.classList.add(seatButton.dataset.seatType === 'vip' ? 'btn-outline-primary' : 'btn-outline-secondary');
             selectedSeats = selectedSeats.filter(seat => seat !== seatNumber);
         } else if (selectedSeats.length < maxSeats) {
             // Select seat
             seatButton.classList.add('selected');
-            if (seatButton.dataset.seatType === 'vip') {
-                seatButton.classList.remove('btn-outline-primary');
-                seatButton.classList.add('btn-blue');
-            } else {
-                seatButton.classList.remove('btn-outline-secondary');
-                seatButton.classList.add('btn-gray');
-            }
-            // Add the seat number to the selectedSeats array
+            seatButton.classList.add(seatButton.dataset.seatType === 'vip' ? 'btn-blue' : 'btn-gray');
             selectedSeats.push(seatNumber);
         }
 
-        // Update selected seat count display
         document.getElementById("selectedCount").innerText = selectedSeats.length;
-
-        // Store selectedSeats in a hidden input for form submission
-        document.getElementById("selectedSeatsInput").value = selectedSeats.join(','); // Store as a comma-separated string
+        document.getElementById("selectedSeatsInput").value = selectedSeats.join(',');
     }
 </script>
 
@@ -137,20 +138,25 @@
         margin: 2px;
     }
 
-    .selected {
-        border-color: #6c757d;
-    }
-
-    /* Gray background for normal seats selected */
     .btn-gray {
-        background-color: #6c757d !important; /* Gray background */
-        color: white; /* White text */
+        background-color: #007bff !important; /* Gray for selected Economy seats */
+        color: white;
     }
 
-    /* Blue background for VIP seats selected */
     .btn-blue {
-        background-color: #007bff !important; /* Blue background */
-        color: white; /* White text */
+        background-color: #007bff !important; /* Blue for selected Business seats */
+        color: white;
+    }
+
+    .btn-dark {
+        background-color: #000000 !important; /* Black for non-selectable seats */
+        color: white;
+        cursor: not-allowed;
+    }
+
+    .btn-danger {
+        background-color: #dc3545 !important;
+        color: white;
     }
 
     .seat-labels span {
@@ -158,13 +164,8 @@
         font-weight: bold;
     }
 
-    .row-number {
+    .seat-labels span, .row-number {
         font-weight: bold;
-        font-size: 1.2em;
-    }
-
-    .btn-danger {
-        background-color: #dc3545 !important; /* Red background for booked seats */
-        color: white !important; /* White text */
     }
 </style>
+
