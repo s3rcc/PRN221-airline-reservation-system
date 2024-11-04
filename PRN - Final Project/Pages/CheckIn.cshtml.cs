@@ -19,12 +19,13 @@ namespace PRN___Final_Project.Pages
         public ClassTypesConfig ClassTypesConfig => _classTypesConfig;
         public TicketTypesConfig TicketTypesConfig => _ticketTypesConfig;
 
-        public CheckInModel(IAirPlaneService airplaneService, ITicketService ticketService, IOptions<ClassTypesConfig> classTypesConfig, IOptions<TicketTypesConfig> ticketTypesConfig)
+        public CheckInModel(IAirPlaneService airplaneService, ITicketService ticketService, IOptions<ClassTypesConfig> classTypesConfig, IOptions<TicketTypesConfig> ticketTypesConfig, UserManager<User> userManager)
         {
             _airplaneService = airplaneService;
             _ticketService = ticketService;
             _classTypesConfig = classTypesConfig.Value;
             _ticketTypesConfig = ticketTypesConfig.Value;
+            _userManager = userManager;
         }
 
         [BindProperty]
@@ -43,7 +44,7 @@ namespace PRN___Final_Project.Pages
         public async Task<IActionResult> OnGetAsync(int planeId)
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null || !await _userManager.IsInRoleAsync(user, "staff"))
+            if (user == null || !await _userManager.IsInRoleAsync(user, "Member"))
             {
                 return RedirectToPage("/Errors/404");
             }
