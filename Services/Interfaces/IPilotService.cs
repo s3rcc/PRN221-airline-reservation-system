@@ -16,5 +16,6 @@ namespace Services.Interfaces
         Task<string> UpdatePilotAsync(Pilot pilot);
         Task<string> DeletePilotAsync(int id);
         Task<int> GetTotalPilot();
+        Task SetPilotStatus(Pilot pilot, bool status);
     }
 }

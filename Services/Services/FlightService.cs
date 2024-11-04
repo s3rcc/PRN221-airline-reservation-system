@@ -11,10 +11,12 @@ namespace Services.Services
     public class FlightService : IFlightService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IPilotService _iplotService;
 
-        public FlightService(IUnitOfWork unitOfWork)
+        public FlightService(IUnitOfWork unitOfWork, IPilotService iplotService)
         {
             _unitOfWork = unitOfWork;
+            _iplotService = iplotService;
         }
 
         public async Task<string> AddFlightAsync(Flight flight)
@@ -27,6 +29,7 @@ namespace Services.Services
                 }
 
                 var rs = await ValidateFlight(flight, true);
+                await _iplotService.SetPilotStatus(flight.Pilot, false);
 
                 if (rs == null)
                 {
@@ -115,6 +118,31 @@ namespace Services.Services
             }
         }
 
+        public async Task<IEnumerable<AirPlane>> GetAirPlanesFromUnavailableFlightsAsync()
+        {
+            try
+            {
+                var unavailableFlights = await _unitOfWork.Repository<Flight>().FindAsync(f => f.Status == false, includes:
+                    [
+                        flight => flight.Plane,
+                        flight => flight.Pilot,
+                        flight => flight.Origin,
+                        flight => flight.Destination
+                    ]);
+
+                var airplanes = unavailableFlights
+                    .Select(flight => flight.Plane)
+                    .Distinct()
+                    .ToList();
+
+                return airplanes;
+            }
+            catch
+            {
+                throw new Exception("An error occurred while retrieving airplanes from unavailable flights.");
+            }
+        }
+
         public async Task<IEnumerable<Flight>> GetAllFlightsAsync()
         {
             try
@@ -131,6 +159,27 @@ namespace Services.Services
             {
                 throw new Exception("An error occured while retrieving flights.");
             }
+        }
+
+        public async Task<IEnumerable<Flight>> GetAllFLightWithRealTimeCondition()
+        {
+            var flights = await GetAllFlightsAsync();
+
+            foreach (var flight in flights)
+            {
+                if (DateTime.Now > flight.ArrivalDateTime)
+                    await SetUnAvailableStatusForFlight(flight);
+            }
+
+            return flights;
+        }
+
+
+        public async Task SetUnAvailableStatusForFlight(Flight flight)
+        {
+            flight.Status = false;
+            await _iplotService.SetPilotStatus(flight.Pilot, true);
+            await UpdateFlightAsync(flight);
         }
 
         public async Task<IEnumerable<Flight>> GetFlightsByMonth(DateTime startDate, DateTime endDate)
@@ -155,7 +204,7 @@ namespace Services.Services
         {
             try
             {
-                return await _unitOfWork.Repository<Flight>().FindAsync(x => x.DepartureDateTime.Year == year ,includes:
+                return await _unitOfWork.Repository<Flight>().FindAsync(x => x.DepartureDateTime.Year == year, includes:
                     [
                     flight => flight.Plane,
                 flight => flight.Pilot,
@@ -209,18 +258,18 @@ namespace Services.Services
             }
         }
 
-		public async Task<int> GetTotalFlight()
-		{
-			try
-			{
-				var flight = await _unitOfWork.Repository<Flight>().GetAllAsync();
-				return flight.Count();
-			}
-			catch
-			{
-				throw new ErrorException(StatusCodes.Status500InternalServerError, ErrorCode.INTERNAL_SERVER_ERROR, "Error getting total flight");
-			}
-		}
+        public async Task<int> GetTotalFlight()
+        {
+            try
+            {
+                var flight = await _unitOfWork.Repository<Flight>().GetAllAsync();
+                return flight.Count();
+            }
+            catch
+            {
+                throw new ErrorException(StatusCodes.Status500InternalServerError, ErrorCode.INTERNAL_SERVER_ERROR, "Error getting total flight");
+            }
+        }
 
         private async Task<string> ValidateFlight(Flight flight, bool isCreate)
         {

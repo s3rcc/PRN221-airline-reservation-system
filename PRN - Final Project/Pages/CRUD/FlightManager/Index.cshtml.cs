@@ -36,7 +36,7 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
             _pilotService = pilotService;
             _locationService = locationService;
 
-            Flight = new Flight();  // Initialize model objects here
+            Flight = new Flight();  
             Flights = new List<Flight>();
             Planes = new List<AirPlane>();
             Pilots = new List<Pilot>();
@@ -49,10 +49,10 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
 
         public async Task OnGetAsync()
         {
-            Planes = await _planeService.GetAllAirPlanesAsync();
-            Pilots = await _pilotService.GetAllPilotsAsync();
+            Planes = await _planeService.GetAvailableAirPlanesAsync();
+            Pilots = await _pilotService.GetAllAvailablePilotsAsync();
             Locations = await _locationService.GetAllLocationsAsync();
-            Flights = await _flightService.GetAllFlightsAsync();  // Fetch flights if needed
+            Flights = await _flightService.GetAllFLightWithRealTimeCondition(); 
         }
 
         public async Task<IActionResult> OnPostAsync(Flight flight)
@@ -67,13 +67,11 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
 
             if (flight.FlightId == 0)
             {
-                await Console.Out.WriteLineAsync("\n\n\n<On Create New>\n\n\n");
                 rs = await _flightService.AddFlightAsync(flight);
                 action = "Create";
             }
             else
             {
-                await Console.Out.WriteLineAsync("\n\n\n<On Update>\n\n\n");
                 rs = await _flightService.UpdateFlightAsync(flight);
                 action = "Update";
             }

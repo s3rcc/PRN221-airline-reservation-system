@@ -9,10 +9,12 @@ namespace Services.Services
     public class AirPlaneService : IAirPlaneService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IFlightService _flightService;
 
-        public AirPlaneService(IUnitOfWork unitOfWork)
+        public AirPlaneService(IUnitOfWork unitOfWork, IFlightService flightService)
         {
             _unitOfWork = unitOfWork;
+            _flightService = flightService;
         }
 
         public async Task AddAirPlaneAsync(AirPlane airPlane)
@@ -67,7 +69,7 @@ namespace Services.Services
         public async Task<IEnumerable<AirPlane>> GetAllAirPlanesAsync()
         {
             try
-            {
+            { 
                 return await _unitOfWork.Repository<AirPlane>().GetAllAsync();
             }
             catch
@@ -75,6 +77,35 @@ namespace Services.Services
                 throw new Exception("An error occurred while retrieving air planes.");
             }
         }
+
+        public async Task<IEnumerable<AirPlane>> GetAvailableAirPlanesAsync()
+        {
+            try
+            {
+                var allAirPlanes = await GetAllAirPlanesAsync();
+
+                var unavailableAirPlanes = await _flightService.GetAirPlanesFromUnavailableFlightsAsync();
+
+                var availableAirPlanes = new HashSet<AirPlane>();
+
+                foreach (var airplane in allAirPlanes)
+                {
+                    if (!unavailableAirPlanes.Contains(airplane))
+                    {
+                        availableAirPlanes.Add(airplane);
+                    }
+                }
+
+                return availableAirPlanes; 
+
+
+            }
+            catch
+            {
+                throw new Exception("An error occurred while retrieving available airplanes.");
+            }
+        }
+
 
         public async Task<AirPlane> GetAirPlaneByIdAsync(int id)
         {

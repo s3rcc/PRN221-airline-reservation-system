@@ -15,5 +15,7 @@ namespace Services.Interfaces
         Task<IEnumerable<Flight>> GetFlightsByMonth(DateTime startDate, DateTime endDate);
         Task<int> GetTotalFlight();
         Task<bool> IsCanDelete(int id);
+        Task<IEnumerable<AirPlane>> GetAirPlanesFromUnavailableFlightsAsync();
+        Task<IEnumerable<Flight>> GetAllFLightWithRealTimeCondition();
     }
 }

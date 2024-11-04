@@ -47,7 +47,7 @@
                     }
                 </td>
                 <td>@string.Format("{0:N0}", item.BasePrice)</td>
-                <td>@(item.Status ? "On Time" : "Delayed")</td>
+                <td>@(item.Status ? "Available" : "Un Available")</td>
                 <td>@item.Plane.PlaneName</td>
                 <td>@item.Pilot.PilotName</td>
                 <td>@item.Origin.LocationName</td>
@@ -93,7 +93,7 @@
                     <div class="mb-3">
                         <label asp-for="Flight.BasePrice" class="form-label">Base Price</label>
                         <input id="BasePrice" asp-for="Flight.BasePrice" class="form-control" required />
-                        <span asp-validation-for="Flight.BasePrice" class="text-danger"></span> <!-- Hiển thị thông báo lỗi -->
+                        <span asp-validation-for="Flight.BasePrice" class="text-danger"></span>
 
                     </div>
                     <div class="mb-3">
@@ -103,7 +103,7 @@
                             <option value="true">On Time</option>
                             <option value="false">Delayed</option>
                         </select>
-                        <span asp-validation-for="Flight.Status" class="text-danger"></span> <!-- Hiển thị thông báo lỗi -->
+                        <span asp-validation-for="Flight.Status" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
@@ -167,7 +167,7 @@
                 <form method="post" asp-page-handler="Delete">
                     <input type="hidden" name="id" id="deleteFlightId" />
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button type="button" class="btn btn-primary" onclick="validateAndSubmitForm()">Save</button>
                 </form>
             </div>
         </div>
@@ -231,7 +231,6 @@
             if (statusMessage) {
                 document.getElementById('statusMessageText').innerText = statusMessage;
 
-                // Set the modal title dynamically
                 document.getElementById('statusMessageModalLabel').innerText = isSuccess ? "Success" : "Error";
 
                 var modal = new bootstrap.Modal(document.getElementById('statusMessageModal'));
@@ -240,8 +239,39 @@
         }
 
         $(document).ready(function () {
-            // Kích hoạt xác thực phía client
             $('form').validate();
         });
+
+        function validateAndSubmitForm() {
+            const form = document.querySelector("#flightModal form");
+
+            // Lấy giá trị từ các trường input bằng ID
+            const originId = document.getElementById("OriginId").value;
+            const destinationId = document.getElementById("DestinationId").value;
+            const departureDateTime = new Date(document.getElementById("DepartureDateTime").value);
+            const arrivalDateTime = new Date(document.getElementById("ArrivalDateTime").value);
+            const basePrice = parseFloat(document.getElementById("BasePrice").value);
+
+            // Biến để lưu trữ thông báo lỗi
+            let errorMessage = "";
+
+            // Kiểm tra các điều kiện
+            if (originId === destinationId) {
+                errorMessage = "Origin and Destination must be different.";
+            } else if (departureDateTime >= arrivalDateTime) {
+                errorMessage = "Departure time must be earlier than arrival time.";
+            } else if (isNaN(basePrice) || basePrice <= 0) {
+                errorMessage = "Base price must be greater than zero.";
+            }
+
+            // Hiển thị thông báo lỗi hoặc gửi form
+            if (errorMessage) {
+                alert(errorMessage); // Hiển thị lỗi qua alert
+            } else {
+                form.submit(); // Gửi form nếu không có lỗi
+            }
+        }
+
+
     </script>
 }

@@ -104,6 +104,12 @@ namespace Services.Services
 			}
 		}
 
+        public async Task SetPilotStatus(Pilot pilot, bool status)
+        {
+            pilot.Status = status;
+            await UpdatePilotAsync(pilot);
+        }
+
 		public async Task<string> UpdatePilotAsync(Pilot pilot)
         {
             try
