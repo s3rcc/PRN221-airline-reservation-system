@@ -403,8 +403,8 @@ namespace DataAccessObjects.SeedData
                 int adultNum = random.Next(1, 3);
                 int childNum = random.Next(0, 2);
                 int babyNum = random.Next(0, 1);
-                string paymentStatus = random.Next(0, 2) == 0 ? "Paid" : "UnPaid";
-                string classType = random.Next(0, 2) == 0 ? "Economy" : "Business";
+                string paymentStatus = random.Next(0, 2) == 0 ? _paymentStatusConfig.Paid : _paymentStatusConfig.Unpaid;
+                string classType = random.Next(0, 2) == 0 ? _classTypesConfig.Economy : _classTypesConfig.Business;
                 booking.Add(new Booking
                 {
                     UserId = user.Id,
@@ -436,14 +436,14 @@ namespace DataAccessObjects.SeedData
                     ReturnClassType = random.Next(0, 2) == 0 ? _classTypesConfig.Economy : _classTypesConfig.Business
                 }
           );
-                if(paymentStatus == "Paid")
+                if(paymentStatus == _paymentStatusConfig.Paid)
                 {
                     var totalPeople = adultNum + childNum + babyNum;
-                    if(classType == "Economy" && flight.AvailableNormalSeat >= totalPeople)
+                    if(classType == _classTypesConfig.Economy && flight.AvailableNormalSeat >= totalPeople)
                     {
                         flight.AvailableNormalSeat -= totalPeople;
                     }
-                    if (classType == "Business" && flight.AvailableVipSeat >= totalPeople)
+                    if (classType == _classTypesConfig.Business && flight.AvailableVipSeat >= totalPeople)
                     {
                         flight.AvailableVipSeat -= totalPeople;
                     }
