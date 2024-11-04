@@ -2,6 +2,8 @@
 @model PRN___Final_Project.Pages.CRUD.FlightManager.ReturnFlightsModel
 @{
     ViewData["Title"] = "Return Flights";
+    var businessClassType = Model.ClassTypesConfig.Business;
+    var economyClassType = Model.ClassTypesConfig.Economy;
 }
 
 <h1 class="display-3 fw-bold py-5">Return Flights</h1>
@@ -125,7 +127,7 @@
                             <form method="post" class="w-100 h-100">
                                 <input type="hidden" name="basePrice" value="@flight.BasePrice" />
                                 <input type="hidden" name="returnFlightId" value="@flight.FlightId" />
-                                <input type="hidden" name="returnClassType" value="Economy" />
+                                <input type="hidden" name="returnClassType" value="@economyClassType" />
                                 <button type="submit" class="d-flex flex-column justify-content-center align-items-center gap-3 rounded-0 btn btn-primary w-100 h-100">
                                     <span class="display-6 fw-bold">Economy Class</span>
                                     <h4 class="fw-bold">@string.Format("{0:N0} đồng", flight.BasePrice)</h4>
@@ -140,7 +142,7 @@
                                 }
                                 <input type="hidden" name="basePrice" value="@businessClassPrice" />
                                 <input type="hidden" name="returnFlightId" value="@flight.FlightId" />
-                                <input type="hidden" name="returnclassType" value="Business" />
+                                <input type="hidden" name="returnclassType" value="@businessClassType" />
                                 <button type="submit" class="d-flex flex-column justify-content-center align-items-center gap-3 rounded-start-0 rounded-end-4 btn btn-success w-100 h-100">
                                     <span class="display-6 fw-bold">Business Class</span>
                                     <h4 class="fw-bold">@string.Format("{0:N0} đồng", flight.BasePrice * 1.4m)</h4>
