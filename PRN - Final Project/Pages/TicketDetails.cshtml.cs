@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using PuppeteerSharp;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Services.Interfaces;
+using Org.BouncyCastle.Cms;
 
 namespace PRN___Final_Project.Pages
 {
@@ -21,11 +22,19 @@ namespace PRN___Final_Project.Pages
         public IEnumerable<Ticket> Tickets { get; set; }
         public int BookingId { get; set; }
 
-        public async Task OnGetAsync(int bookingId = 44, bool isOutbound = true)
+        public async Task OnGetAsync(int bookingId , bool isOutbound, int? ticketId)
         {
             BookingId = bookingId;
-            Tickets = await _ticketService.GetTicketByBookingIdAndTypeAsync(bookingId, isOutbound);
-
+            
+            if (!ticketId.HasValue)
+            {
+                Tickets = await _ticketService.GetTicketByBookingIdAndTypeAsync(bookingId, isOutbound);
+            }
+            else
+            {
+                int id = (int)ticketId;
+                Tickets = (IEnumerable<Ticket>)await _ticketService.GetTicketByIdAsync(id);
+            }
             //// Chuy?n ??i HTML thành ?nh cho t?ng vé
             //var imagePaths = new List<string>();
             //foreach (var ticket in Tickets)
