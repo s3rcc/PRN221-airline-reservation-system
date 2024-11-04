@@ -37,7 +37,8 @@ namespace BussinessObjects
         public decimal BasePrice { get; set; }
 
         public bool Status { get; set; }
-
+        public int? AvailableNormalSeat {  get; set; }
+        public int? AvailableVipSeat { get; set; }
         // Navigation properties
         public virtual AirPlane? Plane { get; set; }
         public virtual Pilot? Pilot { get; set; }

@@ -23,7 +23,7 @@ namespace BussinessObjects
         public int ChildNum { get; set; }
         public int BabyNum { get; set; }
         public string ClassType { get; set; }
-        public string ReturnClassType { get; set; }
+        public string? ReturnClassType { get; set; }
         // Navigation
         public User? User { get; set; }
         public Flight? Flight { get; set; }

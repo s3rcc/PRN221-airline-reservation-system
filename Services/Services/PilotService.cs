@@ -42,7 +42,8 @@ namespace Services.Services
         {
             try
             {
-                var pilot = await _unitOfWork.Repository<Pilot>().GetByIdAsync(id) ?? throw new KeyNotFoundException("Role not found.");
+                var pilot = await _unitOfWork.Repository<Pilot>().GetByIdAsync(id) ?? throw new KeyNotFoundException("Pilot not found.");
+                var flights = await _unitOfWork.Repository<Flight>().FindAsync(x => x.Pilot.PilotId.Equals(id)) ?? throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "There are flight with this pilot");
                 _unitOfWork.Repository<Pilot>().DeleteAsync(pilot);
                 await _unitOfWork.SaveChangeAsync();
 

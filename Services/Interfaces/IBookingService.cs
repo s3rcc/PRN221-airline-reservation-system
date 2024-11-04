@@ -12,12 +12,13 @@ namespace Services.Interfaces
         Task<IEnumerable<Booking>> GetAllBookingsAsync();
         Task<Booking> GetBookingByIdAsync(int id);
         Task<IEnumerable<Booking>> GetBookingByUserIdAsync(string userId);
-        Task CreateBookingAsync(Booking booking);
+        Task<int> CreateBookingAsync(Booking booking);
         Task UpdateBookingAsync(Booking booking);
         Task DeleteBookingAsync(int id);
         Task CancelBookingAsync(int id);
         Task<IEnumerable<Booking>> GetBookingsByYear(int year);
         Task<IEnumerable<Booking>> GetBookings(DateTime startDate, DateTime endDate);
         Task<int> GetTotalBooking();
+        Task<IEnumerable<Booking>> GetBookingByFlightIdAsync(int flightId);
     }
 }
