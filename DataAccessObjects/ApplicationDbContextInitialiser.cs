@@ -442,7 +442,7 @@ namespace DataAccessObjects.SeedData
                 tickets.Add(new Ticket
                 {
                     SeatNumber = $"A{random.Next(1, 30)}", // Random seat number
-                    TicketType = random.Next(0, 2) == 0 ? "One-way" : "Round-trip", // Random ticket type
+                    TicketType = random.Next(0, 2) == 0 ? "OutBoundFlight" : "ReturnFlight", // Random ticket type
                     IssuedDate = DateTime.UtcNow.AddDays(-random.Next(1, 15)), // Issued date within the last two weeks
                     Carryluggage = random.Next(5, 10), // Random carry luggage weight in kg
                     Baggage = random.Next(15, 30), // Random baggage weight in kg

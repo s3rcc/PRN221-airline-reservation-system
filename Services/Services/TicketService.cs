@@ -66,13 +66,20 @@ namespace Services.Services
         public async Task<IEnumerable<Ticket>> GetTicketByBookingIdAndTypeAsync(int bookingId, bool isOutbound)
         {
             var ticketType = isOutbound ? "OutBoundFlight" : "ReturnFlight";
-            return await _unitOfWork.Repository<Ticket>().FindAsync(t => t.BookingId == bookingId && t.TicketType == ticketType);
+            return await _unitOfWork.Repository<Ticket>().FindAsync(t => t.BookingId == bookingId && t.TicketType == ticketType,
+                includes:
+            [
+                t => t.Booking.Flight,
+                t => t.Booking.Flight.Origin,
+                t => t.Booking.Flight.Destination,
+                t => t.Booking.User
+            ]);
         }
 
-        public async Task<List<string>> GetBookedSeatsByFlightIdAsync(int flightId,string flightType)
+        public async Task<List<string>> GetBookedSeatsByFlightIdAsync(int flightId, string flightType)
         {
             var bookings = await _unitOfWork.Repository<Booking>().FindAsync(booking => booking.FlightId == flightId);
-            
+
             var bookedTickets = new List<Ticket>();
             foreach (var booking in bookings)
             {
