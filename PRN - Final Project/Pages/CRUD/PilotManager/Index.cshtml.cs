@@ -28,9 +28,14 @@ namespace PRN___Final_Project.Pages.CRUD.PilotManager
         public string StatusMessage { get; set; } = string.Empty;
         public bool IsSuccess { get; set; } = true;
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
+            if (!(User.IsInRole("Staff") || User.IsInRole("Admin")))
+            {
+                return RedirectToPage("/Errors/404");
+            }
             Pilots = await _pilotService.GetAllPilotsAsync();
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()

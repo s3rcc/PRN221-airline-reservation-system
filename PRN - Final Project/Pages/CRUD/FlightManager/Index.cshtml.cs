@@ -47,12 +47,17 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
 
         }
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
+            if (!(User.IsInRole("Staff") || User.IsInRole("Admin")))
+            {
+                return RedirectToPage("/Errors/404");
+            }
             Planes = await _planeService.GetAvailableAirPlanesAsync();
             Pilots = await _pilotService.GetAllAvailablePilotsAsync();
             Locations = await _locationService.GetAllLocationsAsync();
-            Flights = await _flightService.GetAllFLightWithRealTimeCondition(); 
+            Flights = await _flightService.GetAllFLightWithRealTimeCondition();
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(Flight flight)

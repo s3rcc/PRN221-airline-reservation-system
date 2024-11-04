@@ -1,4 +1,5 @@
 using BussinessObjects;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Services.Interfaces;
@@ -13,6 +14,7 @@ namespace PRN___Final_Project.Pages
         private readonly IAirPlaneService _airplaneService;
         private readonly IUserService _userService;
         private readonly IPilotService _pilotService;
+        private readonly UserManager<User> _userManager;
 
         public List<string> Labels { get; set; } = new List<string>();
         public List<int> Bookings { get; set; } = new List<int>();
@@ -34,7 +36,9 @@ namespace PRN___Final_Project.Pages
         public int TotalPilots { get; set; }
         public int TotalUsers { get; set; }
 
-        public StatisticsModel(IFlightService flightService, IBookingService bookingService, IPaymentService paymentService, IAirPlaneService airPlaneService, IUserService userService, IPilotService pilotService)
+        public StatisticsModel(IFlightService flightService, IBookingService bookingService, IPaymentService paymentService,
+                               IAirPlaneService airPlaneService, IUserService userService, IPilotService pilotService,
+                               UserManager<User> userManager)
         {
             _flightService = flightService;
             _bookingService = bookingService;
@@ -42,11 +46,19 @@ namespace PRN___Final_Project.Pages
             _airplaneService = airPlaneService;
             _userService = userService;
             _pilotService = pilotService;
+            _userManager = userManager;
         }
 
-        
-        public async Task OnGetAsync()
+
+        public async Task<IActionResult> OnGetAsync()
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || !await _userManager.IsInRoleAsync(user, "admin"))
+            {
+                // Tr? v? trang 404 n?u ng??i dùng không ph?i là admin
+                return RedirectToPage("/Errors/404");
+            }
+
             TotalRevenue = await _paymentService.GetRevenue();
             TotalBookings = await _bookingService.GetTotalBooking();
             TotalAirplanes = await _airplaneService.GetTotalAirplane();
@@ -78,6 +90,8 @@ namespace PRN___Final_Project.Pages
             Labels = bookings.Select(b => b.BookingDate.ToShortDateString()).Distinct().ToList();
             Bookings = bookings.GroupBy(b => b.BookingDate.ToShortDateString()).Select(g => g.Count()).ToList();
             Revenue = payments.GroupBy(p => p.PaymentDate.ToShortDateString()).Select(g => g.Sum(p => p.Amount)).ToList();
+
+            return Page();
         }
     }
 }

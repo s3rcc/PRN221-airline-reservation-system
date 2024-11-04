@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using BussinessObjects;
+using Microsoft.AspNetCore.Identity;
 
 namespace MyProject.Pages.CRUD.UserManager
 {
@@ -9,11 +10,13 @@ namespace MyProject.Pages.CRUD.UserManager
     {
         private readonly IUserService _userService;
         private readonly ITierService _tierService;
+        private readonly UserManager<User> _userManager;
 
-        public UserManagementModel(IUserService userService, ITierService tierService)
+        public UserManagementModel(IUserService userService, ITierService tierService, UserManager<User> userManager)
         {
             _tierService = tierService;
             _userService = userService;
+            _userManager = userManager;
             Users = new List<User>();
             Tiers = new List<Tier>();
             User = new User();
@@ -28,11 +31,19 @@ namespace MyProject.Pages.CRUD.UserManager
         public string Message { get; set; }
         public bool IsSuccess { get; set; }
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
+            //var user = await _userManager.GetUserAsync(User);
+            //if (user == null || !await _userManager.IsInRoleAsync(user, "admin"))
+            //{
+            //    // Trả về trang 404 nếu người dùng không phải là admin
+            //    return RedirectToPage("/Errors/404");
+            //}
 
             Users = await _userService.GetAllUsersAsync();
             Tiers = await _tierService.GetAllTiersAsync();
+
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()

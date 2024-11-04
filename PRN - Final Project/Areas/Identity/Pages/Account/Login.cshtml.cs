@@ -87,6 +87,18 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+
+                    // Kiểm tra role của người dùng
+                    var roles = await _userManager.GetRolesAsync(user);
+
+                    if (roles.Contains("Member"))
+                    {
+                        return RedirectToPage("/Index");
+                    }
+                    else if (roles.Contains("Admin") || roles.Contains("Staff"))
+                    {
+                        return RedirectToPage("/Dashboard");
+                    }
                     return LocalRedirect(returnUrl);
                 }
                 else
