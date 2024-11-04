@@ -16,6 +16,7 @@ namespace Services.Interfaces
         Task DeleteUserAsync(int id);
         Task<(IEnumerable<User> Users, int TotalCount)> GetAllUsersPagedAsync(int pageNumber, int pageSize);
         Task<int> GetTotalUser();
+        Task ChangeUserTier(int id, Tier tier);
 
     }
 }

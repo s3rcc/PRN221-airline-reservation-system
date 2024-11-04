@@ -37,12 +37,12 @@
                 <td>
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#userModal"
                             onclick="setEditModal('@user.Id', '@user.Email', '@user.Gender', '@user.DoB.ToString("yyyy-MM-dd")', '@user.CCCD', '@user.TierId')">
-                        Edit
+                        Update Tier
                     </button>
-                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
+@*                     <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
                             onclick="setDeleteModal('@user.Id')">
                         Delete
-                    </button>
+                    </button> *@
                 </td>
             </tr>
         }
@@ -54,7 +54,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="userModalLabel">Add/Edit User</h5>
+                <h5 class="modal-title" id="userModalLabel">Update Tier User</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -62,19 +62,19 @@
                     <input type="hidden" id="UserId" asp-for="User.Id" />
                     <div class="mb-3">
                         <label asp-for="User.Email" class="form-label"></label>
-                        <input id="UserEmail" asp-for="User.Email" class="form-control" required />
+                        <input id="UserEmail" asp-for="User.Email" class="form-control" readonly />
                     </div>
                     <div class="mb-3">
                         <label asp-for="User.Gender" class="form-label"></label>
-                        <input id="UserGender" asp-for="User.Gender" class="form-control" required />
+                        <input id="UserGender" asp-for="User.Gender" class="form-control" readonly />
                     </div>
                     <div class="mb-3">
                         <label asp-for="User.DoB" class="form-label"></label>
-                        <input id="UserDoB" asp-for="User.DoB" type="date" class="form-control" required />
+                        <input id="UserDoB" asp-for="User.DoB" type="date" class="form-control" readonly />
                     </div>
                     <div class="mb-3">
                         <label asp-for="User.CCCD" class="form-label"></label>
-                        <input id="UserCCCD" asp-for="User.CCCD" class="form-control" required />
+                        <input id="UserCCCD" asp-for="User.CCCD" class="form-control" readonly />
                     </div>
                     <div class="mb-3">
                         <label asp-for="User.TierId" class="form-label"></label>
@@ -118,6 +118,24 @@
         </div>
     </div>
 </div>
+<!-- Success/Failure Message Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="messageModalLabel">@((Model.IsSuccess) ? "Success" : "Error")</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @Model.Message
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @section Scripts {
     <script>

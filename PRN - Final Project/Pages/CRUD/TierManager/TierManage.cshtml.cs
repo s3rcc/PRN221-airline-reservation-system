@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Services.Interfaces;
 using BussinessObjects;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Shared;
 
 namespace PRN___Final_Project.Pages.CRUD.TierManager
 {
@@ -14,15 +15,30 @@ namespace PRN___Final_Project.Pages.CRUD.TierManager
             _tierService = tierService;
             Tiers = new List<Tier>();
             Tier = new Tier();
+
+            StatusMessage = Noti.GetMsg();
+            IsSuccess = Noti.IsSuccess;
+
         }
 
         [BindProperty]
         public Tier Tier { get; set; }
         public IEnumerable<Tier> Tiers { get; set; }
 
-        public async Task OnGetAsync()
+        public string StatusMessage { get; set; } = string.Empty;
+        public bool IsSuccess { get; set; } = true;
+
+
+        public async Task<IActionResult> OnGetAsync()
         {
+            // Kiểm tra nếu người dùng không có vai trò 'staff' hoặc 'admin'
+            if (!(User.IsInRole("Staff") || User.IsInRole("Admin")))
+            {
+                return RedirectToPage("/Errors/404"); 
+            }
+
             Tiers = await _tierService.GetAllTiersAsync();
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -39,7 +55,16 @@ namespace PRN___Final_Project.Pages.CRUD.TierManager
             {
                 await Console.Out.WriteLineAsync("\n\n\n On Update id:" + Tier.TierId);
 
-                await _tierService.UpdateTierAsync(Tier);
+
+                try
+                {
+                    await _tierService.UpdateTierAsync(Tier);
+                    Noti.SetSuccess("Update tier success!");
+                }
+                catch (Exception ex)
+                {
+                    Noti.SetFail($"Error: {ex.Message}");
+                }
 
             }
 

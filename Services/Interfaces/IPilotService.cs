@@ -12,9 +12,10 @@ namespace Services.Interfaces
         Task<IEnumerable<Pilot>> GetAllPilotsAsync();
         Task<IEnumerable<Pilot>> GetAllAvailablePilotsAsync();
         Task<Pilot> GetPilotByIdAsync(int id);
-        Task AddPilotAsync(Pilot pilot);
-        Task UpdatePilotAsync(Pilot pilot);
-        Task DeletePilotAsync(int id);
+        Task<string> AddPilotAsync(Pilot pilot);
+        Task<string> UpdatePilotAsync(Pilot pilot);
+        Task<string> DeletePilotAsync(int id);
         Task<int> GetTotalPilot();
+        Task SetPilotStatus(Pilot pilot, bool status);
     }
 }

@@ -29,7 +29,6 @@
                 <td>@pilot.PilotName</td>
                 <td>@(pilot.Status ? "Active" : "Inactive")</td>
                 <td>
-                    <!-- Open the modal and pass pilot details -->
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#pilotModal"
                             onclick="setEditModal(@pilot.PilotId, '@pilot.PilotName', @pilot.Status.ToString().ToLower())">
                         Edit
@@ -96,6 +95,24 @@
     </div>
 </div>
 
+<div class="modal fade" id="statusMessageModal" tabindex="-1" aria-labelledby="statusMessageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header @(Model.IsSuccess ? "bg-success text-white" : "bg-danger text-white")">
+                <h5 class="modal-title" id="statusMessageModalLabel">@((Model.IsSuccess ? "Success" : "Error"))</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="statusMessageText"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary @(Model.IsSuccess ? "bg-success" : "bg-danger")" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @section Scripts {
     <script>
         function setEditModal(id, name, status) {
@@ -113,5 +130,21 @@
             document.getElementById("PilotName").value = "";
             document.getElementById("Status").checked = false;
         }
+
+        window.onload = function () {
+            var statusMessage = '@Model.StatusMessage';
+            var isSuccess = '@Model.IsSuccess'.toLowerCase() === 'true';
+
+            if (statusMessage) {
+                document.getElementById('statusMessageText').innerText = statusMessage;
+
+                // Set the modal title dynamically
+                document.getElementById('statusMessageModalLabel').innerText = isSuccess ? "Success" : "Error";
+
+                var modal = new bootstrap.Modal(document.getElementById('statusMessageModal'));
+                modal.show();
+            }
+        }
+
     </script>
 }

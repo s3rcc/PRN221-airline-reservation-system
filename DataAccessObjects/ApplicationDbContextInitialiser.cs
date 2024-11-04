@@ -1,7 +1,9 @@
 ﻿using BussinessObjects;
+using BussinessObjects.Config;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,17 +18,25 @@ namespace DataAccessObjects.SeedData
         private readonly Fall2024DbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ClassTypesConfig _classTypesConfig;
+        private readonly PaymentStatusConfig _paymentStatusConfig;
+        private readonly TicketTypesConfig _ticketTypesConfig;
 
         public ApplicationDbContextInitialiser(
             ILogger<ApplicationDbContextInitialiser> logger,
             Fall2024DbContext context,
             RoleManager<IdentityRole> roleManager,
-            UserManager<User> userManager)
+            UserManager<User> userManager,IOptions<ClassTypesConfig> classTypesConfig,
+            IOptions<PaymentStatusConfig> paymentStatusConfig,
+            IOptions<TicketTypesConfig> ticketTypesConfig)
         {
             _logger = logger;
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _classTypesConfig = classTypesConfig.Value;
+            _paymentStatusConfig = paymentStatusConfig.Value;
+            _ticketTypesConfig = ticketTypesConfig.Value;
         }
 
         public async Task InitialiseAsync()
@@ -266,19 +276,21 @@ namespace DataAccessObjects.SeedData
                     // Random giờ khởi hành giữa 6h và 20h
                     DateTime departureTime = date.AddHours(6 + i * 4); // Các chuyến cách nhau 4 tiếng
                     DateTime arrivalTime = departureTime.AddHours(2 + random.Next(1, 3)); // Giả sử thời gian bay từ 2-4 giờ
-
+                    var plane = planes[random.Next(planes.Count)];
                     // Tạo chuyến bay cho mỗi ngày
                     flights.Add(new Flight
                     {
                         FlightNumber = $"VN{random.Next(100, 999)}", // Tạo số chuyến bay ngẫu nhiên
-                        PlaneId = planes[random.Next(planes.Count)].PlaneId,
+                        PlaneId = plane.PlaneId,
                         PilotId = pilots[random.Next(pilots.Count)].PilotId,
                         OriginID = locations[random.Next(locations.Count)].LocationID, // Chọn ngẫu nhiên điểm khởi hành
                         DestinationID = locations[random.Next(locations.Count)].LocationID, // Chọn ngẫu nhiên điểm đến
                         DepartureDateTime = departureTime, // Giờ khởi hành ngẫu nhiên trong ngày
                         ArrivalDateTime = arrivalTime, // Giờ đến sau khoảng thời gian bay
                         BasePrice = random.Next(100, 500) + random.Next(0, 99) / 100m, // Giá vé ngẫu nhiên từ 1 tr đến 5 tr
-                        Status = true
+                        Status = true,
+                        AvailableNormalSeat = plane.NormalSeatNumber,
+                        AvailableVipSeat = plane.VipSeatNumber,
                     });
                 }
             }
@@ -388,19 +400,24 @@ namespace DataAccessObjects.SeedData
                 {
                     returnFlight = flights[random.Next(flights.Count)];
                 } while (returnFlight.OriginID == flight.DestinationID);
+                int adultNum = random.Next(1, 3);
+                int childNum = random.Next(0, 2);
+                int babyNum = random.Next(0, 1);
+                string paymentStatus = random.Next(0, 2) == 0 ? "Paid" : "UnPaid";
+                string classType = random.Next(0, 2) == 0 ? "Economy" : "Business";
                 booking.Add(new Booking
                 {
                     UserId = user.Id,
                     FlightId = flight.FlightId,
                     BookingDate = DateTime.UtcNow.AddDays(-random.Next(1, 30)),
-                    PaymentStatus = random.Next(0, 2) == 0 ? "Paid" : "Pending",
-                    ClassType = random.Next(0, 2) == 0 ? "Economy" : "Business",
+                    PaymentStatus = random.Next(0, 2) == 0 ? _paymentStatusConfig.Paid : _paymentStatusConfig.Unpaid,
+                    ClassType = random.Next(0, 2) == 0 ? _classTypesConfig.Economy : _classTypesConfig.Business,
                     AdultNum = random.Next(1, 3),
                     ChildNum = random.Next(0, 2),
                     BabyNum = random.Next(0, 1),
                     Status = true,
                     TotalPrice = flight.BasePrice * (1 + random.Next(0, 2) * 0.5m),
-                    ReturnClassType = random.Next(0, 2) == 0 ? "Economy" : "Business"
+                    ReturnClassType = random.Next(0, 2) == 0 ? _classTypesConfig.Economy : _classTypesConfig.Business
                 }
                 );
                 booking.Add(new Booking
@@ -409,16 +426,28 @@ namespace DataAccessObjects.SeedData
                     FlightId = flight.FlightId,
                     ReturnFlightId = returnFlight.FlightId,
                     BookingDate = DateTime.UtcNow.AddDays(-random.Next(1, 30)),
-                    PaymentStatus = random.Next(0, 2) == 0 ? "Paid" : "Pending",
-                    ClassType = random.Next(0, 2) == 0 ? "Economy" : "Business",
+                    PaymentStatus = random.Next(0, 2) == 0 ? _paymentStatusConfig.Paid : _paymentStatusConfig.Unpaid,
+                    ClassType = random.Next(0, 2) == 0 ? _classTypesConfig.Economy : _classTypesConfig.Business,
                     AdultNum = random.Next(1, 3),
                     ChildNum = random.Next(0, 2),
                     BabyNum = random.Next(0, 1),
                     Status = true,
                     TotalPrice = flight.BasePrice * (1 + random.Next(0, 2) * 0.5m),
-                    ReturnClassType = random.Next(0, 2) == 0 ? "Economy" : "Business"
+                    ReturnClassType = random.Next(0, 2) == 0 ? _classTypesConfig.Economy : _classTypesConfig.Business
                 }
           );
+                if(paymentStatus == "Paid")
+                {
+                    var totalPeople = adultNum + childNum + babyNum;
+                    if(classType == "Economy" && flight.AvailableNormalSeat >= totalPeople)
+                    {
+                        flight.AvailableNormalSeat -= totalPeople;
+                    }
+                    if (classType == "Business" && flight.AvailableVipSeat >= totalPeople)
+                    {
+                        flight.AvailableVipSeat -= totalPeople;
+                    }
+                }
             }
             if (!_context.Bookings.Any())
             {
@@ -442,11 +471,11 @@ namespace DataAccessObjects.SeedData
                 tickets.Add(new Ticket
                 {
                     SeatNumber = $"A{random.Next(1, 30)}", // Random seat number
-                    TicketType = random.Next(0, 2) == 0 ? "OutBoundFlight" : "ReturnFlight", // Random ticket type
+                    TicketType = random.Next(0, 2) == 0 ? _ticketTypesConfig.OutBoundFlight : _ticketTypesConfig.ReturnFlight, // Random ticket type
                     IssuedDate = DateTime.UtcNow.AddDays(-random.Next(1, 15)), // Issued date within the last two weeks
                     Carryluggage = random.Next(5, 10), // Random carry luggage weight in kg
                     Baggage = random.Next(15, 30), // Random baggage weight in kg
-                    ClassType = random.Next(0, 2) == 0 ? "Economy" : "Business", // Random class type
+                    ClassType = random.Next(0, 2) == 0 ? _classTypesConfig.Economy : _classTypesConfig.Business, // Random class type
                     BookingId = booking.BookingId // Link ticket to a booking
                 });
             }

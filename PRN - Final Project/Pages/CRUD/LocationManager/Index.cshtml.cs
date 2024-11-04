@@ -19,9 +19,14 @@ public class LocationManagementModel : PageModel
     public Location Location { get; set; }
     public IEnumerable<Location> Locations { get; set; }
 
-    public async Task OnGetAsync()
+    public async Task<IActionResult> OnGetAsync()
     {
+        if (!(User.IsInRole("Staff") || User.IsInRole("Admin")))
+        {
+            return RedirectToPage("/Errors/404");
+        }
         Locations = await _locationService.GetAllLocationsAsync();
+        return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()

@@ -13,7 +13,7 @@ namespace Services.Services
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task AddPilotAsync(Pilot pilot)
+        public async Task<string> AddPilotAsync(Pilot pilot)
         {
             try
             {
@@ -22,16 +22,23 @@ namespace Services.Services
                     throw new ArgumentNullException(nameof(pilot));
                 }
 
-                await _unitOfWork.Repository<Pilot>().AddAsync(pilot);
-                await _unitOfWork.SaveChangeAsync();
+                var rs = await ValidateItem(pilot);
+
+                if (rs == null)
+                {
+                    await _unitOfWork.Repository<Pilot>().AddAsync(pilot);
+                    await _unitOfWork.SaveChangeAsync();
+                }
+
+                return rs;
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while adding the pilot.");
+                return ("An error occurred while adding the pilot.");
             }
         }
 
-        public async Task DeletePilotAsync(int id)
+        public async Task<string> DeletePilotAsync(int id)
         {
             try
             {
@@ -39,10 +46,12 @@ namespace Services.Services
                 var flights = await _unitOfWork.Repository<Flight>().FindAsync(x => x.Pilot.PilotId.Equals(id)) ?? throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "There are flight with this pilot");
                 _unitOfWork.Repository<Pilot>().DeleteAsync(pilot);
                 await _unitOfWork.SaveChangeAsync();
+
+                return null;
             }
             catch
             {
-                throw new Exception("An error occurred while deleting the pilot.");
+                return "Pilot is working, try again next time!";
             }
         }
 
@@ -96,19 +105,45 @@ namespace Services.Services
 			}
 		}
 
-		public async Task UpdatePilotAsync(Pilot pilot)
+        public async Task SetPilotStatus(Pilot pilot, bool status)
+        {
+            pilot.Status = status;
+            await UpdatePilotAsync(pilot);
+        }
+
+		public async Task<string> UpdatePilotAsync(Pilot pilot)
         {
             try
             {
                 if (pilot == null) throw new ArgumentNullException(nameof(pilot));
 
-                await _unitOfWork.Repository<Pilot>().UpdateAsync(pilot);
-                await _unitOfWork.SaveChangeAsync();
+                var rs = await ValidateItem(pilot);
+
+                if (rs == null)
+                {
+                    await _unitOfWork.Repository<Pilot>().UpdateAsync(pilot);
+                    await _unitOfWork.SaveChangeAsync();
+                }
+
+                return rs;
             }
             catch
             {
-                throw new Exception("An error occurred while updating the pilot.");
+                return ("An error occurred while updating the pilot.");
             }
         }
+
+        private async Task<string> ValidateItem(Pilot item)
+        {
+    //        var existingItem = await _unitOfWork.Repository<Pilot>()
+    //.FindAsync(x => x.PilotName == item.PilotName.Trim());
+    //        if (existingItem.Any())
+    //        {
+    //            return "Pilot name must be unique.";
+    //        }
+
+            return null;
+        }
+
     }
 }

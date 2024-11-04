@@ -4,6 +4,8 @@
     int vipSeatsLeft = Model.AirPlane.VipSeatNumber;
     int normalSeatsLeft = Model.AirPlane.NormalSeatNumber;
     string allowedClassType = Model.AllowedClassType;
+    var vipClassType = Model.ClassTypesConfig.Business;
+    var normalClassType = Model.ClassTypesConfig.Economy;
 }
 
 <h2 class="text-center">Seat Selection</h2>
@@ -37,7 +39,9 @@
                         &nbsp;
                     </button>
                 }
+
                 else if (vipSeatsLeft > 0)
+
                 {
                     if (allowedClassType == "Business")
                     {
@@ -52,7 +56,9 @@
 
                     vipSeatsLeft--;
                 }
+
                 else if (normalSeatsLeft > 0)
+
                 {
                     if (allowedClassType == "Economy")
                     {
@@ -91,6 +97,8 @@
 
 <script>
     const maxSeats = @Model.AllowedSeats;
+    const vipClass = "@Model.ClassTypesConfig.Business";
+    const normalClass = "@Model.ClassTypesConfig.Economy";
     let selectedSeats = []; // Array to hold the selected seat numbers
 
     function toggleSeat(seatButton) {

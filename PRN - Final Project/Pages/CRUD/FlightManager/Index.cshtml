@@ -20,7 +20,7 @@
             <th>Departure Time</th>
             <th>Arrival Time</th>
             <th>Duration</th>
-            <th>Base Price</th>
+            <th>Base Price - VND</th>
             <th>Status</th>
             <th>Plane</th>
             <th>Pilot</th>
@@ -48,8 +48,8 @@
                         <span>@($"{hours}h {minutes}m")</span>
                     }
                 </td>
-                <td>@string.Format("{0:N0} đồng", item.BasePrice)</td>
-                <td>@(item.Status ? "On Time" : "Delayed")</td>
+                <td>@string.Format("{0:N0}", item.BasePrice)</td>
+                <td>@(item.Status ? "Available" : "Un Available")</td>
                 <td>@item.Plane.PlaneName</td>
                 <td>@item.Pilot.PilotName</td>
                 <td>@item.AvailableNormalSeat</td>
@@ -99,14 +99,19 @@
                     <div class="mb-3">
                         <label asp-for="Flight.BasePrice" class="form-label">Base Price</label>
                         <input id="BasePrice" asp-for="Flight.BasePrice" class="form-control" required />
+                        <span asp-validation-for="Flight.BasePrice" class="text-danger"></span>
+
                     </div>
                     <div class="mb-3">
-                        <label asp-for="Flight.Status" class="form-label"></label>
+                        <label asp-for="Flight.Status" class="form-label">Flight Status</label>
                         <select id="Status" asp-for="Flight.Status" class="form-select" required>
-                            <option value="On Time">On Time</option>
-                            <option value="Delayed">Delayed</option>
+                            <option value="">-- Select Status --</option>
+                            <option value="true">On Time</option>
+                            <option value="false">Delayed</option>
                         </select>
+                        <span asp-validation-for="Flight.Status" class="text-danger"></span>
                     </div>
+
                     <div class="mb-3">
                         <label asp-for="Flight.PlaneId" class="form-label">Plane Name</label>
                         <select id="PlaneId" asp-for="Flight.PlaneId" class="form-select" required>
@@ -168,12 +173,30 @@
                 <form method="post" asp-page-handler="Delete">
                     <input type="hidden" name="id" id="deleteFlightId" />
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button type="button" class="btn btn-primary" onclick="validateAndSubmitForm()">Save</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="statusMessageModal" tabindex="-1" aria-labelledby="statusMessageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header @(Model.IsSuccess ? "bg-success text-white" : "bg-danger text-white")">
+                <h5 class="modal-title" id="statusMessageModalLabel">@((Model.IsSuccess ? "Success" : "Error"))</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="statusMessageText"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary @(Model.IsSuccess ? "bg-success" : "bg-danger")" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @section Scripts {
     <script>
@@ -183,7 +206,7 @@
             document.getElementById("DepartureDateTime").value = departure;
             document.getElementById("ArrivalDateTime").value = arrival;
             document.getElementById("BasePrice").value = price;
-            document.getElementById("Status").checked = (status === 'true');
+            document.getElementById("Status").checked = status;
             document.getElementById("PlaneId").value = planeId;
             document.getElementById("PilotId").value = pilotId;
             document.getElementById("AvailableNormalSeat").value = availableNormalSeat;
@@ -210,5 +233,55 @@
             document.getElementById("OriginId").value = 0;
             document.getElementById("DestinationId").value = 0;
         }
+
+        window.onload = function () {
+            var statusMessage = '@Model.StatusMessage';
+            var isSuccess = '@Model.IsSuccess'.toLowerCase() === 'true';
+
+            if (statusMessage) {
+                document.getElementById('statusMessageText').innerText = statusMessage;
+
+                document.getElementById('statusMessageModalLabel').innerText = isSuccess ? "Success" : "Error";
+
+                var modal = new bootstrap.Modal(document.getElementById('statusMessageModal'));
+                modal.show();
+            }
+        }
+
+        $(document).ready(function () {
+            $('form').validate();
+        });
+
+        function validateAndSubmitForm() {
+            const form = document.querySelector("#flightModal form");
+
+            // Lấy giá trị từ các trường input bằng ID
+            const originId = document.getElementById("OriginId").value;
+            const destinationId = document.getElementById("DestinationId").value;
+            const departureDateTime = new Date(document.getElementById("DepartureDateTime").value);
+            const arrivalDateTime = new Date(document.getElementById("ArrivalDateTime").value);
+            const basePrice = parseFloat(document.getElementById("BasePrice").value);
+
+            // Biến để lưu trữ thông báo lỗi
+            let errorMessage = "";
+
+            // Kiểm tra các điều kiện
+            if (originId === destinationId) {
+                errorMessage = "Origin and Destination must be different.";
+            } else if (departureDateTime >= arrivalDateTime) {
+                errorMessage = "Departure time must be earlier than arrival time.";
+            } else if (isNaN(basePrice) || basePrice <= 0) {
+                errorMessage = "Base price must be greater than zero.";
+            }
+
+            // Hiển thị thông báo lỗi hoặc gửi form
+            if (errorMessage) {
+                alert(errorMessage); // Hiển thị lỗi qua alert
+            } else {
+                form.submit(); // Gửi form nếu không có lỗi
+            }
+        }
+
+
     </script>
 }

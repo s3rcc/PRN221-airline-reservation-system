@@ -9,24 +9,24 @@
 <h2>Manage Locations</h2>
 
 <!-- Button to open the modal for adding a new Location -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#locationModal" onclick="clearModal()">
+@* <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#locationModal" onclick="clearModal()">
     Add New Location
-</button>
+</button> *@
 
 <!-- Location List -->
 <table class="table">
     <thead>
         <tr>
             <th>Location Name</th>
-            <th>Actions</th>
-        </tr>
+@*             <th>Actions</th>
+ *@        </tr>
     </thead>
     <tbody>
         @foreach (var location in Model.Locations)
         {
             <tr>
                 <td>@location.LocationName</td>
-                <td>
+@*                 <td>
                     <!-- Open the modal and pass location details -->
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#locationModal"
                             onclick="setEditModal(@location.LocationID, '@location.LocationName')">
@@ -37,7 +37,7 @@
                             onclick="setDeleteModal(@location.LocationID)">
                         Delete
                     </button>
-                </td>
+                </td> *@
             </tr>
         }
     </tbody>

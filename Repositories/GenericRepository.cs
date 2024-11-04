@@ -1,5 +1,6 @@
 ﻿using DataAccessObjects;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1;
 using Repositories.Interface;
 using System.Linq.Expressions;
 
@@ -123,6 +124,15 @@ namespace Repositories
                   .Select(x => x.Name).Single();
 
             return await query.FirstOrDefaultAsync(entity => EF.Property<int>(entity, keyName) == id);
+        }
+
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> expression, bool asNoTracking = true)
+        {
+            IQueryable<T> query = _context.Set<T>();
+            if (asNoTracking)
+                query = query.AsNoTracking();
+
+            return await query.AnyAsync(expression);
         }
 
         public async Task UpdateAsync(T entity)

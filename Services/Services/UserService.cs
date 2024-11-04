@@ -118,5 +118,26 @@ namespace Services.Services
                 throw new Exception("An error occurred while updating the user.");
             };
         }
+
+        public async Task ChangeUserTier(int id, Tier tier)
+        {
+
+            try
+            {
+                var user = await GetUserByIdAsync(id);
+
+                if (user == null) throw new ArgumentNullException(nameof(user));
+
+                user.TierId = tier.TierId;
+                user.Tier = tier;
+
+                await _unitOfWork.Repository<User>().UpdateAsync(user);
+                await _unitOfWork.SaveChangeAsync();
+            }
+            catch
+            {
+                throw new Exception("An error occurred while change the user tier.");
+            };
+        }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using BussinessObjects;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Shared;
 
 namespace PRN___Final_Project.Pages.CRUD.AirPlaneManager;
 
@@ -14,38 +15,70 @@ public class AirPlaneManagementModel : PageModel
         _airPlaneService = airPlaneService;
         AirPlanes = new List<AirPlane>();
         AirPlane = new AirPlane();
+
+        StatusMessage = Noti.GetMsg();
+        IsSuccess = Noti.IsSuccess;
+
     }
 
     [BindProperty]
     public AirPlane AirPlane { get; set; }
     public IEnumerable<AirPlane> AirPlanes { get; set; }
 
-    public async Task OnGetAsync()
+    public string StatusMessage { get; set; } = string.Empty;
+    public bool IsSuccess { get; set; } = true;
+
+
+    public async Task<IActionResult> OnGetAsync()
     {
+        if (!(User.IsInRole("Staff") || User.IsInRole("Admin")))
+        {
+            return RedirectToPage("/Errors/404");
+        }
         AirPlanes = await _airPlaneService.GetAllAirPlanesAsync();
+        return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (!ModelState.IsValid)
-        {
-            return Page();
-        }
 
-        if (AirPlane.PlaneId == 0)
+        try
         {
-            await _airPlaneService.AddAirPlaneAsync(AirPlane);
+            if (!ModelState.IsValid)
+            {
+                Noti.SetFail($"Some thing wrong here!");
+                return Page();
+            }
+
+            if (AirPlane.PlaneId == 0)
+            {
+                await _airPlaneService.AddAirPlaneAsync(AirPlane);
+                Noti.SetSuccess("Create plane success!");
+            }
+            else
+            {
+                await _airPlaneService.UpdateAirPlaneAsync(AirPlane);
+                Noti.SetSuccess("Update plane success!");
+            }
         }
-        else
+        catch (Exception ex)
         {
-            await _airPlaneService.UpdateAirPlaneAsync(AirPlane);
+            Noti.SetFail($"Error: {ex.Message}");
+
         }
         return RedirectToPage();
     }
 
     public async Task<IActionResult> OnPostDeleteAsync(int id)
     {
-        await _airPlaneService.DeleteAirPlaneAsync(id);
+
+        var rs = await _airPlaneService.DeleteAirPlaneAsync(id);
+
+        if (rs == null)
+            Noti.SetSuccess("Airplane deleted successfully.");
+        else
+            Noti.SetFail(rs);
+
         return RedirectToPage();
     }
 }

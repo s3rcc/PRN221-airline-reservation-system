@@ -1,6 +1,9 @@
 using BussinessObjects;
+using Microsoft.AspNetCore.Identity;
+using BussinessObjects.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Options;
 using Services.Interfaces;
 
 namespace PRN___Final_Project.Pages
@@ -9,11 +12,19 @@ namespace PRN___Final_Project.Pages
     {
         private readonly IAirPlaneService _airplaneService;
         private readonly ITicketService _ticketService;
+        private readonly UserManager<User> _userManager;
+        private readonly ClassTypesConfig _classTypesConfig;
+        private readonly TicketTypesConfig _ticketTypesConfig;
 
-        public CheckInModel(IAirPlaneService airplaneService, ITicketService ticketService)
+        public ClassTypesConfig ClassTypesConfig => _classTypesConfig;
+        public TicketTypesConfig TicketTypesConfig => _ticketTypesConfig;
+
+        public CheckInModel(IAirPlaneService airplaneService, ITicketService ticketService, IOptions<ClassTypesConfig> classTypesConfig, IOptions<TicketTypesConfig> ticketTypesConfig)
         {
             _airplaneService = airplaneService;
             _ticketService = ticketService;
+            _classTypesConfig = classTypesConfig.Value;
+            _ticketTypesConfig = ticketTypesConfig.Value;
         }
 
         [BindProperty]
@@ -29,8 +40,14 @@ namespace PRN___Final_Project.Pages
         [BindProperty]
         public List<string> BookedSeats { get; set; }
 
-        public async Task OnGetAsync(int planeId)
+        public async Task<IActionResult> OnGetAsync(int planeId)
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || !await _userManager.IsInRoleAsync(user, "staff"))
+            {
+                return RedirectToPage("/Errors/404");
+            }
+
             AirPlane = await _airplaneService.GetAirPlaneByIdAsync(planeId);
             TotalSeats = AirPlane.VipSeatNumber + AirPlane.NormalSeatNumber;
             TotalRows = (int)Math.Ceiling(TotalSeats / 6.0);
@@ -38,7 +55,7 @@ namespace PRN___Final_Project.Pages
             var bookingData = HttpContext.Session.GetObjectFromJson<Booking>("BookingData");
             AllowedSeats = bookingData.AdultNum + bookingData.ChildNum + bookingData.BabyNum;
             
-            if (flightType == "OutBoundFlight")
+            if (flightType == _ticketTypesConfig.OutBoundFlight)
             {
                 AllowedClassType = bookingData.ClassType;
             }
@@ -49,6 +66,7 @@ namespace PRN___Final_Project.Pages
 
             SelectedSeats = new List<string>();
             BookedSeats = await _ticketService.GetBookedSeatsByFlightIdAsync(bookingData.FlightId, flightType);
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(decimal carryLuggage, decimal baggage)
@@ -62,7 +80,7 @@ namespace PRN___Final_Project.Pages
             foreach (var seat in SelectedSeats)
             {
                 // Determine ClassType based on the first character of the seat number
-                var classType = seat.StartsWith("V") ? "Business" : "Economy";
+                var classType = seat.StartsWith("V") ? _classTypesConfig.Business : _classTypesConfig.Economy;
 
                 // Remove the first character to get the actual seat number
                 var actualSeatNumber = seat.Substring(1);
@@ -81,7 +99,7 @@ namespace PRN___Final_Project.Pages
                 await _ticketService.CreateTicketAsync(ticket);
             }
 
-            if (ticketType == "OutBoundFlight")
+            if (ticketType == _ticketTypesConfig.OutBoundFlight)
             {
                 return RedirectToPage("/TicketDetails", new { bookingId = bookingData.BookingId, isOutbound = true });
             }

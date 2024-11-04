@@ -10,6 +10,8 @@ using DataAccessObjects;
 using Services.Interfaces;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using BussinessObjects.Config;
+using Microsoft.Extensions.Options;
 
 namespace PRN___Final_Project.Pages.CRUD.BookingManager
 {
@@ -18,13 +20,16 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
         private readonly IBookingService _bookingService;
         private readonly IUserService _userService;
         private readonly UserManager<User> _userManager;
+        private readonly PaymentStatusConfig _paymentStatusConfig;
+        
 
-        public CreateModel(IBookingService bookingService, IUserService userService, UserManager<User> userManager)
+        public CreateModel(IBookingService bookingService, IUserService userService, UserManager<User> userManager, IOptions<PaymentStatusConfig> paymentStatusConfig)
         {
             _bookingService = bookingService;
             _userService = userService;
             _userManager = userManager;
             Booking = new Booking();
+            _paymentStatusConfig = paymentStatusConfig.Value;
         }
 
         [BindProperty]
@@ -39,12 +44,30 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
             {
                 return RedirectToPage("/Errors/404");
             }
-            var user = await _userManager.GetUserAsync(User);
+
+            // Kiểm tra xem user đã đăng nhập chưa
             if (!User.Identity.IsAuthenticated)
             {
                 TempData["ErrorMessage"] = "Bạn cần đăng nhập để tiếp tục.";
                 return Redirect($"/Login?returnUrl=/CRUD/BookingManager/Create");
             }
+
+            // Kiểm tra role của user
+            var user = await _userManager.GetUserAsync(User);
+            var roles = await _userManager.GetRolesAsync(user);
+
+            if (roles.Contains("Admin") || roles.Contains("Staff"))
+            {
+                // Nếu user là Admin hoặc Staff, chuyển hướng đến dashboard
+                return RedirectToPage("/Dashboard");
+            }
+            else if (!roles.Contains("Member"))
+            {
+                // Nếu user không phải là Member, chặn quyền truy cập
+                TempData["ErrorMessage"] = "Bạn không có quyền truy cập trang này.";
+                return RedirectToPage("/Errors/403");
+            }
+
             TempData.Remove("ErrorMessage");
             Booking.FlightId = FlightData.OutboundFlightId;
             Booking.ReturnFlightId = FlightData.ReturnFlightId;
@@ -54,12 +77,14 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
             Booking.ChildNum = FlightData.ChildNum;
             Booking.BabyNum = FlightData.BabyNum;
             Booking.UserId = user.Id;
-            Booking.PaymentStatus = "UnPaid";
+            Booking.PaymentStatus = _paymentStatusConfig.Unpaid;
             Booking.Status = true;
             Booking.ClassType = FlightData.ClassType;
             Booking.ReturnClassType = FlightData.ReturnClassType;
+
             return Page();
         }
+
 
         public async Task<IActionResult> OnPostAsync()
         {

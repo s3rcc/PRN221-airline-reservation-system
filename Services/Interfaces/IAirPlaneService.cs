@@ -8,7 +8,8 @@ namespace Services.Interfaces
         Task<AirPlane> GetAirPlaneByIdAsync(int id);
         Task AddAirPlaneAsync(AirPlane airPlane);
         Task UpdateAirPlaneAsync(AirPlane airPlane);
-        Task DeleteAirPlaneAsync(int id);
-        Task<int> GetTotalAirplane(); 
+        Task<string> DeleteAirPlaneAsync(int id);
+        Task<int> GetTotalAirplane();
+        Task<IEnumerable<AirPlane>> GetAvailableAirPlanesAsync();
     }
 }

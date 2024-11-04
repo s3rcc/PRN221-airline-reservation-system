@@ -13,6 +13,7 @@ namespace BussinessObjects
         public int TicketId { get; set; }
         public string SeatNumber { get; set; }
         public string TicketType { get; set; }
+        public string? CustomerName { get; set; }
         public DateTime IssuedDate { get; set; }
         public decimal Carryluggage { get; set; }
         public decimal Baggage { get; set; }
