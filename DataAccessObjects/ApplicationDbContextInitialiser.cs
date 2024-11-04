@@ -88,6 +88,7 @@ namespace DataAccessObjects.SeedData
             await SeedUsersAsync();
             await SeedBookingsAsync();
             await SeedTicketsAsync();
+            await SeedPaymentsAsync();
 
             _logger.LogInformation("Data seeding completed.");
         }
@@ -305,6 +306,7 @@ namespace DataAccessObjects.SeedData
 
 
         #endregion Flights
+
         #region User
         private async Task SeedUsersAsync()
         {
@@ -488,5 +490,40 @@ namespace DataAccessObjects.SeedData
             }
         }
         #endregion Tickets
+
+        #region Payments
+        private async Task SeedPaymentsAsync()
+        {
+            var random = new Random();
+            var bookings = await _context.Bookings.ToListAsync();
+            var payments = new List<Payment>();
+
+            foreach (var booking in bookings)
+            {
+                // Giả định rằng chỉ một số booking đã thanh toán
+                bool isPaid = random.Next(0, 2) == 0;
+
+                if (isPaid)
+                {
+                    payments.Add(new Payment
+                    {
+                        BookingId = booking.BookingId,
+                        UserId = booking.UserId,
+                        Amount = booking.TotalPrice,
+                        PaymentDate = DateTime.UtcNow.AddDays(-random.Next(1, 15)) // Ngày thanh toán trong vòng 15 ngày gần đây
+                    });
+                }
+            }
+
+            if (!_context.Payments.Any())
+            {
+                await _context.Payments.AddRangeAsync(payments);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Payments seeded successfully.");
+            }
+        }
+        #endregion Payments
+
+
     }
 }
