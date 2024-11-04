@@ -24,12 +24,17 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account.Manage
             Tickets = new List<Ticket>();
         }
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return;
+                return NotFound("Unable to load user.");
+            }
+
+            if (!await _userManager.IsInRoleAsync(user, "Member"))
+            {
+                return RedirectToPage("/Errors/404");
             }
 
             var bookings = await _bookingService.GetBookingByUserIdAsync(user.Id);
@@ -41,7 +46,8 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account.Manage
                 allTickets.AddRange(tickets);
             }
 
-            Tickets = allTickets;  
+            Tickets = allTickets;
+            return Page();
         }
     }
 }

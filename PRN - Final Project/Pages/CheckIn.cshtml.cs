@@ -1,4 +1,5 @@
 using BussinessObjects;
+using Microsoft.AspNetCore.Identity;
 using BussinessObjects.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,6 +12,7 @@ namespace PRN___Final_Project.Pages
     {
         private readonly IAirPlaneService _airplaneService;
         private readonly ITicketService _ticketService;
+        private readonly UserManager<User> _userManager;
         private readonly ClassTypesConfig _classTypesConfig;
         private readonly TicketTypesConfig _ticketTypesConfig;
 
@@ -38,8 +40,14 @@ namespace PRN___Final_Project.Pages
         [BindProperty]
         public List<string> BookedSeats { get; set; }
 
-        public async Task OnGetAsync(int planeId)
+        public async Task<IActionResult> OnGetAsync(int planeId)
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || !await _userManager.IsInRoleAsync(user, "staff"))
+            {
+                return RedirectToPage("/Errors/404");
+            }
+
             AirPlane = await _airplaneService.GetAirPlaneByIdAsync(planeId);
             TotalSeats = AirPlane.VipSeatNumber + AirPlane.NormalSeatNumber;
             TotalRows = (int)Math.Ceiling(TotalSeats / 6.0);
@@ -58,6 +66,7 @@ namespace PRN___Final_Project.Pages
 
             SelectedSeats = new List<string>();
             BookedSeats = await _ticketService.GetBookedSeatsByFlightIdAsync(bookingData.FlightId, flightType);
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(decimal carryLuggage, decimal baggage)

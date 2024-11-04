@@ -44,12 +44,30 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
             {
                 return RedirectToPage("/Errors/404");
             }
-            var user = await _userManager.GetUserAsync(User);
+
+            // Kiểm tra xem user đã đăng nhập chưa
             if (!User.Identity.IsAuthenticated)
             {
                 TempData["ErrorMessage"] = "Bạn cần đăng nhập để tiếp tục.";
                 return Redirect($"/Login?returnUrl=/CRUD/BookingManager/Create");
             }
+
+            // Kiểm tra role của user
+            var user = await _userManager.GetUserAsync(User);
+            var roles = await _userManager.GetRolesAsync(user);
+
+            if (roles.Contains("Admin") || roles.Contains("Staff"))
+            {
+                // Nếu user là Admin hoặc Staff, chuyển hướng đến dashboard
+                return RedirectToPage("/Dashboard");
+            }
+            else if (!roles.Contains("Member"))
+            {
+                // Nếu user không phải là Member, chặn quyền truy cập
+                TempData["ErrorMessage"] = "Bạn không có quyền truy cập trang này.";
+                return RedirectToPage("/Errors/403");
+            }
+
             TempData.Remove("ErrorMessage");
             Booking.FlightId = FlightData.OutboundFlightId;
             Booking.ReturnFlightId = FlightData.ReturnFlightId;
@@ -63,8 +81,10 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
             Booking.Status = true;
             Booking.ClassType = FlightData.ClassType;
             Booking.ReturnClassType = FlightData.ReturnClassType;
+
             return Page();
         }
+
 
         public async Task<IActionResult> OnPostAsync()
         {

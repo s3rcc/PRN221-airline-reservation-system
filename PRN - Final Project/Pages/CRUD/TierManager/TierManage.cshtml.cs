@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Services.Interfaces;
 using BussinessObjects;
@@ -29,9 +29,16 @@ namespace PRN___Final_Project.Pages.CRUD.TierManager
         public bool IsSuccess { get; set; } = true;
 
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
+            // Kiểm tra nếu người dùng không có vai trò 'staff' hoặc 'admin'
+            if (!(User.IsInRole("Staff") || User.IsInRole("Admin")))
+            {
+                return RedirectToPage("/Errors/404"); 
+            }
+
             Tiers = await _tierService.GetAllTiersAsync();
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()

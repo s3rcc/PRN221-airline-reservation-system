@@ -23,9 +23,14 @@ namespace PRN___Final_Project.Pages.CRUD.TicketManager
 
         public IEnumerable<Ticket> Tickets { get; set; }
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
+            if (!(User.IsInRole("Staff") || User.IsInRole("Admin")))
+            {
+                return RedirectToPage("/Errors/404");
+            }
             Tickets = await _ticketService.GetAllTicketsAsync();
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()

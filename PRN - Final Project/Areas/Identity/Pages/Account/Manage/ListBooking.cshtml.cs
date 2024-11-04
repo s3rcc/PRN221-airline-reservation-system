@@ -31,6 +31,10 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account.Manage
             {
                 return NotFound("Unable to load user.");
             }
+            if (!await _userManager.IsInRoleAsync(user, "Member"))
+            {
+                return RedirectToPage("/Errors/404"); 
+            }
 
             Bookings = await _bookingService.GetBookingByUserIdAsync(user.Id);
             return Page();

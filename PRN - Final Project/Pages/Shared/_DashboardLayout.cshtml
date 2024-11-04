@@ -35,51 +35,69 @@
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+@using BussinessObjects
+                @using Microsoft.AspNetCore.Identity
+                @inject UserManager<User> UserManager
+                @inject SignInManager<User> SignInManager
+
                 <div class="sb-sidenav-menu">
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">Manager</div>
-                        <a class="nav-link" href="/manage-planes">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            Airplane
-                        </a>
-                        <a class="nav-link" href="/manage-flights">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                            Flight
-                        </a>
-                        <a class="nav-link" href="/manage-locations">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                            Location
-                        </a>
-                        <a class="nav-link" href="/manage-pilots">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                            Pilot
-                        </a>
-                        <a class="nav-link" href="/manage-bookings">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                            Booking
-                        </a>
-                        <a class="nav-link" href="/manage-users">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                            User
-                        </a>
-                        <a class="nav-link" href="/manage-tickets">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                            Ticket
-                        </a>
-                        <a class="nav-link" href="/manage-tiers">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                            Tier
-                        </a>
-                        <a class="nav-link" href="/manage-payments">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                            Payment
-                        </a>
-                        <a class="nav-link" href="/Statistics">
-                            <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                            Statistic
-                        </a>
+
+                        <!-- Conditional rendering for staff and admin roles -->
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a class="nav-link" href="/manage-users">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                User
+                            </a>
+                            <a class="nav-link" href="/Statistics">
+                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                                Statistic
+                            </a>
+                        }
+                        @if (User.IsInRole("Staff") || User.IsInRole("Admin"))
+                        {
+                            <a class="nav-link" href="/manage-planes">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Airplane
+                            </a>
+                            <a class="nav-link" href="/manage-locations">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                Location
+                            </a>
+                            <a class="nav-link" href="/manage-pilots">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                Pilot
+                            </a>
+
+                            <a class="nav-link" href="/manage-flights">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                Flight
+                            </a>
+                            <a class="nav-link" href="/manage-bookings">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                Booking
+
+                            </a>
+
+                            <a class="nav-link" href="/manage-tickets">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                Ticket
+                            </a>
+                            <a class="nav-link" href="/manage-tiers">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                Tier
+                            </a>
+                            <a class="nav-link" href="/manage-payments">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                Payment
+                            </a>
+                        }
+
                     </div>
                 </div>
+
 
             </nav>
         </div>

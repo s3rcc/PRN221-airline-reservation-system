@@ -22,9 +22,14 @@ namespace PRN___Final_Project.Pages.CRUD.PaymentManager
         public Payment Payment { get; set; }
         public IEnumerable<Payment> Payments { get; set; }
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
-            Payments = await _paymentService.GetAllPayments();  
+            if (!(User.IsInRole("Staff") || User.IsInRole("Admin")))
+            {
+                return RedirectToPage("/Errors/404");
+            }
+            Payments = await _paymentService.GetAllPayments();
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
