@@ -1,6 +1,8 @@
+using BussinessObjects.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Options;
 using Services.Interfaces;
 
 namespace PRN___Final_Project.Pages
@@ -10,12 +12,14 @@ namespace PRN___Final_Project.Pages
         private readonly IFlightService _flightService;
         private readonly IBookingService _bookingService;
         private readonly ITicketService _ticketService;
+        private readonly TicketTypesConfig _ticketTypesConfig;
 
-        public BookingCheckModel(IFlightService flightService, IBookingService bookingService, ITicketService ticketService)
+        public BookingCheckModel(IFlightService flightService, IBookingService bookingService, ITicketService ticketService, IOptions<TicketTypesConfig> ticketTypesConfig)
         {
             _flightService = flightService;
             _bookingService = bookingService;
             _ticketService = ticketService;
+            _ticketTypesConfig = ticketTypesConfig.Value;
         }
 
         [BindProperty]
@@ -63,7 +67,7 @@ namespace PRN___Final_Project.Pages
             }
 
             HttpContext.Session.SetObjectAsJson("BookingData", booking);
-            HttpContext.Session.SetString("FlightType", IsOutboundFlight ? "OutBoundFlight" : "ReturnFlight");
+            HttpContext.Session.SetString("FlightType", IsOutboundFlight ? _ticketTypesConfig.OutBoundFlight : _ticketTypesConfig.ReturnFlight);
 
             return RedirectToPage("/CheckIn", new { planeId = flight.PlaneId });
         }

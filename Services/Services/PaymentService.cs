@@ -1,7 +1,11 @@
 using BussinessObjects;
+using BussinessObjects.Config;
 using BussinessObjects.Exceptions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using NuGet.Protocol.Core.Types;
 using Repositories;
 using Repositories.Interface;
 using Services.Interfaces;
@@ -18,13 +22,17 @@ namespace Services.Services
         private readonly IBookingService _bookingService;
         private readonly IFlightService _flightService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ClassTypesConfig _classTypesConfig;
+        private readonly PaymentStatusConfig _paymentStatusConfig;
 
-        public PaymentService( IConfiguration configuration, IBookingService bookingService, IUnitOfWork unitOfWork, IFlightService flightService)
+        public PaymentService( IConfiguration configuration, IBookingService bookingService, IUnitOfWork unitOfWork, IFlightService flightService, IOptions<ClassTypesConfig> classTypesConfig, IOptions<PaymentStatusConfig> paymentStatusConfig)
         {
             _configuration = configuration;
             _bookingService = bookingService;
             _unitOfWork = unitOfWork;
             _flightService = flightService;
+            _classTypesConfig = classTypesConfig.Value;
+            _paymentStatusConfig = paymentStatusConfig.Value;
         }
         public string CreatePaymentUrl(HttpContext context,Booking booking)
         {
@@ -83,11 +91,11 @@ namespace Services.Services
                 var flight = await _flightService.GetFlightByIdAsync(booking.FlightId);
                 int requiredSeats = booking.AdultNum + booking.ChildNum + booking.BabyNum;
 
-                if (booking.ClassType.Equals("Normal") && flight.AvailableNormalSeat < requiredSeats)
+                if (booking.ClassType.Equals(_classTypesConfig.Economy) && flight.AvailableNormalSeat < requiredSeats)
                 {
                     throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Không đủ ghế thường.");
                 }
-                if (booking.ClassType.Equals("Vip") && flight.AvailableVipSeat < requiredSeats)
+                if (booking.ClassType.Equals(_classTypesConfig.Business) && flight.AvailableVipSeat < requiredSeats)
                 {
                     throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Không đủ ghế VIP.");
                 }
@@ -96,11 +104,11 @@ namespace Services.Services
                 if (booking.ReturnFlightId != null)
                 {
                     var returnFlight = await _flightService.GetFlightByIdAsync(booking.ReturnFlightId.Value);
-                    if (booking.ReturnClassType.Equals("Normal") && returnFlight.AvailableNormalSeat < requiredSeats)
+                    if (booking.ReturnClassType.Equals(_classTypesConfig.Economy) && returnFlight.AvailableNormalSeat < requiredSeats)
                     {
                         throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Không đủ ghế thường cho chuyến bay về.");
                     }
-                    if (booking.ReturnClassType.Equals("Vip") && returnFlight.AvailableVipSeat < requiredSeats)
+                    if (booking.ReturnClassType.Equals(_classTypesConfig.Business) && returnFlight.AvailableVipSeat < requiredSeats)
                     {
                         throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Không đủ ghế VIP cho chuyến bay về.");
                     }
@@ -113,12 +121,12 @@ namespace Services.Services
                     Amount = booking.TotalPrice,
                     PaymentDate = DateTime.Now
                 };
-                booking.PaymentStatus = "Paid";
+                booking.PaymentStatus = _paymentStatusConfig.Paid;
                 await CreatePaymentAsync(payment);
                 await _bookingService.UpdateBookingAsync(booking);
 
                 // Reduce seat for flight
-                if (booking.ClassType.Equals("Normal"))
+                if (booking.ClassType.Equals(_classTypesConfig.Economy))
                 {
                     flight.AvailableNormalSeat -= requiredSeats;
                 }
@@ -132,7 +140,7 @@ namespace Services.Services
                 {
 
                     var returnFlight = await _flightService.GetReturnFlightByIdAsync(booking.ReturnFlightId);
-                    if(booking.ReturnClassType.Equals("Normal"))
+                    if(booking.ReturnClassType.Equals(_classTypesConfig.Economy))
                     {
                         returnFlight.AvailableNormalSeat -= requiredSeats;
                     }
@@ -155,7 +163,7 @@ namespace Services.Services
                 {
                     throw new ErrorException(StatusCodes.Status404NotFound, ErrorCode.NOT_FOUND, "Không tìm thấy booking.");
                 }
-                booking.PaymentStatus = "Unpaid";
+                booking.PaymentStatus = _paymentStatusConfig.Unpaid;
                 await _bookingService.UpdateBookingAsync(booking);
                 await _unitOfWork.SaveChangeAsync();
                 throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.FAILED, $"Thanh toán không thành công, mã lỗi: {responseCode}");

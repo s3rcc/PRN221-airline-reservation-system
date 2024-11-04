@@ -10,6 +10,8 @@ using DataAccessObjects;
 using Services.Interfaces;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using BussinessObjects.Config;
+using Microsoft.Extensions.Options;
 
 namespace PRN___Final_Project.Pages.CRUD.BookingManager
 {
@@ -18,13 +20,16 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
         private readonly IBookingService _bookingService;
         private readonly IUserService _userService;
         private readonly UserManager<User> _userManager;
+        private readonly PaymentStatusConfig _paymentStatusConfig;
+        
 
-        public CreateModel(IBookingService bookingService, IUserService userService, UserManager<User> userManager)
+        public CreateModel(IBookingService bookingService, IUserService userService, UserManager<User> userManager, IOptions<PaymentStatusConfig> paymentStatusConfig)
         {
             _bookingService = bookingService;
             _userService = userService;
             _userManager = userManager;
             Booking = new Booking();
+            _paymentStatusConfig = paymentStatusConfig.Value;
         }
 
         [BindProperty]
@@ -72,7 +77,7 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
             Booking.ChildNum = FlightData.ChildNum;
             Booking.BabyNum = FlightData.BabyNum;
             Booking.UserId = user.Id;
-            Booking.PaymentStatus = "UnPaid";
+            Booking.PaymentStatus = _paymentStatusConfig.Unpaid;
             Booking.Status = true;
             Booking.ClassType = FlightData.ClassType;
             Booking.ReturnClassType = FlightData.ReturnClassType;

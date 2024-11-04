@@ -1,6 +1,8 @@
 ﻿using BussinessObjects;
+using BussinessObjects.Config;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Options;
 using Services.Interfaces;
 
 namespace PRN___Final_Project.Pages.CRUD.FlightManager
@@ -9,11 +11,18 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
     {
         private readonly IFlightService _flightService;
         private readonly ILocationService _locationService;
+        private readonly ClassTypesConfig _classTypesConfig;
+        private readonly TicketTypesConfig _ticketTypesConfig;
 
-        public OutboundFlightsModel(IFlightService flightService, ILocationService locationService)
+        public ClassTypesConfig ClassTypesConfig => _classTypesConfig;
+        public TicketTypesConfig TicketTypesConfig => _ticketTypesConfig;
+
+        public OutboundFlightsModel(IFlightService flightService, ILocationService locationService, IOptions<ClassTypesConfig> classTypesConfig, IOptions<TicketTypesConfig> ticketTypesConfig)
         {
             _flightService = flightService;
             _locationService = locationService;
+            _classTypesConfig = classTypesConfig.Value;
+            _ticketTypesConfig = ticketTypesConfig.Value;
         }
 
         public IEnumerable<Flight> Flights { get; set; } = default!;

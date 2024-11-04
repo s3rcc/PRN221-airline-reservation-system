@@ -6,6 +6,8 @@ using DataAccessObjects;
 using Microsoft.AspNetCore.Identity;
 using System;
 using DataAccessObjects.SeedData;
+using System.Configuration;
+using BussinessObjects.Config;
 
 namespace PRN___Final_Project
 {
@@ -48,6 +50,13 @@ namespace PRN___Final_Project
                 };
 
             });
+            builder.Services.Configure<ClassTypesConfig>(
+    builder.Configuration.GetSection("ClassTypes"));
+            builder.Services.Configure<PaymentStatusConfig>(
+    builder.Configuration.GetSection("PaymentStatus"));
+            builder.Services.Configure<TicketTypesConfig>(
+    builder.Configuration.GetSection("TicketTypes"));
+
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddDistributedMemoryCache();

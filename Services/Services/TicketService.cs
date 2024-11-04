@@ -1,7 +1,9 @@
 ﻿using BussinessObjects;
+using BussinessObjects.Config;
 using BussinessObjects.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Repositories.Interface;
 using Services.Interfaces;
 using System;
@@ -16,9 +18,11 @@ namespace Services.Services
     public class TicketService : ITicketService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public TicketService(IUnitOfWork unitOfWork)
+        private readonly TicketTypesConfig _ticketTypesConfig;
+        public TicketService(IUnitOfWork unitOfWork, IOptions<TicketTypesConfig> ticketTypesConfig)
         {
             _unitOfWork = unitOfWork;
+            _ticketTypesConfig = ticketTypesConfig.Value;
         }
         public async Task CreateTicketAsync(Ticket ticket)
         {
@@ -65,7 +69,7 @@ namespace Services.Services
 
         public async Task<IEnumerable<Ticket>> GetTicketByBookingIdAndTypeAsync(int bookingId, bool isOutbound)
         {
-            var ticketType = isOutbound ? "OutBoundFlight" : "ReturnFlight";
+            var ticketType = isOutbound ? _ticketTypesConfig.OutBoundFlight : _ticketTypesConfig.ReturnFlight;
             return await _unitOfWork.Repository<Ticket>().FindAsync(t => t.BookingId == bookingId && t.TicketType == ticketType);
         }
 
@@ -80,17 +84,17 @@ namespace Services.Services
                 bookedTickets.AddRange(tickets);
             }
 
-            if (flightType == "OutBoundFlight")
+            if (flightType == _ticketTypesConfig.OutBoundFlight)
             {
                 return bookedTickets
-                    .Where(ticket => ticket.TicketType == "OutBoundFlight")
+                    .Where(ticket => ticket.TicketType == _ticketTypesConfig.OutBoundFlight)
                     .Select(ticket => ticket.SeatNumber).ToList();
             }
 
             else
             {
                 return bookedTickets
-                    .Where(ticket => ticket.TicketType == "ReturnFlight")
+                    .Where(ticket => ticket.TicketType == _ticketTypesConfig.ReturnFlight)
                     .Select(ticket => ticket.SeatNumber).ToList();
             }
         }
