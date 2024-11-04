@@ -1,8 +1,10 @@
 ﻿using BussinessObjects;
+using BussinessObjects.Config;
 using Microsoft.Build.Framework;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -18,11 +20,15 @@ namespace Services.Services
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<BookingCleanupService> _logger;
         private readonly TimeSpan _checkInterval = TimeSpan.FromHours(1);
+        private readonly ClassTypesConfig _classTypesConfig;
+        private readonly PaymentStatusConfig _paymentStatusConfig;
 
-        public BookingCleanupService(IServiceProvider serviceProvider,ILogger<BookingCleanupService> logger)
+        public BookingCleanupService(IServiceProvider serviceProvider,ILogger<BookingCleanupService> logger, IOptions<ClassTypesConfig> classTypesConfig, IOptions<PaymentStatusConfig> paymentStatusConfig)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
+            _classTypesConfig = classTypesConfig.Value;
+            _paymentStatusConfig = paymentStatusConfig.Value;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -60,7 +66,7 @@ namespace Services.Services
                 var flight = await _flightService.GetFlightByIdAsync(booking.FlightId);
                 bool shouldDeleteBooking = false;
                 // Remove unpaid booking if the flight is set
-                if (flight.DepartureDateTime < DateTime.Now && booking.PaymentStatus != "Paid")
+                if (flight.DepartureDateTime < DateTime.Now && booking.PaymentStatus != _paymentStatusConfig.Paid)
                 {
                     shouldDeleteBooking = true;
                     _logger.LogInformation($"Deleted unpaid booking with ID: {booking.BookingId} (flight already departed)");
@@ -96,8 +102,8 @@ namespace Services.Services
 
         private bool IsSeatUnavailable(Flight flight, string classType, int requiredSeats)
         {
-            return (classType == "Normal" && flight.AvailableNormalSeat < requiredSeats) ||
-                   (classType == "Vip" && flight.AvailableVipSeat < requiredSeats);
+            return (classType == _classTypesConfig.Economy && flight.AvailableNormalSeat < requiredSeats) ||
+                   (classType == _classTypesConfig.Business && flight.AvailableVipSeat < requiredSeats);
         }
     }
 }
