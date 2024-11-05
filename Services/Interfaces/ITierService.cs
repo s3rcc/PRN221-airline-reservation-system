@@ -10,5 +10,6 @@ namespace Services.Interfaces
         Task<IEnumerable<Tier>> GetAllTiersAsync();
         Task<Tier> GetTierByIdAsync(int id);
         Task UpdateTierAsync(Tier tier);
+        Task<Tier> GetTierByUserIdAsync(string userId);
     }
 }

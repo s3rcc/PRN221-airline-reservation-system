@@ -1,4 +1,5 @@
 ﻿using BussinessObjects;
+using Microsoft.AspNetCore.Identity;
 using Repositories.Interface;
 using Services.Interfaces;
 
@@ -7,10 +8,12 @@ namespace Services.Services
     public class TierService : ITierService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<User> _userManager;
 
-        public TierService(IUnitOfWork unitOfWork)
+        public TierService(IUnitOfWork unitOfWork, UserManager<User> userManager)
         {
             _unitOfWork = unitOfWork;
+            _userManager = userManager;
         }
 
         public async Task AddTierAsync(Tier tier)
@@ -82,6 +85,24 @@ namespace Services.Services
             catch
             {
                 throw new Exception("An error occurred while updating the tier.");
+            }
+        }
+
+        public async Task<Tier> GetTierByUserIdAsync(string userId)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId)
+                           ?? throw new KeyNotFoundException("User not found.");
+
+                var tier = await _unitOfWork.Repository<Tier>().GetByIdAsync(user.TierId)
+                           ?? throw new KeyNotFoundException("Tier not found for this user.");
+
+                return tier;
+            }
+            catch
+            {
+                throw new Exception("An error occurred while retrieving the tier.");
             }
         }
     }

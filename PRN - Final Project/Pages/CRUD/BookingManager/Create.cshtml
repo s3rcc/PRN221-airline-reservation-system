@@ -6,9 +6,7 @@
     var flightData = HttpContext.Session.GetObjectFromJson<FlightData>("FlightData");
 }
 
-<h1>Create Booking</h1>
-
-<h4>Booking Information</h4>
+<h1 class="display-3 fw-bold py-5">Create Booking</h1>
 <hr />
 <div class="container">
     <div class="row justify-content-center">
@@ -16,88 +14,112 @@
             <form method="post" class="needs-validation" novalidate>
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                <div class="mb-3">
-                    <label asp-for="Booking.UserId" class="form-label"></label>
-                    <input asp-for="Booking.UserId" class="form-control" readonly />
-                    <span asp-validation-for="Booking.UserId" class="text-danger"></span>
-                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3 d-none">
+                            <label asp-for="Booking.UserId" class="form-label"></label>
+                            <input asp-for="Booking.UserId" class="form-control" readonly />
+                            <span asp-validation-for="Booking.UserId" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 d-none">
+                            <label asp-for="Booking.FlightId" class="form-label"></label>
+                            <input asp-for="Booking.FlightId" class="form-control" readonly />
+                            <span asp-validation-for="Booking.FlightId" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 d-none">
+                            <label asp-for="Booking.ReturnFlightId" class="form-label"></label>
+                            <input asp-for="Booking.ReturnFlightId" class="form-control" readonly />
+                            <span asp-validation-for="Booking.ReturnFlightId" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 d-none">
+                            <label asp-for="Booking.PaymentStatus" class="form-label"></label>
+                            <input asp-for="Booking.PaymentStatus" class="form-control" readonly />
+                            <span asp-validation-for="Booking.PaymentStatus" class="text-danger"></span>
+                        </div>
+                        <div class="form-check d-none">
+                            <input class="form-check-input" type="checkbox" asp-for="Booking.Status" readonly />
+                            <label class="form-check-label" asp-for="Booking.Status"></label>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="UserName" class="fw-bold form-label"></label>
+                            <input asp-for="UserName" class="text-center form-control" readonly />
+                            <span asp-validation-for="UserName" class="text-danger"></span>
+                        </div>
 
-                <div class="mb-3">
-                    <label asp-for="Booking.FlightId" class="form-label"></label>
-                    <input asp-for="Booking.FlightId" class="form-control" readonly />
-                    <span asp-validation-for="Booking.FlightId" class="text-danger"></span>
-                </div>
+                        <div class="mb-3">
+                            <label asp-for="Booking.BookingDate" class="fw-bold form-label"></label>
+                            <input asp-for="Booking.BookingDate" class="text-center form-control" readonly />
+                            <span asp-validation-for="Booking.BookingDate" class="text-danger"></span>
+                        </div>
 
-                @if (!flightData.IsOneWay)
-                {
-                    <div class="mb-3">
-                        <label asp-for="Booking.ReturnFlightId" class="form-label"></label>
-                        <input asp-for="Booking.ReturnFlightId" class="form-control" readonly />
-                        <span asp-validation-for="Booking.ReturnFlightId" class="text-danger"></span>
+                        <div class="mb-3">
+                            <label asp-for="Booking.AdultNum" class="fw-bold form-label"></label>
+                            <input asp-for="Booking.AdultNum" class="text-center form-control" readonly />
+                            <span asp-validation-for="Booking.AdultNum" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Booking.ChildNum" class="fw-bold form-label"></label>
+                            <input asp-for="Booking.ChildNum" class="text-center form-control" readonly />
+                            <span asp-validation-for="Booking.ChildNum" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Booking.BabyNum" class="fw-bold form-label"></label>
+                            <input asp-for="Booking.BabyNum" class="text-center form-control" readonly />
+                            <span asp-validation-for="Booking.BabyNum" class="text-danger"></span>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Booking.ReturnClassType" class="form-label"></label>
-                        <input asp-for="Booking.ReturnClassType" class="form-control" readonly />
-                        <span asp-validation-for="Booking.ReturnClassType" class="text-danger"></span>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Booking.ClassType" class="fw-bold form-label"></label>
+                            <input asp-for="Booking.ClassType" class="text-center form-control" readonly />
+                            <span asp-validation-for="Booking.ClassType" class="text-danger"></span>
+                        </div>
+
+                        @if (!flightData.IsOneWay)
+                        {
+                            <div class="mb-3">
+                                <label asp-for="Booking.ReturnClassType" class="fw-bold form-label"></label>
+                                <input asp-for="Booking.ReturnClassType" class="text-center form-control" readonly />
+                                <span asp-validation-for="Booking.ReturnClassType" class="text-danger"></span>
+                            </div>
+                        }
+                        <div class="mb-3">
+                            <label asp-for="Booking.TotalPrice" class="fw-bold form-label"></label>
+                            <input asp-for="Booking.TotalPrice" class="text-center form-control" readonly />
+                            <span asp-validation-for="Booking.TotalPrice" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Tier" class="fw-bold form-label"></label>
+                            <input asp-for="Tier" class="text-center form-control" readonly />
+                            <span asp-validation-for="Tier" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="fw-bold form-label">Discount (%)</label>
+                            <input type="text" class="text-center form-control" value="@((Model.Discount * 100) + "%")" readonly />
+                            <span asp-validation-for="Discount" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PriceAfterDiscount" class="fw-bold form-label"></label>
+                            <input asp-for="PriceAfterDiscount" class="text-center form-control text-danger" readonly />
+                            <span asp-validation-for="PriceAfterDiscount" class="text-danger"></span>
+                        </div>
                     </div>
-                }
-
-                <div class="mb-3">
-                    <label asp-for="Booking.BookingDate" class="form-label"></label>
-                    <input asp-for="Booking.BookingDate" class="form-control" readonly />
-                    <span asp-validation-for="Booking.BookingDate" class="text-danger"></span>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="Booking.TotalPrice" class="form-label"></label>
-                    <input asp-for="Booking.TotalPrice" class="form-control" readonly />
-                    <span asp-validation-for="Booking.TotalPrice" class="text-danger"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Booking.PaymentStatus" class="form-label"></label>
-                    <input asp-for="Booking.PaymentStatus" class="form-control" readonly />
-                    <span asp-validation-for="Booking.PaymentStatus" class="text-danger"></span>
-                </div>
-
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" asp-for="Booking.Status" readonly />
-                    <label class="form-check-label" asp-for="Booking.Status"></label>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Booking.AdultNum" class="form-label"></label>
-                    <input asp-for="Booking.AdultNum" class="form-control" readonly />
-                    <span asp-validation-for="Booking.AdultNum" class="text-danger"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Booking.ChildNum" class="form-label"></label>
-                    <input asp-for="Booking.ChildNum" class="form-control" readonly />
-                    <span asp-validation-for="Booking.ChildNum" class="text-danger"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Booking.BabyNum" class="form-label"></label>
-                    <input asp-for="Booking.BabyNum" class="form-control" readonly />
-                    <span asp-validation-for="Booking.BabyNum" class="text-danger"></span>
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Booking.ClassType" class="form-label"></label>
-                    <input asp-for="Booking.ClassType" class="form-control" readonly />
-                    <span asp-validation-for="Booking.ClassType" class="text-danger"></span>
-                </div>
-
-                <div class="d-grid gap-2">
+                <div class="gap-2">
                     <button type="submit" class="btn btn-primary">Create Booking</button>
                 </div>
             </form>
-         <div>
+            <div class="py-4">
                 @if (!string.IsNullOrEmpty(Request.Headers["Referer"]))
                 {
-            <a href="@Request.Headers["Referer"]">Back to Previous Page</a>
+                    <a class="py-2 btn btn-secondary" href="@Request.Headers["Referer"]">Back to Previous Page</a>
                 }
 </div>
         </div>

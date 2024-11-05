@@ -21,19 +21,33 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
         private readonly IUserService _userService;
         private readonly UserManager<User> _userManager;
         private readonly PaymentStatusConfig _paymentStatusConfig;
-        
-
-        public CreateModel(IBookingService bookingService, IUserService userService, UserManager<User> userManager, IOptions<PaymentStatusConfig> paymentStatusConfig)
+        private readonly ITierService _tierService;
+        private readonly ILocationService _locationService;
+        public CreateModel(IBookingService bookingService, IUserService userService, UserManager<User> userManager, IOptions<PaymentStatusConfig> paymentStatusConfig, ITierService tierService, ILocationService locationService)
         {
             _bookingService = bookingService;
             _userService = userService;
             _userManager = userManager;
             Booking = new Booking();
             _paymentStatusConfig = paymentStatusConfig.Value;
+            _tierService = tierService;
+            _locationService = locationService;
         }
 
         [BindProperty]
         public Booking Booking { get; set; } = default!;
+        [BindProperty]
+        public string Tier { get; set; } = default!;
+        [BindProperty]
+        public decimal Discount { get; set; } = default!;
+        [BindProperty]
+        public decimal PriceAfterDiscount { get; set; } = default!;
+        [BindProperty]
+        public string UserName { get; set; } = default!;
+        [BindProperty]
+        public string OriginLocation { get; set; } = default!;
+        [BindProperty]
+        public string DestinationLocation { get; set; } = default!;
 
         public FlightData FlightData { get; set; } = default!;
 
@@ -55,6 +69,9 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
             // Kiểm tra role của user
             var user = await _userManager.GetUserAsync(User);
             var roles = await _userManager.GetRolesAsync(user);
+            var tier = await _tierService.GetTierByUserIdAsync(user.Id);
+            var originLocation = await _locationService.GetLocationByIdAsync(FlightData.OriginId);
+            var destinationLocation = await _locationService.GetLocationByIdAsync(FlightData.DestinationId);
 
             if (roles.Contains("Admin") || roles.Contains("Staff"))
             {
@@ -67,6 +84,13 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
                 TempData["ErrorMessage"] = "Bạn không có quyền truy cập trang này.";
                 return RedirectToPage("/Errors/403");
             }
+
+            Tier = tier?.TierName;
+            Discount = tier?.Discount ?? 0;
+            PriceAfterDiscount = FlightData.TotalPrice * (1 - Discount);
+            UserName = user.UserName;
+            OriginLocation = originLocation.LocationName;
+            DestinationLocation = destinationLocation.LocationName;
 
             TempData.Remove("ErrorMessage");
             Booking.FlightId = FlightData.OutboundFlightId;
@@ -88,11 +112,8 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
             HttpContext.Session.Remove("FlightData");
+            Booking.TotalPrice = PriceAfterDiscount;
             Booking.BookingId = await _bookingService.CreateBookingAsync(Booking);
             if (Booking.BookingId > 0)
             {

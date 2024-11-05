@@ -136,12 +136,14 @@
         if (seatButton.classList.contains('selected')) {
             // Deselect seat
             seatButton.classList.remove('selected');
-            seatButton.classList.add(seatButton.dataset.seatType === 'vip' ? 'btn-outline-primary' : 'btn-outline-secondary');
+            seatButton.classList.remove('btn-blue', 'btn-gray');
+            seatButton.classList.add(seatType === 'Business' ? 'btn-outline-primary' : 'btn-outline-secondary');
             selectedSeats = selectedSeats.filter(seat => seat !== seatNumber);
         } else if (selectedSeats.length < maxSeats) {
             // Select seat
             seatButton.classList.add('selected');
-            seatButton.classList.add(seatButton.dataset.seatType === 'vip' ? 'btn-blue' : 'btn-gray');
+            seatButton.classList.remove('btn-outline-primary', 'btn-outline-secondary');
+            seatButton.classList.add(seatType === 'Business' ? 'btn-blue' : 'btn-gray');
             selectedSeats.push(seatNumber);
         }
 

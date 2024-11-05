@@ -75,21 +75,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Cột 4: Button to Flight Details -->
-        <div class="col d-flex justify-content-center align-items-center">
-            <div class="row w-100">
-                <div class="col-12 d-flex justify-content-center align-items-center">
-                    <a asp-page="./FlightDetails" asp-route-isOneWay="@Model.IsOneWay"
-                       asp-route-origin="@Model.OriginLocation"
-                       asp-route-destination="@Model.DestinationLocation"
-                       asp-route-departureDate="@Model.DepartureDate.ToString("yyyy-MM-dd")"
-                       asp-route-returnDate="@Model.ReturnDate?.ToString("yyyy-MM-dd")"
-                       asp-route-totalPassengers="@Model.TotalPassengers"
-                       class="btn btn-primary">View Flight Details</a>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
