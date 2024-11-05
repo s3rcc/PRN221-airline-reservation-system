@@ -22,27 +22,32 @@
             <th>Date of Birth</th>
             <th>CCCD</th>
             <th>Tier</th>
+            <th>Roles</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in Model.Users)
+        @foreach (var userWithRoles in Model.UsersWithRoles)
         {
             <tr>
-                <td>@user.Email</td>
-                <td>@user.Gender</td>
-                <td>@user.DoB.ToShortDateString()</td>
-                <td>@user.CCCD</td>
-                <td>@user.Tier.TierName</td>
+                <td>@userWithRoles.User.Email</td>
+                <td>@userWithRoles.User.Gender</td>
+                <td>@userWithRoles.User.DoB.ToShortDateString()</td>
+                <td>@userWithRoles.User.CCCD</td>
+                <td>@userWithRoles.User.Tier.TierName</td>
                 <td>
-                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#userModal"
-                            onclick="setEditModal('@user.Id', '@user.Email', '@user.Gender', '@user.DoB.ToString("yyyy-MM-dd")', '@user.CCCD', '@user.TierId')">
+                    @foreach (var role in userWithRoles.Roles)
+                    {
+                        <span class="badge bg-info">@role</span>
+                    }
+                </td>
+                <td>
+                    <a class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#userModal"
+                       onclick="setEditModal('@userWithRoles.User.Id', '@userWithRoles.User.Email', '@userWithRoles.User.Gender', '@userWithRoles.User.DoB.ToString("yyyy-MM-dd")', '@userWithRoles.User.CCCD', '@userWithRoles.User.TierId')">
                         Update Tier
-                    </button>
-@*                     <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
-                            onclick="setDeleteModal('@user.Id')">
-                        Delete
-                    </button> *@
+                    </a>
+                    <a class="btn btn-primary" href="/Identity/Account/UserRole/AddRole/admin/assign-user-role/@userWithRoles.User.Id">Edit Role</a>
+
                 </td>
             </tr>
         }

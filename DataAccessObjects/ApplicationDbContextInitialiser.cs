@@ -488,5 +488,43 @@ namespace DataAccessObjects.SeedData
             }
         }
         #endregion Tickets
+        #region Payments
+        private async Task SeedPaymentsAsync()
+        {
+            // Retrieve all bookings with an Unpaid status
+            var unpaidBookings = await _context.Bookings
+                .Where(b => b.PaymentStatus == _paymentStatusConfig.Unpaid)
+                .ToListAsync();
+
+            var payments = new List<Payment>();
+            var random = new Random();
+
+            foreach (var booking in unpaidBookings)
+            {
+                // Create a Payment record for each unpaid booking
+                payments.Add(new Payment
+                {
+                    BookingId = booking.BookingId,
+                    UserId = booking.UserId,
+                    Amount = booking.TotalPrice,
+                    PaymentDate = DateTime.UtcNow,
+                });
+
+                // Update the booking status to Paid
+                booking.PaymentStatus = _paymentStatusConfig.Paid;
+            }
+
+            if (payments.Any())
+            {
+                // Add all new payments to the Payments table
+                await _context.Payments.AddRangeAsync(payments);
+
+                // Save changes to apply the new payments and updated booking statuses
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Payments seeded and booking statuses updated to Paid successfully.");
+            }
+        }
+        #endregion Payments
     }
 }

@@ -47,14 +47,16 @@
                         <!-- Conditional rendering for staff and admin roles -->
                         @if (User.IsInRole("Admin"))
                         {
-                            <a class="nav-link" href="/manage-users">
-                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                                User
-                            </a>
+
                             <a class="nav-link" href="/Statistics">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                                 Statistic
                             </a>
+                            <a class="nav-link" href="/manage-users">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                User
+                            </a>
+
                         }
                         @if (User.IsInRole("Staff") || User.IsInRole("Admin"))
                         {
