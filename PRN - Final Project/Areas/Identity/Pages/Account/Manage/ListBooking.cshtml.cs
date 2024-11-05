@@ -39,5 +39,10 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account.Manage
             Bookings = await _bookingService.GetBookingByUserIdAsync(user.Id);
             return Page();
         }
+
+        public async Task<IActionResult> OnPostAsync(int bookingId)
+        {
+            return RedirectToPage("/TicketDetails", new { bookingId });
+        }
     }
 }

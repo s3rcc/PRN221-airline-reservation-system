@@ -21,6 +21,7 @@
                     <th>Carry luggage</th>
                     <th>Baggage</th>
                     <th>Class Type</th>
+                    <th>Show Ticket</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,6 +38,13 @@
                             <td>@ticket.Carryluggage</td>
                             <td>@ticket.Baggage</td>
                             <td>@ticket.ClassType</td>
+                            <td>
+                                <form method="post">
+                                    <input type="hidden" id="ticketId" name="ticketId" value="@ticket.TicketId"/>
+                                    <input type="hidden" id="bookingId" name="bookingId" value="@ticket.BookingId" />
+                                    <button type="submit" class="btn btn-primary">View</button>
+                                </form>
+                            </td>
                         </tr>
                     }
                 }

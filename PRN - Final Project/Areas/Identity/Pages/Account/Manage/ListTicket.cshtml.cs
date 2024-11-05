@@ -49,5 +49,10 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account.Manage
             Tickets = allTickets;
             return Page();
         }
+
+        public async Task<IActionResult> OnPostAsync(int bookingId, int ticketId)
+        {
+            return RedirectToPage("/TicketDetails", new { bookingId , ticketId });
+        }
     }
 }

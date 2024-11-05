@@ -12,7 +12,8 @@
     <select id="paymentStatusFilter" class="form-select" style="width: 200px;" onchange="filterTable()">
         <option value="">All</option>
         <option value="Paid">Paid</option>
-        <option value="Unpaid">Unpaid</option>
+        <option value="Pending">Pending</option>
+        <option value="Cancelled">Cancelled</option>
     </select>
 </div>
 
@@ -26,6 +27,7 @@
                 <th>Date</th>
                 <th>Payment Status</th>
                 <th>Total Price</th>
+                <th>Show Ticket</th>
             </tr>
         </thead>
         <tbody>
@@ -36,6 +38,15 @@
                     <td>@booking.BookingDate.ToShortDateString()</td>
                     <td>@booking.PaymentStatus</td>
                     <td>@booking.TotalPrice</td>
+                    <td>
+                        @if (booking.Tickets != null && booking.Tickets.Any())
+                        {
+                            <form method="post">
+                                <input type="hidden" id="bookingId" name="bookingId" value="@booking.BookingId"/>
+                                <button type="submit" class="btn btn-primary">View</button>
+                            </form>
+                        }
+                    </td>
                 </tr>
             }
         </tbody>
