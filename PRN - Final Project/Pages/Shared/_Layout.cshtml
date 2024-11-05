@@ -50,9 +50,12 @@
                             <a class="nav-link fs-4" asp-page="/Dashboard">Dashboard</a>
                         </li>
                     }
-                    <li class="nav-item">
-                        <a class="nav-link fs-4" asp-page="/Contact">Contact</a>
-                    </li>
+                    @if (User.IsInRole("Member"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link fs-4" asp-page="/BookingCheck">Check In</a>
+                        </li>
+                    }
                     <li class="fw-bold fs-4">
                         @await Html.PartialAsync("_LoginPartial")
                     </li>
@@ -71,7 +74,7 @@
     <!-- Optional sections like weather, services, etc. from your template -->
     @RenderSection("CustomSection", required: false)
 
-    <footer class="bg-dark text-white py-4">
+    <footer class="bg-dark text-white">
         <div class="container text-center">
             <ul class="list-unstyled d-flex justify-content-center mb-3">
                 <li class="ms-3"><a href="#" class="text-white"><i class="fa fa-facebook"></i></a></li>

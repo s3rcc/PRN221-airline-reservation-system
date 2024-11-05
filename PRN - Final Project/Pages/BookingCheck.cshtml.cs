@@ -28,8 +28,35 @@ namespace PRN___Final_Project.Pages
         [BindProperty]
         public bool IsOutboundFlight { get; set; }
 
+        public async Task<IActionResult> OnGetAsync()
+        {
+            // Check if the user is authenticated
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Redirect("/Login");
+            }
+
+            if (!User.IsInRole("Member"))
+            {
+                return RedirectToPage("/Errors/404"); 
+            }
+
+   
+            return Page();
+        }
+
         public async Task<IActionResult> OnPostAsync()
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Redirect("/Login");
+            }
+
+            if (!User.IsInRole("Member"))
+            {
+                
+                return RedirectToPage("/Errors/404"); 
+            }
             var booking = await _bookingService.GetBookingByIdAsync(BookingId);
             if (booking == null)
             {

@@ -39,7 +39,11 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account.UserRole
         public SelectList allRoles { get; set; }
         public async Task<IActionResult> OnGetAsync(string id)
         {
-            if(string.IsNullOrEmpty(id))
+            if ( !User.IsInRole("Admin"))
+            {
+                return RedirectToPage("/Errors/404");
+            }
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound($"Không có user");
             }    

@@ -3,9 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using BussinessObjects;
 using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MyProject.Pages.CRUD.UserManager
 {
+    [Authorize(Roles = "Admin")]
     public class UserManagementModel : PageModel
     {
         private readonly IUserService _userService;
@@ -17,14 +21,13 @@ namespace MyProject.Pages.CRUD.UserManager
             _tierService = tierService;
             _userService = userService;
             _userManager = userManager;
-            Users = new List<User>();
+            UsersWithRoles = new List<UserWithRolesViewModel>();
             Tiers = new List<Tier>();
-            User = new User();
         }
 
         [BindProperty]
         public User User { get; set; }
-        public IEnumerable<User> Users { get; set; }
+        public List<UserWithRolesViewModel> UsersWithRoles { get; set; }
         public IEnumerable<Tier> Tiers { get; set; }
 
         // Add properties for message display
@@ -33,35 +36,31 @@ namespace MyProject.Pages.CRUD.UserManager
 
         public async Task<IActionResult> OnGetAsync()
         {
-            //var user = await _userManager.GetUserAsync(User);
-            //if (user == null || !await _userManager.IsInRoleAsync(user, "admin"))
-            //{
-            //    // Trả về trang 404 nếu người dùng không phải là admin
-            //    return RedirectToPage("/Errors/404");
-            //}
-
-            Users = await _userService.GetAllUsersAsync();
+            var users = await _userService.GetAllUsersAsync();
             Tiers = await _tierService.GetAllTiersAsync();
+
+            // Populate UsersWithRoles
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                UsersWithRoles.Add(new UserWithRolesViewModel
+                {
+                    User = user,
+                    Roles = roles
+                });
+            }
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            await Console.Out.WriteLineAsync("___ Post ___");
-            //if (!ModelState.IsValid)
-            //{
-            //    return Page();
-            //}
-
             if (string.IsNullOrEmpty(User.Id))
             {
                 await _userService.AddUserAsync(User);
             }
             else
             {
-                await Console.Out.WriteLineAsync("___ Update ___");
-
                 try
                 {
                     var existingUser = await _userManager.FindByIdAsync(User.Id);
@@ -93,23 +92,19 @@ namespace MyProject.Pages.CRUD.UserManager
                 }
                 catch
                 {
-                    Message = "Error change user tier!";
+                    Message = "Error changing user tier!";
                     IsSuccess = false;
-                    await Console.Out.WriteLineAsync("\n\n\n ---");
                 }
-                await Console.Out.WriteLineAsync("### Update ###");
             }
-            await Console.Out.WriteLineAsync("### Post ###");
 
-            return RedirectToPage(new { successMessage = Message, isSuccess = IsSuccess }); ;
+            return RedirectToPage(new { successMessage = Message, isSuccess = IsSuccess });
         }
 
-        //public async Task<IActionResult> OnPostDeleteAsync(int id)
-        //{
-        //    await Console.Out.WriteLineAsync("\n\n\n\n=== Get id: "+ id);
-
-        //    await _userService.DeleteUserAsync(id);
-        //    return RedirectToPage();
-        //}
+        // ViewModel for User with Roles
+        public class UserWithRolesViewModel
+        {
+            public User User { get; set; }
+            public IList<string> Roles { get; set; }
+        }
     }
 }

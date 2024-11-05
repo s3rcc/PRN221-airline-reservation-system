@@ -9,6 +9,8 @@ using Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Net.Sockets;
 using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
@@ -58,28 +60,54 @@ namespace Services.Services
 
         public async Task<Ticket> GetTicketByIdAsync(int id)
         {
-            var ticket = await _unitOfWork.Repository<Ticket>().GetByIdAsync(id) ?? throw new ErrorException(StatusCodes.Status404NotFound, ErrorCode.NOT_FOUND, "Ticket not found.");
+            var ticket = await _unitOfWork.Repository<Ticket>().GetByIdAsync(id,
+                includes:
+                [
+                    t => t.Booking.Flight,
+                t => t.Booking.Flight.Origin,
+                t => t.Booking.Flight.Destination,
+                t => t.Booking.User
+                ]) ?? throw new ErrorException(StatusCodes.Status404NotFound, ErrorCode.NOT_FOUND, "Ticket not found.");
             return ticket;
         }
 
         public async Task<IEnumerable<Ticket>> GetTicketsByBookingIdAsync(int bookingId)
         {
-            return await _unitOfWork.Repository<Ticket>().FindAsync(t => t.BookingId == bookingId);
-        }
-
-        public async Task<IEnumerable<Ticket>> GetTicketByBookingIdAndTypeAsync(int bookingId, bool isOutbound)
-        {
-
-var ticketType = isOutbound ? _ticketTypesConfig.OutBoundFlight : _ticketTypesConfig.ReturnFlight;
-            return await _unitOfWork.Repository<Ticket>().FindAsync(t => t.BookingId == bookingId && t.TicketType == ticketType,
-                includes:
-            [
-                t => t.Booking.Flight,
+            return await _unitOfWork.Repository<Ticket>().FindAsync(t => t.BookingId == bookingId,
+                    includes:
+                [
+                    t => t.Booking.Flight,
                 t => t.Booking.Flight.Origin,
                 t => t.Booking.Flight.Destination,
                 t => t.Booking.User
-            ]);
+                ]);
+        }
 
+        public async Task<IEnumerable<Ticket>> GetTicketByBookingIdAndTypeAsync(int bookingId, bool? isOutbound)
+        {
+            if (isOutbound.HasValue)
+            {
+                var ticketType = isOutbound.Value ? _ticketTypesConfig.OutBoundFlight : _ticketTypesConfig.ReturnFlight;
+                return await _unitOfWork.Repository<Ticket>().FindAsync(t => t.BookingId == bookingId && t.TicketType == ticketType,
+                    includes:
+                [
+                    t => t.Booking.Flight,
+                t => t.Booking.Flight.Origin,
+                t => t.Booking.Flight.Destination,
+                t => t.Booking.User
+                ]);
+            }
+            else
+            {
+                return await _unitOfWork.Repository<Ticket>().FindAsync(t => t.BookingId == bookingId,
+                    includes:
+                [
+                    t => t.Booking.Flight,
+                t => t.Booking.Flight.Origin,
+                t => t.Booking.Flight.Destination,
+                t => t.Booking.User
+                ]);
+            }
         }
 
         public async Task<List<string>> GetBookedSeatsByFlightIdAsync(int flightId, string flightType)
