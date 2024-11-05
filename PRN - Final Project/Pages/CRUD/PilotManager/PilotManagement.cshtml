@@ -5,14 +5,16 @@
 }
 
 <h2>Manage Pilots</h2>
-
+<div class="mb-3">
+    <input type="text" id="searchKey" class="form-control" placeholder="Search by Name" onkeyup="searchBy()" />
+</div>
 <!-- Button to open the modal for adding a new Pilot -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#pilotModal" onclick="clearModal()">
     Add New Pilot
 </button>
 
 <!-- Pilot List -->
-<table class="table">
+<table class="table" id="pilotTable">
     <thead>
         <tr>
             <th>Pilot ID</th>
@@ -146,5 +148,32 @@
             }
         }
 
+        function searchBy() {
+            let input = document.getElementById("searchKey").value.toLowerCase();
+            let table = document.getElementById("ticketTable");
+            let rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) { // Start from 1 to skip table header
+                let emailCell = rows[i].getElementsByTagName("td")[6];
+                if (emailCell) {
+                    let email = emailCell.textContent || emailCell.innerText;
+                    rows[i].style.display = email.toLowerCase().includes(input) ? "" : "none";
+                }
+            }
+        }
+
+        function searchBy() {
+            let input = document.getElementById("searchKey").value.toLowerCase();
+            let table = document.getElementById("pilotTable");
+            let rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) { // Start from 1 to skip table header
+                let emailCell = rows[i].getElementsByTagName("td")[1];
+                if (emailCell) {
+                    let email = emailCell.textContent || emailCell.innerText;
+                    rows[i].style.display = email.toLowerCase().includes(input) ? "" : "none";
+                }
+            }
+            }
     </script>
 }

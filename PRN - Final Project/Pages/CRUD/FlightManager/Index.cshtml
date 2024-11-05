@@ -7,12 +7,14 @@
 }
 
 <h2>Manage Flights</h2>
-
+<div class="mb-3">
+    <input type="text" id="searchKey" class="form-control" placeholder="Search by FlightId or Plane or Pilot" onkeyup="searchBy()" />
+</div>
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#flightModal" onclick="clearModal()">
     Add New Flight
 </button>
 
-<table class="table">
+<table class="table" id="flightTable">
     <thead>
         <tr>
             <th>Flight ID</th>
@@ -279,6 +281,30 @@
                 alert(errorMessage); // Hiển thị lỗi qua alert
             } else {
                 form.submit(); // Gửi form nếu không có lỗi
+            }
+        }
+
+        function searchBy() {
+            let input = document.getElementById("searchKey").value.toLowerCase();
+            let table = document.getElementById("flightTable");
+            let rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) { // Start from 1 to skip table header
+                let flightIdCell = rows[i].getElementsByTagName("td")[0];
+                let planeCell = rows[i].getElementsByTagName("td")[7];
+                let pilotCell = rows[i].getElementsByTagName("td")[8];
+
+                if (flightIdCell && planeCell && pilotCell) {
+                    let flightId = flightIdCell.textContent || flightIdCell.innerText;
+                    let plane = planeCell.textContent || planeCell.innerText;
+                    let pilot = pilotCell.textContent || pilotCell.innerText;
+
+                    rows[i].style.display = (
+                        flightId.toLowerCase().includes(input) ||
+                        plane.toLowerCase().includes(input) ||
+                        pilot.toLowerCase().includes(input)
+                    ) ? "" : "none";
+                }
             }
         }
 

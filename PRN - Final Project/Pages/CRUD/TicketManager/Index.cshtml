@@ -13,8 +13,14 @@
     Add New Ticket
 </button> *@
 
+
+<!-- Search box -->
+<div class="mb-3">
+    <input type="text" id="searchKey" class="form-control" placeholder="Search by BookingId" onkeyup="searchBy()" />
+</div>
+
 <!-- Ticket List -->
-<table class="table">
+<table class="table" id ="ticketTable">
     <thead>
         <tr>
             <th>Seat Number</th>
@@ -169,6 +175,20 @@
             document.getElementById("Baggage").value = "";
             document.getElementById("ClassType").value = "";
             document.getElementById("PaymentStatus").value = "";
+        }
+
+        function searchBy() {
+            let input = document.getElementById("searchKey").value.toLowerCase();
+            let table = document.getElementById("ticketTable");
+            let rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) { // Start from 1 to skip table header
+                let emailCell = rows[i].getElementsByTagName("td")[6];
+                if (emailCell) {
+                    let email = emailCell.textContent || emailCell.innerText;
+                    rows[i].style.display = email.toLowerCase().includes(input) ? "" : "none";
+                }
+            }
         }
     </script>
 }

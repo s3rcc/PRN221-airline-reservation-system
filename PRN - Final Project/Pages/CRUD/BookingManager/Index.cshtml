@@ -12,9 +12,11 @@
 @* <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bookingModal" onclick="clearModal()">
     Add New Booking
 </button> *@
-
+<div class="mb-3">
+    <input type="text" id="searchKey" class="form-control" placeholder="Search by FlightId or ReturnFlightId" onkeyup="searchBy()" />
+</div>
 <!-- Booking List -->
-<table class="table">
+<table class="table" id="bookingTb">
     <thead>
         <tr>
             <th>Booking Date</th>
@@ -24,9 +26,11 @@
             <th>Adult Number</th>
             <th>Child Number</th>
             <th>Baby Number</th>
-            <th>User</th>
-            <th>Flight</th>
+@*             <th>User</th>
+ *@            <th>Flight</th>
+            <th>Flight Class Type</th>
             <th>Return Flight</th>
+            <th>Return Flight Class Type</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -42,8 +46,8 @@
                 <td>@booking.AdultNum</td>
                 <td>@booking.ChildNum</td>
                 <td>@booking.BabyNum</td>
-                <td>@booking.UserId</td>
-                <td>@booking.FlightId</td>
+@*                 <td>@booking.UserId</td>
+ *@                <td>@booking.FlightId</td>
                 <td>@booking.ClassType</td>
                 <td>@booking.ReturnFlightId</td>
                 <td>@booking.ReturnClassType</td>
@@ -230,6 +234,28 @@
             document.getElementById("UserId").value = "";
             document.getElementById("FlightId").value = "";
             document.getElementById("ReturnFlightId").value = "";
+        }
+
+        function searchBy() {
+            let input = document.getElementById("searchKey").value.toLowerCase();
+            let table = document.getElementById("bookingTb");
+            let rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) {  
+                let flightIdCell = rows[i].getElementsByTagName("td")[7];
+                let returnFlightIdCell = rows[i].getElementsByTagName("td")[9];
+
+                if (flightIdCell && returnFlightIdCell) {
+                    let flightId = flightIdCell.textContent || flightIdCell.innerText;
+                    let returnFlightId = returnFlightIdCell.textContent || returnFlightIdCell.innerText;
+
+                    if (flightId.toLowerCase().includes(input) || returnFlightId.toLowerCase().includes(input)) {
+                        rows[i].style.display = "";  
+                    } else {
+                        rows[i].style.display = "none";  
+                    }
+                }
+            }
         }
     </script>
 }

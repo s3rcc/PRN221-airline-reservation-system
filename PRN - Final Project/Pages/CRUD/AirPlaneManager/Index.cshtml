@@ -7,14 +7,17 @@
 }
 
 <h2>Manage Planes</h2>
-
+<!-- Search box -->
+<div class="mb-3">
+    <input type="text" id="searchKey" class="form-control" placeholder="Search by Name" onkeyup="searchBy()" />
+</div>
 <!-- Button to open the modal for adding a new AirPlane -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#planeModal" onclick="clearModal()">
     Add New AirPlane
 </button>
 
 <!-- AirPlane List -->
-<table class="table">
+<table class="table" id="planeTb">
     <thead>
         <tr>
             <th>AirPlane Name</th>
@@ -152,6 +155,20 @@
 
                 var modal = new bootstrap.Modal(document.getElementById('statusMessageModal'));
                 modal.show();
+            }
+        }
+
+        function searchBy() {
+            let input = document.getElementById("searchKey").value.toLowerCase();
+            let table = document.getElementById("planeTb");
+            let rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) { // Start from 1 to skip table header
+                let emailCell = rows[i].getElementsByTagName("td")[0];
+                if (emailCell) {
+                    let email = emailCell.textContent || emailCell.innerText;
+                    rows[i].style.display = email.toLowerCase().includes(input) ? "" : "none";
+                }
             }
         }
 
