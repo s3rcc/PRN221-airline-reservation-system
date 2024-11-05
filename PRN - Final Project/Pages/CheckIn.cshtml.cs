@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
 using Services.Interfaces;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using System.Text;
+using System.Text.Encodings.Web;
 
 namespace PRN___Final_Project.Pages
 {
@@ -15,17 +18,21 @@ namespace PRN___Final_Project.Pages
         private readonly UserManager<User> _userManager;
         private readonly ClassTypesConfig _classTypesConfig;
         private readonly TicketTypesConfig _ticketTypesConfig;
+        private readonly IEmailSender _emailSender;
+        private readonly IBookingService _bookingService;
 
         public ClassTypesConfig ClassTypesConfig => _classTypesConfig;
         public TicketTypesConfig TicketTypesConfig => _ticketTypesConfig;
 
-        public CheckInModel(IAirPlaneService airplaneService, ITicketService ticketService, IOptions<ClassTypesConfig> classTypesConfig, IOptions<TicketTypesConfig> ticketTypesConfig, UserManager<User> userManager)
+        public CheckInModel(IAirPlaneService airplaneService, ITicketService ticketService, IOptions<ClassTypesConfig> classTypesConfig, IOptions<TicketTypesConfig> ticketTypesConfig, UserManager<User> userManager, IEmailSender emailSender, IBookingService bookingService)
         {
             _airplaneService = airplaneService;
             _ticketService = ticketService;
             _classTypesConfig = classTypesConfig.Value;
             _ticketTypesConfig = ticketTypesConfig.Value;
             _userManager = userManager;
+            _emailSender = emailSender;
+            _bookingService = bookingService;
         }
 
         [BindProperty]
@@ -40,6 +47,8 @@ namespace PRN___Final_Project.Pages
         public List<string> SelectedSeats { get; set; }
         [BindProperty]
         public List<string> BookedSeats { get; set; }
+        [BindProperty]
+        public List<string> CustomerNames { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int planeId)
         {
@@ -70,16 +79,22 @@ namespace PRN___Final_Project.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(decimal carryLuggage, decimal baggage)
+        public async Task<IActionResult> OnPostAsync(decimal carryLuggage, decimal baggage, List<string> customerNames)
         {
             var bookingData = HttpContext.Session.GetObjectFromJson<Booking>("BookingData");
+            var booking = await _bookingService.GetBookingByIdAsync(bookingData.BookingId);
             var ticketType = HttpContext.Session.GetString("FlightType");
+            var user = await _userManager.GetUserAsync(User);
 
             // Split the SelectedSeats string into a list
             SelectedSeats = Request.Form["SelectedSeats"].ToString().Split(',').ToList();
 
-            foreach (var seat in SelectedSeats)
+            var tickets = new List<Ticket>();
+
+            for (int i = 0; i < SelectedSeats.Count; i++)
             {
+                var seat = SelectedSeats[i];
+
                 // Determine ClassType based on the first character of the seat number
                 var classType = seat.StartsWith("V") ? _classTypesConfig.Business : _classTypesConfig.Economy;
 
@@ -89,26 +104,65 @@ namespace PRN___Final_Project.Pages
                 var ticket = new Ticket
                 {
                     SeatNumber = actualSeatNumber, // Save the actual seat number
+                    CustomerName = customerNames[i], // Add customer name
                     TicketType = ticketType,
-                    IssuedDate = DateTime.Now,
+                    IssuedDate = booking.Flight.DepartureDateTime,
                     ClassType = classType,
                     Carryluggage = carryLuggage,
                     Baggage = baggage,
                     BookingId = bookingData.BookingId
                 };
+                tickets.Add(ticket);
 
                 await _ticketService.CreateTicketAsync(ticket);
             }
+
+            var emailContent = GenerateEmailContent(carryLuggage, baggage, booking, tickets);
+
+            await _emailSender.SendEmailAsync(user.Email, "Your Ticket Information", emailContent);
 
             if (ticketType == _ticketTypesConfig.OutBoundFlight)
             {
                 return RedirectToPage("/TicketDetails", new { bookingId = bookingData.BookingId, isOutbound = true });
             }
-
             else
             {
                 return RedirectToPage("/TicketDetails", new { bookingId = bookingData.BookingId, isOutbound = false });
             }
+        }
+
+        private string GenerateEmailContent(decimal carryLuggage, decimal baggage, Booking booking, List<Ticket> tickets)
+        {
+            var callbackUrl = Url.Page(
+        "/TicketDetails",
+        pageHandler: null,
+        values: new { bookingId = booking.BookingId },
+        protocol: Request.Scheme);
+
+            var sb = new StringBuilder();
+
+            // General Information
+            sb.AppendLine("<strong>General Information:</strong><br/>");
+            sb.AppendLine($"Origin Location: {booking.Flight.Origin.LocationName}<br/>");
+            sb.AppendLine($"Destination Location: {booking.Flight.Destination.LocationName}<br/>");
+            sb.AppendLine($"Departure Date: {booking.Flight.DepartureDateTime}<br/>");
+            sb.AppendLine($"Carry-on Luggage: {carryLuggage}<br/>");
+            sb.AppendLine($"Checked Baggage: {baggage}<br/><br/>"); // Add a blank line for separation
+
+            // Personal Information
+            sb.AppendLine("<strong>Personal Information:</strong><br/>");
+            foreach (var ticket in tickets)
+            {
+                sb.AppendLine($"Customer Name: {ticket.CustomerName}<br/>");
+                sb.AppendLine($"Seat Number: {ticket.SeatNumber}<br/>");
+                sb.AppendLine($"Ticket Type: {ticket.TicketType}<br/>");
+                sb.AppendLine($"Class Type: {ticket.ClassType}<br/><br/>"); // Add a blank line after each ticket for better spacing
+            }
+
+            sb.AppendLine("To view your ticket(s), " +
+                  $"<a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>click here</a>.");
+
+            return sb.ToString();
         }
     }
 }

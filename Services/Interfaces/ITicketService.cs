@@ -15,7 +15,7 @@ namespace Services.Interfaces
         Task<IEnumerable<Ticket>> GetAllTicketsAsync();
         Task<Ticket> GetTicketByIdAsync(int id);
         Task<IEnumerable<Ticket>> GetTicketsByBookingIdAsync(int bookingId);
-        Task<IEnumerable<Ticket>> GetTicketByBookingIdAndTypeAsync(int bookingId, bool isOutbound);
+        Task<IEnumerable<Ticket>> GetTicketByBookingIdAndTypeAsync(int bookingId, bool? isOutbound);
         Task<List<string>> GetBookedSeatsByFlightIdAsync(int flightId, string flightType);
     }
 }

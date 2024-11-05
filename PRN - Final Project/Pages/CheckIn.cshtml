@@ -35,6 +35,14 @@
 
                 if (isBooked)
                 {
+                    if (seatNumber.StartsWith("V"))
+                    {
+                        vipSeatsLeft--;
+                    }
+                    else
+                    {
+                        normalSeatsLeft--;
+                    }
                     <button type="button" class="seat btn btn-danger disabled" disabled>
                         &nbsp;
                     </button>
@@ -82,18 +90,34 @@
     }
 </div>
 
-<!-- Luggage Input Section -->
 <form method="post">
-    <label for="carryLuggage">Carry-on Luggage:</label>
-    <input type="number" name="carryLuggage" id="carryLuggage" min="0" step="0.01" required />
+    <div id="customerNamesSection" class="mt-4">
+        <h4>Customer Names</h4>
+        <div id="selectedSeatsContainer">
+            @for (int i = 0; i < Model.AllowedSeats; i++)
+            {
+                <div class="form-group">
+                    <label for="CustomerNames_@i">Seat <span id="selectedSeat_@i"></span> - Customer Name:</label>
+                    <input type="text" name="CustomerNames[@i]" id="CustomerNames_@i" class="form-control" required />
+                </div>
+            }
+        </div>
+    </div>
 
-    <label for="baggage">Checked Baggage:</label>
-    <input type="number" name="baggage" id="baggage" min="0" step="0.01" required />
+    <!-- Luggage Input Section -->
+    <div class="mt-4">
+        <label for="carryLuggage">Carry-on Luggage:</label>
+        <input type="number" name="carryLuggage" id="carryLuggage" min="0" step="0.01" required />
+
+        <label for="baggage">Checked Baggage:</label>
+        <input type="number" name="baggage" id="baggage" min="0" step="0.01" required />
+    </div>
 
     <input type="hidden" id="selectedSeatsInput" name="SelectedSeats" />
 
     <button type="submit" class="btn btn-primary">Confirm Selection and Create Tickets</button>
 </form>
+
 
 <script>
     const maxSeats = @Model.AllowedSeats;
@@ -123,6 +147,23 @@
 
         document.getElementById("selectedCount").innerText = selectedSeats.length;
         document.getElementById("selectedSeatsInput").value = selectedSeats.join(',');
+
+        // Update Customer Names section
+        updateCustomerNames();
+    }
+
+    function updateCustomerNames() {
+        const container = document.getElementById('selectedSeatsContainer');
+        container.innerHTML = ''; // Clear previous inputs
+
+        selectedSeats.forEach((seat, index) => {
+            const inputField = document.createElement('div');
+            inputField.innerHTML = `
+                    <label for="CustomerNames_${index}">Customer Name for ${seat}:</label>
+                        <input type="text" name="CustomerNames[${index}]" id="CustomerNames_${index}" required />
+                `;
+            container.appendChild(inputField);
+        });
     }
 </script>
 
