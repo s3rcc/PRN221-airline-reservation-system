@@ -64,10 +64,32 @@ namespace MyProject.Pages.CRUD.UserManager
 
                 try
                 {
-                    await _userService.ChangeUserTier(int.Parse(User.Id), User.Tier);
-                    Message = "Change user tier successfully!";
-                    IsSuccess = true;
-                    await Console.Out.WriteLineAsync("\n\n\n +++");
+                    var existingUser = await _userManager.FindByIdAsync(User.Id);
+                    if (existingUser == null)
+                    {
+                        Message = "User not found!";
+                        IsSuccess = false;
+                        return Page();
+                    }
+
+                    existingUser.Tier = User.Tier;
+                    existingUser.TierId = User.TierId;
+
+                    var result = await _userManager.UpdateAsync(existingUser);
+                    if (result.Succeeded)
+                    {
+                        Message = "User updated successfully!";
+                        IsSuccess = true;
+                    }
+                    else
+                    {
+                        Message = "Failed to update user!";
+                        IsSuccess = false;
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                    }
                 }
                 catch
                 {
