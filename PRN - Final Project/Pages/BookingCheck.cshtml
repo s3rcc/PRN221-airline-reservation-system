@@ -4,17 +4,17 @@
     ViewData["Title"] = "Enter Booking ID";
 }
 
-<h2>Enter Booking ID</h2>
-
+<h2 class="display-3 fw-bold py-5">Enter Booking ID</h2>
+<hr />
 <form method="post">
-    <div class="form-group">
-        <label for="BookingId">Booking ID</label>
-        <input type="number" asp-for="BookingId" class="form-control" id="BookingId" required />
+    <div class="d-flex flex-column justify-content-center align-items-center form-group gap-3">
+        <h4 for="BookingId" class="fw-bold">Booking ID</h4>
+        <input type="number" asp-for="BookingId" class="w-25 text-center form-control" id="BookingId" required />
         <span asp-validation-for="BookingId" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label>Select Flight Type</label><br />
+        <h4 class="fw-bold">Select Flight Type</h4><br />
         <input type="radio" asp-for="IsOutboundFlight" value="true" id="OutboundFlight" checked />
         <label for="OutboundFlight">Outbound Flight</label><br />
         <input type="radio" asp-for="IsOutboundFlight" value="false" id="ReturnFlight" />

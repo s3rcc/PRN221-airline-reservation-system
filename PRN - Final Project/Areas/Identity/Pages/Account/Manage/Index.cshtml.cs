@@ -58,7 +58,9 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account.Manage
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-
+            [Required(ErrorMessage = "Please enter your name.")]
+            [Display(Name = "UserName")]
+            public string Username { get; set; }
 
             [Required(ErrorMessage = "Please select a gender.")]
             [Display(Name = "Gender")]
@@ -76,12 +78,9 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account.Manage
 
         private async Task LoadAsync(User user)
         {
-            var userName = await _userManager.GetUserNameAsync(user);
-
-            Username = userName;
-
             Input = new InputModel
             {
+                Username = user.UserName,
                 Gender = user.Gender,
                 DoB = user.DoB,
                 CCCD = user.CCCD,
@@ -113,14 +112,40 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account.Manage
                 await LoadAsync(user);
                 return Page();
             }
+
             user.DoB = Input.DoB;
             user.CCCD = Input.CCCD;
             user.Gender = Input.Gender;
-            user.TierId = user.TierId;
-            await _userManager.UpdateAsync(user);
+
+            if (user.UserName != Input.Username)
+            {
+                var setUserNameResult = await _userManager.SetUserNameAsync(user, Input.Username);
+                if (!setUserNameResult.Succeeded)
+                {
+                    foreach (var error in setUserNameResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    await LoadAsync(user);
+                    return Page();
+                }
+            }
+
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                foreach (var error in updateResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                await LoadAsync(user);
+                return Page();
+            }
+
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Hồ sơ của bạn đã được cập nhật";
             return RedirectToPage();
         }
+
     }
 }

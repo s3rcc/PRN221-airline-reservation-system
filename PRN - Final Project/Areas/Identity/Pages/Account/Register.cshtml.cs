@@ -50,6 +50,9 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
         public string ReturnUrl { get; set; }
         public class InputModel
         {
+            [Required]
+            [Display(Name = "Name")]
+            public string UserName { get; set; }
 
             [Required]
             [EmailAddress]
@@ -111,7 +114,7 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
                 }
                 var user = new User()
                 {
-                    UserName = Input.Email,
+                    UserName = Input.UserName,
                     CCCD = Input.CCCD,
                     Gender = Input.Gender,
                     DoB = Input.DoB,

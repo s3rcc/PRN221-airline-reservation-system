@@ -106,7 +106,7 @@ namespace PRN___Final_Project.Pages
                     SeatNumber = actualSeatNumber, // Save the actual seat number
                     CustomerName = customerNames[i], // Add customer name
                     TicketType = ticketType,
-                    IssuedDate = booking.Flight.DepartureDateTime,
+                    IssuedDate = DateTime.UtcNow,
                     ClassType = classType,
                     Carryluggage = carryLuggage,
                     Baggage = baggage,
