@@ -36,7 +36,8 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
             [EmailAddress]
             public string Email { get; set; }
         }
-
+        [TempData]
+        public string StatusMessage {  get; set; }
         public async Task<IActionResult> OnPostAsync()
         {
             if (User.Identity.IsAuthenticated)
@@ -46,7 +47,12 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(Input.Email);
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                if (user == null)
+                {
+                    StatusMessage = "User not exist! Try another";
+                    return RedirectToPage();
+                }
+                if (!(await _userManager.IsEmailConfirmedAsync(user)))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
                     return RedirectToPage("./ForgotPasswordConfirmation");

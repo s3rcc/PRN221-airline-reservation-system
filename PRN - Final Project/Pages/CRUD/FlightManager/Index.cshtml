@@ -7,12 +7,14 @@
 }
 
 <h2>Manage Flights</h2>
-
+<div class="mb-3">
+    <input type="text" id="searchKey" class="form-control" placeholder="Search by FlightId or Plane or Pilot" onkeyup="searchBy()" />
+</div>
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#flightModal" onclick="clearModal()">
     Add New Flight
 </button>
 
-<table class="table">
+<table class="table" id="flightTable">
     <thead>
         <tr>
             <th>Flight ID</th>
@@ -24,8 +26,8 @@
             <th>Status</th>
             <th>Plane</th>
             <th>Pilot</th>
-            <th>Available Normal Seats</th>
-            <th>Available Vip Seats</th>
+            @*             <th>Available Normal Seats</th>
+            <th>Available Vip Seats</th> *@
             <th>Origin</th>
             <th>Destination</th>
             <th>Actions</th>
@@ -102,6 +104,19 @@
                         <span asp-validation-for="Flight.BasePrice" class="text-danger"></span>
 
                     </div>
+
+
+                    <!-- Available Seats Fields -->
+                    @*                     <div class="mb-3">
+                    <label asp-for="Flight.AvailableNormalSeat" class="form-label">Available Normal Seats</label>
+                    <input id="availableNormalSeat" asp-for="Flight.AvailableNormalSeat" class="form-control" type="number" required />
+                    </div>
+                    <div class="mb-3">
+                    <label asp-for="Flight.AvailableVipSeat" class="form-label">Available VIP Seats</label>
+                    <input id="availableVipSeat" asp-for="Flight.AvailableVipSeat" class="form-control" type="number" required />
+                    </div> *@
+
+
                     <div class="mb-3">
                         <label asp-for="Flight.Status" class="form-label">Flight Status</label>
                         <select id="Status" asp-for="Flight.Status" class="form-select" required>
@@ -173,7 +188,7 @@
                 <form method="post" asp-page-handler="Delete">
                     <input type="hidden" name="id" id="deleteFlightId" />
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="validateAndSubmitForm()">Save</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
                 </form>
             </div>
         </div>
@@ -209,8 +224,8 @@
             document.getElementById("Status").checked = status;
             document.getElementById("PlaneId").value = planeId;
             document.getElementById("PilotId").value = pilotId;
-            document.getElementById("AvailableNormalSeat").value = availableNormalSeat;
-            document.getElementById("AvailableVipSeat").value = availableVipSeat;
+            document.getElementById("availableNormalSeat").value = availableNormalSeat;
+            document.getElementById("availableVipSeat").value = availableVipSeat;
             document.getElementById("OriginId").value = originId;
             document.getElementById("DestinationId").value = destinationId;
         }
@@ -228,8 +243,8 @@
             document.getElementById("Status").value = 'On Time'; // Default status
             document.getElementById("PlaneId").value = 0;
             document.getElementById("PilotId").value = 0;
-            document.getElementById("AvailableNormalSeat").value = null;
-            document.getElementById("AvailableVipSeat").value = null;
+            document.getElementById("availableNormalSeat").value = null;
+            document.getElementById("availableVipSeat").value = null;
             document.getElementById("OriginId").value = 0;
             document.getElementById("DestinationId").value = 0;
         }
@@ -279,6 +294,30 @@
                 alert(errorMessage); // Hiển thị lỗi qua alert
             } else {
                 form.submit(); // Gửi form nếu không có lỗi
+            }
+        }
+
+        function searchBy() {
+            let input = document.getElementById("searchKey").value.toLowerCase();
+            let table = document.getElementById("flightTable");
+            let rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) { // Start from 1 to skip table header
+                let flightIdCell = rows[i].getElementsByTagName("td")[0];
+                let planeCell = rows[i].getElementsByTagName("td")[7];
+                let pilotCell = rows[i].getElementsByTagName("td")[8];
+
+                if (flightIdCell && planeCell && pilotCell) {
+                    let flightId = flightIdCell.textContent || flightIdCell.innerText;
+                    let plane = planeCell.textContent || planeCell.innerText;
+                    let pilot = pilotCell.textContent || pilotCell.innerText;
+
+                    rows[i].style.display = (
+                        flightId.toLowerCase().includes(input) ||
+                        plane.toLowerCase().includes(input) ||
+                        pilot.toLowerCase().includes(input)
+                    ) ? "" : "none";
+                }
             }
         }
 

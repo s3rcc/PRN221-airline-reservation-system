@@ -34,7 +34,7 @@ namespace Services
             services.AddScoped<ApplicationDbContextInitialiser>();
             // Background Services
             services.AddHostedService<BookingCleanupService>();
-            services.AddHostedService<BookingCleanupService>();
+            services.AddHostedService<BookingReminderService>();
 
             services.AddHttpContextAccessor();
             //services.AddOptions();                                        
