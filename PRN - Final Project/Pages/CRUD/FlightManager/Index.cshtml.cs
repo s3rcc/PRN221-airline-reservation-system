@@ -53,7 +53,7 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
             {
                 return RedirectToPage("/Errors/404");
             }
-            Planes = await _planeService.GetAvailableAirPlanesAsync();
+            Planes = await _planeService.GetAllAirPlanesAsync();
             Pilots = await _pilotService.GetAllAvailablePilotsAsync();
             Locations = await _locationService.GetAllLocationsAsync();
             Flights = await _flightService.GetAllFLightWithRealTimeCondition();

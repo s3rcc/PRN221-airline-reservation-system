@@ -26,8 +26,10 @@
             <th>Baby Number</th>
             <th>User</th>
             <th>Flight</th>
+            <th>Class Type</th>
             <th>Return Flight</th>
-            <th>Actions</th>
+            <th>Class Type</th>
+            @* <th>Actions</th> *@
         </tr>
     </thead>
     <tbody>
@@ -47,7 +49,7 @@
                 <td>@booking.ClassType</td>
                 <td>@booking.ReturnFlightId</td>
                 <td>@booking.ReturnClassType</td>
-                <td>
+                @* <td>
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#bookingModal"
                             onclick="setEditModal(
                         '@booking.BookingId',
@@ -70,7 +72,7 @@
                             onclick="setDeleteModal(@booking.BookingId)">
                         Delete
                     </button>
-                </td>
+                </td> *@
             </tr>
         }
 

@@ -29,7 +29,7 @@ namespace Services.Services
                 }
 
                 var rs = await ValidateFlight(flight, true);
-                await _iplotService.SetPilotStatus(flight.Pilot, false);
+                //await _iplotService.SetPilotStatus(flight.Pilot, false);
 
                 if (rs == null)
                 {
@@ -252,6 +252,13 @@ namespace Services.Services
 
                 if (rs == null)
                 {
+                    var plane = await _unitOfWork.Repository<AirPlane>().GetByIdAsync(flight
+                    .PlaneId);
+                    if(flight.AvailableNormalSeat == null && flight.AvailableVipSeat == null)
+                    {
+                    flight.AvailableNormalSeat = plane.NormalSeatNumber;
+                    flight.AvailableVipSeat = plane.VipSeatNumber;
+                    }
                     await _unitOfWork.Repository<Flight>().UpdateAsync(flight);
                     await _unitOfWork.SaveChangeAsync();
                 }
