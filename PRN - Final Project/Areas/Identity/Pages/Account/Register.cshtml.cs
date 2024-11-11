@@ -119,7 +119,7 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
                     Gender = Input.Gender,
                     DoB = Input.DoB,
                     Email = Input.Email,
-                    TierId = 1,
+                    TierId = 4,
 
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
