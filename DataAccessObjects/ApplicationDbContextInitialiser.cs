@@ -200,7 +200,15 @@ namespace DataAccessObjects.SeedData
             new Pilot { PilotName = "Hoàng Văn E", Status = true },
             new Pilot { PilotName = "Vũ Thị F", Status = false },
             new Pilot { PilotName = "Ngô Văn G", Status = true },
-            new Pilot { PilotName = "Đỗ Thị H", Status = true }
+            new Pilot { PilotName = "Đỗ Thị H", Status = true },
+            new Pilot { PilotName = "Phan Văn I", Status = true },
+        new Pilot { PilotName = "Dương Thị K", Status = false },
+        new Pilot { PilotName = "Đinh Văn L", Status = true },
+        new Pilot { PilotName = "Trương Thị M", Status = true },
+        new Pilot { PilotName = "Nguyễn Văn N", Status = true },
+        new Pilot { PilotName = "Lý Văn O", Status = false },
+        new Pilot { PilotName = "Trần Thị P", Status = true },
+        new Pilot { PilotName = "Mai Văn Q", Status = true }
         };
             if (!_context.Pilots.Any())
             {
@@ -258,13 +266,16 @@ namespace DataAccessObjects.SeedData
         private async Task SeedFlightsAsync()
         {
             // Kiểm tra xem có chuyến bay nào đã tồn tại chưa
+            if (_context.Flights.Any())
+            {
+                _logger.LogInformation("Flights already exist.");
+                return;
+            }
 
             var flights = new List<Flight>();
-            // Lấy ngày hiện tại
-            DateTime currentDate = DateTime.Now;
-            DateTime endDate = new DateTime(2024, 11, 20);
+            DateTime currentDate = new DateTime(2024, 11, 11); // Ngày bắt đầu từ 11/11/2024
+            DateTime endDate = new DateTime(2024, 11, 20); // Ngày kết thúc
 
-            // Random giá vé và trạng thái
             var random = new Random();
             var locations = _context.Locations.ToList(); // Lấy tất cả địa điểm từ database
             var planes = _context.AirPlanes.ToList(); // Lấy tất cả máy bay từ database
@@ -272,37 +283,66 @@ namespace DataAccessObjects.SeedData
 
             for (DateTime date = currentDate.Date; date <= endDate.Date; date = date.AddDays(1))
             {
-                for (int i = 0; i < 3; i++) // Tạo 3 chuyến bay mỗi ngày
+                foreach (var origin in locations)
                 {
-                    // Random giờ khởi hành giữa 6h và 20h
-                    DateTime departureTime = date.AddHours(6 + i * 4); // Các chuyến cách nhau 4 tiếng
-                    DateTime arrivalTime = departureTime.AddHours(2 + random.Next(1, 3)); // Giả sử thời gian bay từ 2-4 giờ
-                    var plane = planes[random.Next(planes.Count)];
-                    // Tạo chuyến bay cho mỗi ngày
-                    flights.Add(new Flight
+                    // Chọn một điểm đến cố định cho mỗi ngày từ mỗi điểm đi
+                    var destination = locations[random.Next(locations.Count)];
+                    while (destination.LocationID == origin.LocationID)
                     {
-                        FlightNumber = $"VN{random.Next(100, 999)}", // Tạo số chuyến bay ngẫu nhiên
-                        PlaneId = plane.PlaneId,
-                        PilotId = pilots[random.Next(pilots.Count)].PilotId,
-                        OriginID = locations[random.Next(locations.Count)].LocationID, // Chọn ngẫu nhiên điểm khởi hành
-                        DestinationID = locations[random.Next(locations.Count)].LocationID, // Chọn ngẫu nhiên điểm đến
-                        DepartureDateTime = departureTime, // Giờ khởi hành ngẫu nhiên trong ngày
-                        ArrivalDateTime = arrivalTime, // Giờ đến sau khoảng thời gian bay
-                        BasePrice = random.Next(100, 500) + random.Next(0, 99) / 100m, // Giá vé ngẫu nhiên từ 1 tr đến 5 tr
-                        Status = true,
-                        AvailableNormalSeat = plane.NormalSeatNumber,
-                        AvailableVipSeat = plane.VipSeatNumber,
-                    });
+                        destination = locations[random.Next(locations.Count)];
+                    }
+
+                    for (int i = 0; i < 3; i++)
+                    {
+                        DateTime departureTime = date.AddHours(6 + i * 4); // Giờ khởi hành các chuyến đi cách nhau 4 tiếng
+                        DateTime arrivalTime = departureTime.AddHours(2); // Thời gian bay cố định 2 giờ
+                        var plane = planes[random.Next(planes.Count)];
+                        var pilot = pilots[random.Next(pilots.Count)];
+
+                        // Thêm chuyến bay đi vào danh sách
+                        flights.Add(new Flight
+                        {
+                            FlightNumber = $"VN{random.Next(100, 999)}",
+                            PlaneId = plane.PlaneId,
+                            PilotId = pilot.PilotId,
+                            OriginID = origin.LocationID,
+                            DestinationID = destination.LocationID,
+                            DepartureDateTime = departureTime,
+                            ArrivalDateTime = arrivalTime,
+                            BasePrice = random.Next(100, 500) + random.Next(0, 99) / 100m,
+                            Status = true,
+                            AvailableNormalSeat = plane.NormalSeatNumber,
+                            AvailableVipSeat = plane.VipSeatNumber,
+                        });
+
+                        // Tạo chuyến bay về trong cùng ngày, cách nhau 4 tiếng
+                        DateTime returnDepartureTime = arrivalTime.AddHours(2); // Khởi hành sau khi đến 2 giờ
+                        DateTime returnArrivalTime = returnDepartureTime.AddHours(2); // Thời gian bay về là 2 giờ
+
+                        flights.Add(new Flight
+                        {
+                            FlightNumber = $"VN{random.Next(100, 999)}",
+                            PlaneId = plane.PlaneId,
+                            PilotId = pilot.PilotId,
+                            OriginID = destination.LocationID,
+                            DestinationID = origin.LocationID,
+                            DepartureDateTime = returnDepartureTime,
+                            ArrivalDateTime = returnArrivalTime,
+                            BasePrice = random.Next(100, 500) + random.Next(0, 99) / 100m,
+                            Status = true,
+                            AvailableNormalSeat = plane.NormalSeatNumber,
+                            AvailableVipSeat = plane.VipSeatNumber,
+                        });
+                    }
                 }
             }
-            if (!_context.Flights.Any())
-            {
-                // Thêm chuyến bay vào database
-                await _context.Flights.AddRangeAsync(flights);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Flights seeded successfully.");
-            }
+
+            // Thêm các chuyến bay vào database nếu chưa có chuyến bay nào
+            await _context.Flights.AddRangeAsync(flights);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Flights seeded successfully.");
         }
+
 
 
         #endregion Flights
