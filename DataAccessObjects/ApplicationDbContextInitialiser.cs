@@ -193,22 +193,22 @@ namespace DataAccessObjects.SeedData
 
             var pilots = new List<Pilot>
         {
-            new Pilot { PilotName = "Nguyễn Văn A", Status = true },
-            new Pilot { PilotName = "Lê Văn B", Status = true },
-            new Pilot { PilotName = "Trần Thị C", Status = true },
-            new Pilot { PilotName = "Phạm Văn D", Status = true },
-            new Pilot { PilotName = "Hoàng Văn E", Status = true },
-            new Pilot { PilotName = "Vũ Thị F", Status = false },
-            new Pilot { PilotName = "Ngô Văn G", Status = true },
-            new Pilot { PilotName = "Đỗ Thị H", Status = true },
-            new Pilot { PilotName = "Phan Văn I", Status = true },
-        new Pilot { PilotName = "Dương Thị K", Status = false },
-        new Pilot { PilotName = "Đinh Văn L", Status = true },
-        new Pilot { PilotName = "Trương Thị M", Status = true },
-        new Pilot { PilotName = "Nguyễn Văn N", Status = true },
-        new Pilot { PilotName = "Lý Văn O", Status = false },
-        new Pilot { PilotName = "Trần Thị P", Status = true },
-        new Pilot { PilotName = "Mai Văn Q", Status = true }
+            new Pilot { PilotName = "Nguyen Van A", Status = true },
+            new Pilot { PilotName = "Le Van B", Status = true },
+            new Pilot { PilotName = "Tran Thi C", Status = true },
+            new Pilot { PilotName = "Pham Van D", Status = true },
+            new Pilot { PilotName = "Hoang Van E", Status = true },
+            new Pilot { PilotName = "Vu Thi F", Status = false },
+            new Pilot { PilotName = "Ngo Van G", Status = true },
+            new Pilot { PilotName = "Đo Thi H", Status = true },
+            new Pilot { PilotName = "Phan Van I", Status = true },
+        new Pilot { PilotName = "Duong Thi K", Status = false },
+        new Pilot { PilotName = "Dinh Van L", Status = true },
+        new Pilot { PilotName = "Truong Thi M", Status = true },
+        new Pilot { PilotName = "Nguyen Van N", Status = true },
+        new Pilot { PilotName = "Ly Van O", Status = false },
+        new Pilot { PilotName = "Tran Thi P", Status = true },
+        new Pilot { PilotName = "Mai Van Q", Status = true }
         };
             if (!_context.Pilots.Any())
             {
