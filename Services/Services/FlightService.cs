@@ -12,15 +12,20 @@ namespace Services.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPilotService _iplotService;
+        private readonly ILocationService _locationService;
 
-        public FlightService(IUnitOfWork unitOfWork, IPilotService iplotService)
+        public FlightService(IUnitOfWork unitOfWork, IPilotService iplotService, ILocationService locationService)
         {
             _unitOfWork = unitOfWork;
             _iplotService = iplotService;
+            _locationService = locationService;
         }
 
         public async Task<string> AddFlightAsync(Flight flight)
         {
+
+
+
             try
             {
                 if (flight == null)
@@ -28,15 +33,20 @@ namespace Services.Services
                     throw new ArgumentNullException(nameof(flight));
                 }
 
+                var pilotValid = await ValidateFlightScheduleAsync(flight);
+                if (pilotValid != null)
+                    return pilotValid;
+
+
                 var rs = await ValidateFlight(flight, true);
                 //await _iplotService.SetPilotStatus(flight.Pilot, false);
 
                 if (rs == null)
                 {
-                var plane = await _unitOfWork.Repository<AirPlane>().GetByIdAsync(flight
-                    .PlaneId);
-                flight.AvailableNormalSeat = plane.NormalSeatNumber;
-                flight.AvailableVipSeat = plane.VipSeatNumber;
+                    var plane = await _unitOfWork.Repository<AirPlane>().GetByIdAsync(flight
+                        .PlaneId);
+                    flight.AvailableNormalSeat = plane.NormalSeatNumber;
+                    flight.AvailableVipSeat = plane.VipSeatNumber;
                     await _unitOfWork.Repository<Flight>().AddAsync(flight);
                     await _unitOfWork.SaveChangeAsync();
                 }
@@ -68,7 +78,14 @@ namespace Services.Services
         {
             try
             {
-                var flight = await _unitOfWork.Repository<Flight>().GetByIdAsync(id) ?? throw new KeyNotFoundException("Flight not found.");
+                var flight = await _unitOfWork.Repository<Flight>().GetByIdAsync(id)
+                    ?? throw new KeyNotFoundException("Flight not found.");
+
+                DateTime currentDateTime = DateTime.Now;
+
+                if (flight.DepartureDateTime <= currentDateTime && flight.ArrivalDateTime >= currentDateTime)
+                    return "Cannot delete flight. The flight is currently in progress.";
+
                 _unitOfWork.Repository<Flight>().DeleteAsync(flight);
                 await _unitOfWork.SaveChangeAsync();
 
@@ -76,9 +93,10 @@ namespace Services.Services
             }
             catch
             {
-                return ("An error occurred while deleting the flight.");
+                return "An error occurred while deleting the flight.";
             }
         }
+
 
         public async Task<IEnumerable<Flight>> FilterFlightsAsync(int originId, int destinationId, DateTime departureDate, int totalPassengers)
         {
@@ -109,7 +127,7 @@ namespace Services.Services
         {
             try
             {
-                return await _unitOfWork.Repository<Flight>().FindAsync(f => f.Status, 
+                return await _unitOfWork.Repository<Flight>().FindAsync(f => f.Status,
                 includes:
             [
                 flight => flight.Plane,
@@ -176,7 +194,6 @@ namespace Services.Services
                 if (DateTime.Now > flight.ArrivalDateTime)
                     await SetUnAvailableStatusForFlight(flight);
             }
-
             return flights;
         }
 
@@ -254,10 +271,10 @@ namespace Services.Services
                 {
                     var plane = await _unitOfWork.Repository<AirPlane>().GetByIdAsync(flight
                     .PlaneId);
-                    if(flight.AvailableNormalSeat == null && flight.AvailableVipSeat == null)
+                    if (flight.AvailableNormalSeat == null && flight.AvailableVipSeat == null)
                     {
-                    flight.AvailableNormalSeat = plane.NormalSeatNumber;
-                    flight.AvailableVipSeat = plane.VipSeatNumber;
+                        flight.AvailableNormalSeat = plane.NormalSeatNumber;
+                        flight.AvailableVipSeat = plane.VipSeatNumber;
                     }
                     await _unitOfWork.Repository<Flight>().UpdateAsync(flight);
                     await _unitOfWork.SaveChangeAsync();
@@ -324,5 +341,59 @@ namespace Services.Services
                 throw new Exception("An error occurred while retrieving the flight.");
             }
         }
+
+
+        public async Task<string?> ValidateFlightScheduleAsync(Flight flightCreate)
+        {
+            string errors = null;
+            var pilot = await _unitOfWork.Repository<Pilot>().GetByIdAsync(flightCreate.PilotId);
+
+            if (pilot == null)
+            {
+                return "Pilot not found.";
+            }
+
+            var oriLoc = await _unitOfWork.Repository<Location>().GetByIdAsync(flightCreate.OriginID);
+            var oriLocName = oriLoc.LocationName;
+
+            var flights = await _unitOfWork.Repository<Flight>()
+                .FindAsync(f => f.PilotId == flightCreate.PilotId && f.ArrivalDateTime <= flightCreate.DepartureDateTime);
+
+            var flightLast = flights
+                .OrderByDescending(f => f.ArrivalDateTime)
+                .FirstOrDefault();
+
+            if (flightLast == null)
+                return null;
+
+            TimeSpan timeDifference = flightCreate.DepartureDateTime - flightLast.ArrivalDateTime;
+            string formattedTimeDifference = $"{Math.Floor(timeDifference.TotalHours):F0} hours and {timeDifference.Minutes} minutes";
+
+            string lastArrivalFormatted = flightLast.ArrivalDateTime.ToString("dd/MM/yyyy hh:mm tt");
+            string createDepartureFormatted = flightCreate.DepartureDateTime.ToString("dd/MM/yyyy hh:mm tt");
+
+            var desLoc = await _unitOfWork.Repository<Location>().GetByIdAsync(flightLast.DestinationID);
+            var desLocName = desLoc.LocationName;
+
+            var piName = pilot.PilotName;
+
+            string? error = (flightLast.DestinationID == flightCreate.OriginID) switch
+            {
+
+                // Case where 9 hours are required between flights
+                true when timeDifference.TotalHours < 9 =>
+                    $"Pilot ID {pilot.PilotId}, Name {piName}: Requires 9 hours rest for flights from {desLocName} to {oriLocName}. Last arrival at {lastArrivalFormatted}. Only {formattedTimeDifference} have passed.",
+
+                // Case where 24 hours are required between flights
+                false when timeDifference.TotalHours < 24 =>
+                    $"Pilot ID {pilot.PilotId}, Name {piName}: Requires 24 hours rest after arriving at destination {desLocName}. Last arrival at {lastArrivalFormatted}. Only {formattedTimeDifference} have passed.",
+
+                _ => null
+            };
+
+            return error;
+        }
+
+
     }
 }
