@@ -26,8 +26,8 @@
             <th>Status</th>
             <th>Plane</th>
             <th>Pilot</th>
-            @*             <th>Available Normal Seats</th>
-            <th>Available Vip Seats</th> *@
+            <th>Available Normal Seats</th>
+            <th>Available Vip Seats</th> 
             <th>Origin</th>
             <th>Destination</th>
             <th>Actions</th>
@@ -59,10 +59,10 @@
                 <td>@item.Origin.LocationName</td>
                 <td>@item.Destination.LocationName</td>
                 <td>
-                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#flightModal"
+                    @* <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#flightModal"
                             onclick="setEditModal('@item.FlightId', '@item.FlightNumber', '@item.DepartureDateTime.ToString("yyyy-MM-ddTHH:mm:ss")', '@item.ArrivalDateTime.ToString("yyyy-MM-ddTHH:mm:ss")', '@item.BasePrice', '@(item.Status.ToString().ToLower())', '@item.Plane.PlaneId', '@item.Pilot.PilotId', '@item.AvailableNormalSeat', '@item.AvailableVipSeat', '@item.Origin.LocationID', '@item.Destination.LocationID')">
                         Edit
-                    </button>
+                    </button> *@
                     <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
                             onclick="setDeleteModal(@item.FlightId)">
                         Delete

@@ -42,8 +42,16 @@ namespace Services.Services
         {
             try
             {
+
                 var pilot = await _unitOfWork.Repository<Pilot>().GetByIdAsync(id) ?? throw new KeyNotFoundException("Pilot not found.");
-                var flights = await _unitOfWork.Repository<Flight>().FindAsync(x => x.Pilot.PilotId.Equals(id)) ?? throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "There are flight with this pilot");
+
+                var rs = await ValidatePilotDeleteAsync(pilot);
+
+                if(rs != null)
+                    return rs;
+
+
+                //var flights = await _unitOfWork.Repository<Flight>().FindAsync(x => x.Pilot.PilotId.Equals(id)) ?? throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "There are flight with this pilot");
                 _unitOfWork.Repository<Pilot>().DeleteAsync(pilot);
                 await _unitOfWork.SaveChangeAsync();
 
@@ -55,7 +63,7 @@ namespace Services.Services
             }
         }
 
-        public async Task<IEnumerable<Pilot>> GetAllAvailablePilotsAsync()
+        public async Task<IEnumerable<Pilot>> GetAllAvailablePilotsAsync() 
         {
             try
             {
@@ -145,5 +153,93 @@ namespace Services.Services
             return null;
         }
 
+        public async Task<string?> ValidatePilotDeleteAsync(Pilot pilot)
+        {
+            var flights = await _unitOfWork.Repository<Flight>()
+                .FindAsync(f => f.PilotId == pilot.PilotId);
+
+            if (pilot == null)
+                return "Pilot not found.";
+
+            DateTime currentDateTime = DateTime.Now;
+
+            foreach (var flight in flights)
+            {
+                if (flight.DepartureDateTime <= currentDateTime && flight.ArrivalDateTime >= currentDateTime)
+                {
+                    string flightDetails = $"Flight ID: {flight.FlightId}, Departure: {flight.DepartureDateTime.ToString("dd/MM/yyyy hh:mm tt")}, Arrival: {flight.ArrivalDateTime.ToString("dd/MM/yyyy hh:mm tt")}";
+                    return $"Pilot ID {pilot.PilotId} Name {pilot.PilotName}: Currently flying on {flightDetails}. Cannot delete while active flight is in progress.";
+                }
+            }
+
+            return null;
+        }
+
+
+
+
+        public async Task<List<PilotVM>> GetAllPilotWithStatusDes()
+        {
+            var pilots = await _unitOfWork.Repository<Pilot>().GetAllAsync();
+            var pilotVMList = new List<PilotVM>();
+
+            foreach (var pilot in pilots)
+            {
+                var pilotVM = new PilotVM
+                {
+                    PilotId = pilot.PilotId,
+                    PilotName = pilot.PilotName,
+                    Status = pilot.Status
+                };
+
+                var flights = await _unitOfWork.Repository<Flight>()
+                    .FindAsync(f => f.PilotId == pilot.PilotId);
+
+                DateTime currentDateTime = DateTime.Now;
+                var activeFlight = flights.FirstOrDefault(f => f.DepartureDateTime <= currentDateTime && f.ArrivalDateTime >= currentDateTime);
+
+                if (activeFlight != null)
+                {
+                    pilotVM.StatusDes = $"Flying on Flight ID {activeFlight.FlightId}, Departure: {activeFlight.DepartureDateTime:dd/MM/yyyy hh:mm tt}, Arrival: {activeFlight.ArrivalDateTime:dd/MM/yyyy hh:mm tt}";
+                }
+                else
+                {
+                    var lastFlight = flights
+                        .OrderByDescending(f => f.ArrivalDateTime)
+                        .FirstOrDefault();
+
+
+
+
+                    if (lastFlight != null)
+                    {
+
+                        var desLoc = await _unitOfWork.Repository<Location>().GetByIdAsync(lastFlight.DestinationID);
+
+                        TimeSpan timeDifference = currentDateTime - lastFlight.ArrivalDateTime;
+                        if (timeDifference.TotalHours < 9)
+                        {
+                            pilotVM.StatusDes = $"Resting. Requires 9 hours rest if starting from {desLoc.LocationName}. Only {timeDifference.TotalHours:F0} hours have passed since last flight.";
+                        }
+                        else if (timeDifference.TotalHours < 24)
+                        {
+                            pilotVM.StatusDes = $"Requires 24 hours if not starting from a {desLoc.LocationName}. Only {timeDifference.TotalHours:F0} hours have passed since last flight.";
+                        }
+                        else
+                            pilotVM.StatusDes = "Available";
+                    }
+                    else
+                        pilotVM.StatusDes = "Available";
+                }
+
+                pilotVMList.Add(pilotVM);
+            }
+
+            return pilotVMList;
+        }
+
     }
+
+
+
 }
