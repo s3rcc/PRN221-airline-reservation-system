@@ -265,121 +265,74 @@ namespace DataAccessObjects.SeedData
         #region Flights
         private async Task SeedFlightsAsync()
         {
-            // Kiểm tra xem có chuyến bay nào đã tồn tại chưa
             if (_context.Flights.Any())
             {
                 _logger.LogInformation("Flights already exist.");
                 return;
             }
-            DateTime currentDate = new DateTime(2024, 11, 18); // Ngày bắt đầu là 18/11/2024
 
-            var flights = new List<Flight>();
             var random = new Random();
-            var locations = _context.Locations.ToList();
+            DateTime flightDate1 = new DateTime(2024, 11, 18, 10, 0, 0);
+            DateTime flightArrival1 = flightDate1.AddHours(2); 
 
-            for (DateTime date = currentDate.Date; date <= new DateTime(2024, 11, 20).Date; date = date.AddDays(2)) // Chỉ ngày 18 và 20
+            DateTime flightDate2 = new DateTime(2024, 11, 20, 10, 0, 0);
+            DateTime flightArrival2 = flightDate2.AddHours(2);
+            var origin1 = _context.Locations.FirstOrDefault(l => l.LocationID == 1);
+            var destination1 = _context.Locations.FirstOrDefault(l => l.LocationID == 2);
+            var pilot1 = _context.Pilots.FirstOrDefault();
+            var plane1 = _context.AirPlanes.FirstOrDefault();
+
+            if (pilot1 != null && plane1 != null)
             {
-                foreach (var origin in locations)
+                var flight1 = new Flight
                 {
-                    var destination = locations[random.Next(locations.Count)];
-                    while (destination.LocationID == origin.LocationID)
-                    {
-                        destination = locations[random.Next(locations.Count)];
-                    }
-
-                    DateTime departureTime = date.AddHours(10); // Giờ khởi hành cố định lúc 10 giờ sáng
-                    DateTime arrivalTime = departureTime.AddHours(2); // Thời gian bay cố định là 2 giờ
-
-                    // Tìm danh sách máy bay khả dụng không có chuyến bay nào trong cùng ngày và đang ở vị trí khởi hành (origin)
-                    var availablePlanes = _context.AirPlanes
-                        .Where(p => !_context.Flights.Any(f =>
-                            f.PlaneId == p.PlaneId &&
-                            (f.DepartureDateTime.Date == date || // Máy bay không có chuyến bay nào khác trong cùng ngày
-                             f.OriginID != origin.LocationID && f.ArrivalDateTime > departureTime) // Máy bay phải ở vị trí khởi hành
-                        ))
-                        .ToList();
-
-                    if (!availablePlanes.Any())
-                    {
-                        _logger.LogWarning("No available planes at origin " + origin.LocationID + " for flight on " + date);
-                        continue;
-                    }
-
-                    // Lấy danh sách phi công khả dụng không trùng lịch
-                    var availablePilots = _context.Pilots
-                        .Where(p => !_context.Flights.Any(f => f.PilotId == p.PilotId &&
-                            ((f.DepartureDateTime <= departureTime && f.ArrivalDateTime > departureTime) ||
-                            (f.DepartureDateTime < arrivalTime && f.ArrivalDateTime >= arrivalTime))))
-                        .ToList();
-
-                    if (!availablePilots.Any())
-                    {
-                        _logger.LogWarning("No available pilots for flight on " + date);
-                        continue;
-                    }
-
-                    var plane = availablePlanes[random.Next(availablePlanes.Count)];
-                    var pilot = availablePilots[random.Next(availablePilots.Count)];
-
-                    // Tạo chuyến bay đi
-                    flights.Add(new Flight
-                    {
-                        FlightNumber = $"VN{random.Next(100, 999)}",
-                        PlaneId = plane.PlaneId,
-                        PilotId = pilot.PilotId,
-                        OriginID = origin.LocationID,
-                        DestinationID = destination.LocationID,
-                        DepartureDateTime = departureTime,
-                        ArrivalDateTime = arrivalTime,
-                        BasePrice = random.Next(100, 500) + random.Next(0, 99) / 100m,
-                        Status = true,
-                        AvailableNormalSeat = plane.NormalSeatNumber,
-                        AvailableVipSeat = plane.VipSeatNumber,
-                    });
-
-                    // Tạo chuyến bay về vào ngày 20 nếu ngày đi là 18
-                    if (date.Day == 18)
-                    {
-                        DateTime returnDepartureTime = new DateTime(2024, 11, 20).AddHours(14);
-                        DateTime returnArrivalTime = returnDepartureTime.AddHours(2);
-
-                        // Kiểm tra phi công và máy bay có khả dụng cho chuyến bay về không
-                        bool isPilotAvailable = !_context.Flights.Any(f => f.PilotId == pilot.PilotId &&
-                            ((f.DepartureDateTime <= returnDepartureTime && f.ArrivalDateTime > returnDepartureTime) ||
-                            (f.DepartureDateTime < returnArrivalTime && f.ArrivalDateTime >= returnArrivalTime)));
-
-                        bool isPlaneAvailable = !_context.Flights.Any(f => f.PlaneId == plane.PlaneId &&
-                            (f.DepartureDateTime.Date == returnDepartureTime.Date ||
-                             (f.OriginID != destination.LocationID && f.ArrivalDateTime > returnDepartureTime)));
-
-                        if (isPilotAvailable && isPlaneAvailable)
-                        {
-                            flights.Add(new Flight
-                            {
-                                FlightNumber = $"VN{random.Next(100, 999)}",
-                                PlaneId = plane.PlaneId,
-                                PilotId = pilot.PilotId,
-                                OriginID = destination.LocationID,
-                                DestinationID = origin.LocationID,
-                                DepartureDateTime = returnDepartureTime,
-                                ArrivalDateTime = returnArrivalTime,
-                                BasePrice = random.Next(100, 500) + random.Next(0, 99) / 100m,
-                                Status = true,
-                                AvailableNormalSeat = plane.NormalSeatNumber,
-                                AvailableVipSeat = plane.VipSeatNumber,
-                            });
-                        }
-                    }
-                }
+                    FlightNumber = $"VN{random.Next(100, 999)}",
+                    PlaneId = plane1.PlaneId,
+                    PilotId = pilot1.PilotId,
+                    OriginID = origin1.LocationID,
+                    DestinationID = destination1.LocationID,
+                    DepartureDateTime = flightDate1,
+                    ArrivalDateTime = flightArrival1,
+                    BasePrice = random.Next(100, 500) + random.Next(0, 99) / 100m,
+                    Status = true,
+                    AvailableNormalSeat = plane1.NormalSeatNumber,
+                    AvailableVipSeat = plane1.VipSeatNumber,
+                };
+                _context.Flights.Add(flight1);
             }
+            else
+            {
+                _logger.LogWarning("No available pilot or plane for flight 1.");
+            }
+            var pilot2 = pilot1; 
+            var plane2 = plane1; 
 
-            // Thêm các chuyến bay vào database nếu chưa có chuyến bay nào
-            await _context.Flights.AddRangeAsync(flights);
+            if (pilot2 != null && plane2 != null)
+            {
+                var flight2 = new Flight
+                {
+                    FlightNumber = $"VN{random.Next(100, 999)}",
+                    PlaneId = plane2.PlaneId,
+                    PilotId = pilot2.PilotId,
+                    OriginID = destination1.LocationID,
+                    DestinationID = origin1.LocationID,
+                    DepartureDateTime = flightDate2,
+                    ArrivalDateTime = flightArrival2,
+                    BasePrice = random.Next(100, 500) + random.Next(0, 99) / 100m,
+                    Status = true,
+                    AvailableNormalSeat = plane2.NormalSeatNumber,
+                    AvailableVipSeat = plane2.VipSeatNumber,
+                };
+                _context.Flights.Add(flight2);
+            }
+            else
+            {
+                _logger.LogWarning("No available pilot or plane for return flight.");
+            }
             await _context.SaveChangesAsync();
-            _logger.LogInformation("Selected flights seeded successfully.");
-
-
+            _logger.LogInformation("Specific flights seeded successfully.");
         }
+
 
 
 
