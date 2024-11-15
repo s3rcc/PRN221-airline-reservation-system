@@ -105,6 +105,28 @@ namespace Repositories
             return await query.ToListAsync();
         }
 
+        public async Task<IQueryable<T>> GetAllWithPaginationAsync(
+    Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+    params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            return query;  // Return IQueryable instead of executing the query
+        }
+
         public async Task<T> GetByIdAsync(
             int id,
             params Expression<Func<T, object>>[] includes)

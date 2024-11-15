@@ -19,6 +19,9 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
         public IEnumerable<AirPlane> Planes { get; set; }
         public IEnumerable<Pilot> Pilots { get; set; }
         public IEnumerable<Location> Locations { get; set; }
+        public int PageSize { get; set; } = 20;
+        public int TotalPages { get; set; }
+        public int CurrentPage { get; set; }
 
         public string StatusMessage { get; set; } = string.Empty;
         public bool IsSuccess { get; set; } = true;
@@ -47,7 +50,7 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
 
         }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(int pageIndex = 1, int pageSize = 20)
         {
             if (!(User.IsInRole("Staff") || User.IsInRole("Admin")))
             {
@@ -56,7 +59,12 @@ namespace PRN___Final_Project.Pages.CRUD.FlightManager
             Planes = await _planeService.GetAllAirPlanesAsync();
             Pilots = await _pilotService.GetAllAvailablePilotsAsync();
             Locations = await _locationService.GetAllLocationsAsync();
-            Flights = await _flightService.GetAllFLightWithRealTimeCondition();
+            //Flights = await _flightService.GetAllFLightWithRealTimeCondition();
+            var allFlights = await _flightService.GetAllFLightWithRealTimeCondition();
+            TotalPages = (int)Math.Ceiling(allFlights.Count() / (double)pageSize);
+            CurrentPage = pageIndex;
+
+            Flights = await _flightService.GetAllFlightsWithPagitationAsync(pageIndex, pageSize);
             return Page();
         }
 

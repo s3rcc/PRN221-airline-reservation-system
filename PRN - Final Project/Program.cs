@@ -8,6 +8,7 @@ using System;
 using DataAccessObjects.SeedData;
 using System.Configuration;
 using BussinessObjects.Config;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace PRN___Final_Project
 {
@@ -67,6 +68,7 @@ namespace PRN___Final_Project
                 options.Cookie.IsEssential = true;
             });
 
+            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
             builder.Services.ConfigureService(builder.Configuration);
 
             var app = builder.Build();

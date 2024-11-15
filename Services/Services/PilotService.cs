@@ -205,10 +205,9 @@ namespace Services.Services
                 else
                 {
                     var lastFlight = flights
+                        .Where(f => f.ArrivalDateTime <= currentDateTime)
                         .OrderByDescending(f => f.ArrivalDateTime)
                         .FirstOrDefault();
-
-
 
 
                     if (lastFlight != null)
