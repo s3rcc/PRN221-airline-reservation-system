@@ -13,7 +13,7 @@ namespace PRN___Final_Project.Pages.CRUD.PilotManager
         public PilotManagementModel(IPilotService pilotService)
         {
             _pilotService = pilotService;
-            Pilots = new List<Pilot>();
+            Pilots = new List<PilotVM>();
             Pilot = new Pilot();
 
             StatusMessage = Noti.GetMsg();
@@ -22,7 +22,7 @@ namespace PRN___Final_Project.Pages.CRUD.PilotManager
 
         [BindProperty]
         public Pilot Pilot { get; set; }
-        public IEnumerable<Pilot> Pilots { get; set; }
+        public IEnumerable<PilotVM> Pilots { get; set; }
 
         // New properties to track messages
         public string StatusMessage { get; set; } = string.Empty;
@@ -34,7 +34,7 @@ namespace PRN___Final_Project.Pages.CRUD.PilotManager
             {
                 return RedirectToPage("/Errors/404");
             }
-            Pilots = await _pilotService.GetAllPilotsAsync();
+            Pilots = await _pilotService.GetAllPilotWithStatusDes();
             return Page();
         }
 
@@ -76,10 +76,8 @@ namespace PRN___Final_Project.Pages.CRUD.PilotManager
         {
             var rs = await _pilotService.DeletePilotAsync(id);
 
-            if(rs == null)
-                rs = "Pilot deleted successfully.";
 
-            Noti.SetFail(rs);
+            Noti.SetByResult("Delete", "pilot", rs);
 
             return RedirectToPage();
         }

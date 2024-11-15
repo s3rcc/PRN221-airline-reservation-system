@@ -1,9 +1,4 @@
 ﻿using BussinessObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services.Interfaces
 {
@@ -17,5 +12,6 @@ namespace Services.Interfaces
         Task<string> DeletePilotAsync(int id);
         Task<int> GetTotalPilot();
         Task SetPilotStatus(Pilot pilot, bool status);
+        Task<List<PilotVM>> GetAllPilotWithStatusDes();
     }
 }

@@ -26,7 +26,7 @@ namespace DataAccessObjects.SeedData
             ILogger<ApplicationDbContextInitialiser> logger,
             Fall2024DbContext context,
             RoleManager<IdentityRole> roleManager,
-            UserManager<User> userManager,IOptions<ClassTypesConfig> classTypesConfig,
+            UserManager<User> userManager, IOptions<ClassTypesConfig> classTypesConfig,
             IOptions<PaymentStatusConfig> paymentStatusConfig,
             IOptions<TicketTypesConfig> ticketTypesConfig)
         {
@@ -193,14 +193,22 @@ namespace DataAccessObjects.SeedData
 
             var pilots = new List<Pilot>
         {
-            new Pilot { PilotName = "Nguyễn Văn A", Status = true },
-            new Pilot { PilotName = "Lê Văn B", Status = true },
-            new Pilot { PilotName = "Trần Thị C", Status = true },
-            new Pilot { PilotName = "Phạm Văn D", Status = true },
-            new Pilot { PilotName = "Hoàng Văn E", Status = true },
-            new Pilot { PilotName = "Vũ Thị F", Status = false },
-            new Pilot { PilotName = "Ngô Văn G", Status = true },
-            new Pilot { PilotName = "Đỗ Thị H", Status = true }
+            new Pilot { PilotName = "Nguyen Van A", Status = true },
+            new Pilot { PilotName = "Le Van B", Status = true },
+            new Pilot { PilotName = "Tran Thi C", Status = true },
+            new Pilot { PilotName = "Pham Van D", Status = true },
+            new Pilot { PilotName = "Hoang Van E", Status = true },
+            new Pilot { PilotName = "Vu Thi F", Status = false },
+            new Pilot { PilotName = "Ngo Van G", Status = true },
+            new Pilot { PilotName = "Đo Thi H", Status = true },
+            new Pilot { PilotName = "Phan Van I", Status = true },
+        new Pilot { PilotName = "Duong Thi K", Status = false },
+        new Pilot { PilotName = "Dinh Van L", Status = true },
+        new Pilot { PilotName = "Truong Thi M", Status = true },
+        new Pilot { PilotName = "Nguyen Van N", Status = true },
+        new Pilot { PilotName = "Ly Van O", Status = false },
+        new Pilot { PilotName = "Tran Thi P", Status = true },
+        new Pilot { PilotName = "Mai Van Q", Status = true }
         };
             if (!_context.Pilots.Any())
             {
@@ -217,13 +225,13 @@ namespace DataAccessObjects.SeedData
 
             var planes = new List<AirPlane>
         {
-            new AirPlane { PlaneName = "Boeing 737", VipSeatNumber = 20, NormalSeatNumber = 150 },
-            new AirPlane { PlaneName = "Airbus A320", VipSeatNumber = 15, NormalSeatNumber = 160 },
-            new AirPlane { PlaneName = "Boeing 747", VipSeatNumber = 25, NormalSeatNumber = 300 },
-            new AirPlane { PlaneName = "Airbus A380", VipSeatNumber = 30, NormalSeatNumber = 400 },
-            new AirPlane { PlaneName = "Boeing 787", VipSeatNumber = 20, NormalSeatNumber = 250 },
-            new AirPlane { PlaneName = "Airbus A321", VipSeatNumber = 10, NormalSeatNumber = 190 },
-            new AirPlane { PlaneName = "Boeing 777", VipSeatNumber = 25, NormalSeatNumber = 300 }
+            new AirPlane { PlaneName = "Boeing 737", VipSeatNumber = 20, NormalSeatNumber = 80 },
+            new AirPlane { PlaneName = "Airbus A320", VipSeatNumber = 15, NormalSeatNumber = 100 },
+            new AirPlane { PlaneName = "Boeing 747", VipSeatNumber = 25, NormalSeatNumber = 100 },
+            new AirPlane { PlaneName = "Airbus A380", VipSeatNumber = 20, NormalSeatNumber = 120 },
+            new AirPlane { PlaneName = "Boeing 787", VipSeatNumber = 20, NormalSeatNumber = 120 },
+            new AirPlane { PlaneName = "Airbus A321", VipSeatNumber = 10, NormalSeatNumber = 80 },
+            new AirPlane { PlaneName = "Boeing 777", VipSeatNumber = 25, NormalSeatNumber = 100 }
         };
             if (!_context.AirPlanes.Any())
             {
@@ -254,58 +262,130 @@ namespace DataAccessObjects.SeedData
         }
         #endregion Tiers
 
+
         #region Flights
         private async Task SeedFlightsAsync()
         {
             // Kiểm tra xem có chuyến bay nào đã tồn tại chưa
+            if (_context.Flights.Any())
+            {
+                _logger.LogInformation("Flights already exist.");
+                return;
+            }
+            DateTime currentDate = new DateTime(2024, 11, 18); // Ngày bắt đầu là 18/11/2024
 
             var flights = new List<Flight>();
-            // Lấy ngày hiện tại
-            DateTime currentDate = DateTime.Now;
-            DateTime endDate = new DateTime(2024, 11, 20);
-
-            // Random giá vé và trạng thái
             var random = new Random();
-            var locations = _context.Locations.ToList(); // Lấy tất cả địa điểm từ database
-            var planes = _context.AirPlanes.ToList(); // Lấy tất cả máy bay từ database
-            var pilots = _context.Pilots.ToList(); // Lấy tất cả phi công từ database
+            var locations = _context.Locations.ToList();
 
-            for (DateTime date = currentDate.Date; date <= endDate.Date; date = date.AddDays(1))
+            for (DateTime date = currentDate.Date; date <= new DateTime(2024, 11, 20).Date; date = date.AddDays(2)) // Chỉ ngày 18 và 20
             {
-                for (int i = 0; i < 3; i++) // Tạo 3 chuyến bay mỗi ngày
+                foreach (var origin in locations)
                 {
-                    // Random giờ khởi hành giữa 6h và 20h
-                    DateTime departureTime = date.AddHours(6 + i * 4); // Các chuyến cách nhau 4 tiếng
-                    DateTime arrivalTime = departureTime.AddHours(2 + random.Next(1, 3)); // Giả sử thời gian bay từ 2-4 giờ
-                    var plane = planes[random.Next(planes.Count)];
-                    // Tạo chuyến bay cho mỗi ngày
+                    var destination = locations[random.Next(locations.Count)];
+                    while (destination.LocationID == origin.LocationID)
+                    {
+                        destination = locations[random.Next(locations.Count)];
+                    }
+
+                    DateTime departureTime = date.AddHours(10); // Giờ khởi hành cố định lúc 10 giờ sáng
+                    DateTime arrivalTime = departureTime.AddHours(2); // Thời gian bay cố định là 2 giờ
+
+                    // Tìm danh sách máy bay khả dụng không có chuyến bay nào trong cùng ngày và đang ở vị trí khởi hành (origin)
+                    var availablePlanes = _context.AirPlanes
+                        .Where(p => !_context.Flights.Any(f =>
+                            f.PlaneId == p.PlaneId &&
+                            (f.DepartureDateTime.Date == date || // Máy bay không có chuyến bay nào khác trong cùng ngày
+                             f.OriginID != origin.LocationID && f.ArrivalDateTime > departureTime) // Máy bay phải ở vị trí khởi hành
+                        ))
+                        .ToList();
+
+                    if (!availablePlanes.Any())
+                    {
+                        _logger.LogWarning("No available planes at origin " + origin.LocationID + " for flight on " + date);
+                        continue;
+                    }
+
+                    // Lấy danh sách phi công khả dụng không trùng lịch
+                    var availablePilots = _context.Pilots
+                        .Where(p => !_context.Flights.Any(f => f.PilotId == p.PilotId &&
+                            ((f.DepartureDateTime <= departureTime && f.ArrivalDateTime > departureTime) ||
+                            (f.DepartureDateTime < arrivalTime && f.ArrivalDateTime >= arrivalTime))))
+                        .ToList();
+
+                    if (!availablePilots.Any())
+                    {
+                        _logger.LogWarning("No available pilots for flight on " + date);
+                        continue;
+                    }
+
+                    var plane = availablePlanes[random.Next(availablePlanes.Count)];
+                    var pilot = availablePilots[random.Next(availablePilots.Count)];
+
+                    // Tạo chuyến bay đi
                     flights.Add(new Flight
                     {
-                        FlightNumber = $"VN{random.Next(100, 999)}", // Tạo số chuyến bay ngẫu nhiên
+                        FlightNumber = $"VN{random.Next(100, 999)}",
                         PlaneId = plane.PlaneId,
-                        PilotId = pilots[random.Next(pilots.Count)].PilotId,
-                        OriginID = locations[random.Next(locations.Count)].LocationID, // Chọn ngẫu nhiên điểm khởi hành
-                        DestinationID = locations[random.Next(locations.Count)].LocationID, // Chọn ngẫu nhiên điểm đến
-                        DepartureDateTime = departureTime, // Giờ khởi hành ngẫu nhiên trong ngày
-                        ArrivalDateTime = arrivalTime, // Giờ đến sau khoảng thời gian bay
-                        BasePrice = random.Next(100, 500) + random.Next(0, 99) / 100m, // Giá vé ngẫu nhiên từ 1 tr đến 5 tr
+                        PilotId = pilot.PilotId,
+                        OriginID = origin.LocationID,
+                        DestinationID = destination.LocationID,
+                        DepartureDateTime = departureTime,
+                        ArrivalDateTime = arrivalTime,
+                        BasePrice = random.Next(100, 500) + random.Next(0, 99) / 100m,
                         Status = true,
                         AvailableNormalSeat = plane.NormalSeatNumber,
                         AvailableVipSeat = plane.VipSeatNumber,
                     });
+
+                    // Tạo chuyến bay về vào ngày 20 nếu ngày đi là 18
+                    if (date.Day == 18)
+                    {
+                        DateTime returnDepartureTime = new DateTime(2024, 11, 20).AddHours(14);
+                        DateTime returnArrivalTime = returnDepartureTime.AddHours(2);
+
+                        // Kiểm tra phi công và máy bay có khả dụng cho chuyến bay về không
+                        bool isPilotAvailable = !_context.Flights.Any(f => f.PilotId == pilot.PilotId &&
+                            ((f.DepartureDateTime <= returnDepartureTime && f.ArrivalDateTime > returnDepartureTime) ||
+                            (f.DepartureDateTime < returnArrivalTime && f.ArrivalDateTime >= returnArrivalTime)));
+
+                        bool isPlaneAvailable = !_context.Flights.Any(f => f.PlaneId == plane.PlaneId &&
+                            (f.DepartureDateTime.Date == returnDepartureTime.Date ||
+                             (f.OriginID != destination.LocationID && f.ArrivalDateTime > returnDepartureTime)));
+
+                        if (isPilotAvailable && isPlaneAvailable)
+                        {
+                            flights.Add(new Flight
+                            {
+                                FlightNumber = $"VN{random.Next(100, 999)}",
+                                PlaneId = plane.PlaneId,
+                                PilotId = pilot.PilotId,
+                                OriginID = destination.LocationID,
+                                DestinationID = origin.LocationID,
+                                DepartureDateTime = returnDepartureTime,
+                                ArrivalDateTime = returnArrivalTime,
+                                BasePrice = random.Next(100, 500) + random.Next(0, 99) / 100m,
+                                Status = true,
+                                AvailableNormalSeat = plane.NormalSeatNumber,
+                                AvailableVipSeat = plane.VipSeatNumber,
+                            });
+                        }
+                    }
                 }
             }
-            if (!_context.Flights.Any())
-            {
-                // Thêm chuyến bay vào database
-                await _context.Flights.AddRangeAsync(flights);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Flights seeded successfully.");
-            }
+
+            // Thêm các chuyến bay vào database nếu chưa có chuyến bay nào
+            await _context.Flights.AddRangeAsync(flights);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Selected flights seeded successfully.");
+
+
         }
 
 
+
         #endregion Flights
+
 
         #region User
         private async Task SeedUsersAsync()
@@ -314,7 +394,7 @@ namespace DataAccessObjects.SeedData
     {
         (new User
             {
-                UserName = "admin@example.com",
+                UserName = "admin",
                 Email = "admin@example.com",
                 Gender = "Male",
                 DoB = new DateTime(1980, 1, 1),
@@ -324,7 +404,7 @@ namespace DataAccessObjects.SeedData
             }, "Admin"),
         (new User
             {
-                UserName = "staff@example.com",
+                UserName = "staff",
                 Email = "staff@example.com",
                 Gender = "Female",
                 DoB = new DateTime(1990, 2, 1),
@@ -334,7 +414,7 @@ namespace DataAccessObjects.SeedData
             }, "Staff"),
         (new User
         {
-                UserName = "staff2@example.com",
+                UserName = "staff2",
                 Email = "staff2@example.com",
                 Gender = "Female",
                 DoB = new DateTime(1990, 2, 1),
@@ -344,7 +424,7 @@ namespace DataAccessObjects.SeedData
         },"Staff"),
         (new User
             {
-                UserName = "member@example.com",
+                UserName = "member",
                 Email = "member@example.com",
                 Gender = "Male",
                 DoB = new DateTime(2000, 3, 1),
@@ -354,7 +434,7 @@ namespace DataAccessObjects.SeedData
             }, "Member"),
                 (new User
             {
-                UserName = "member2@example.com",
+                UserName = "member2",
                 Email = "member2@example.com",
                 Gender = "Male",
                 DoB = new DateTime(2000, 3, 1),
@@ -438,10 +518,10 @@ namespace DataAccessObjects.SeedData
                     ReturnClassType = random.Next(0, 2) == 0 ? _classTypesConfig.Economy : _classTypesConfig.Business
                 }
           );
-                if(paymentStatus == _paymentStatusConfig.Paid)
+                if (paymentStatus == _paymentStatusConfig.Paid)
                 {
                     var totalPeople = adultNum + childNum + babyNum;
-                    if(classType == _classTypesConfig.Economy && flight.AvailableNormalSeat >= totalPeople)
+                    if (classType == _classTypesConfig.Economy && flight.AvailableNormalSeat >= totalPeople)
                     {
                         flight.AvailableNormalSeat -= totalPeople;
                     }

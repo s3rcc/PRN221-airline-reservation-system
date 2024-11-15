@@ -8,6 +8,7 @@ using System;
 using DataAccessObjects.SeedData;
 using System.Configuration;
 using BussinessObjects.Config;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace PRN___Final_Project
 {
@@ -50,6 +51,17 @@ namespace PRN___Final_Project
                 };
 
             });
+
+            builder.Services.Configure<Microsoft.AspNetCore.Mvc.MvcOptions>(options =>
+            {
+                options.RespectBrowserAcceptHeader = true;
+                options.OutputFormatters.Clear();
+                options.OutputFormatters.Add(new Microsoft.AspNetCore.Mvc.Formatters.StringOutputFormatter
+                {
+                    SupportedEncodings = { System.Text.Encoding.UTF8 }
+                });
+            });
+
             builder.Services.Configure<ClassTypesConfig>(
     builder.Configuration.GetSection("ClassTypes"));
             builder.Services.Configure<PaymentStatusConfig>(
@@ -67,6 +79,7 @@ namespace PRN___Final_Project
                 options.Cookie.IsEssential = true;
             });
 
+            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
             builder.Services.ConfigureService(builder.Configuration);
 
             var app = builder.Build();

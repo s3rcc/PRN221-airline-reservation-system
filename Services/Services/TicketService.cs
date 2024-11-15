@@ -55,7 +55,7 @@ namespace Services.Services
 
         public async Task<IEnumerable<Ticket>> GetAllTicketsAsync()
         {
-            return await _unitOfWork.Repository<Ticket>().GetAllAsync();
+            return await _unitOfWork.Repository<Ticket>().GetAllAsync(orderBy: x => x.OrderByDescending(x => x.IssuedDate));
         }
 
         public async Task<Ticket> GetTicketByIdAsync(int id)

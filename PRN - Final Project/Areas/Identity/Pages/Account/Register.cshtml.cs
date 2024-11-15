@@ -28,7 +28,6 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
-
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
@@ -43,7 +42,6 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
         }
-
 
         [BindProperty]
         public InputModel Input { get; set; }
@@ -73,7 +71,6 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
             [Display(Name = "CCCD")]
             public string CCCD { get; set; }
 
-
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
@@ -86,9 +83,7 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
         }
 
-
         public async Task<IActionResult> OnGetAsync(string returnUrl = null)
-
         {
             if (User.Identity.IsAuthenticated)
             {
@@ -97,19 +92,17 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
 
             ReturnUrl = returnUrl;
             return Page();
-
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             if (ModelState.IsValid)
-
             {
                 var existingUser = await _userManager.Users.SingleOrDefaultAsync(u => u.CCCD == Input.CCCD);
                 if (existingUser != null)
                 {
-                    ModelState.AddModelError(string.Empty, "CCCD đã tồn tại trong hệ thống.");
+                    ModelState.AddModelError(string.Empty, "CCCD already exists in the system.");
                     return Page();
                 }
                 var user = new User()
@@ -119,8 +112,7 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
                     Gender = Input.Gender,
                     DoB = Input.DoB,
                     Email = Input.Email,
-                    TierId = 1,
-
+                    TierId = 4,
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
 

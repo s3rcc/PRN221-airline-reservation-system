@@ -27,12 +27,12 @@
             <tr>
                 <td>@pilot.PilotId</td>
                 <td>@pilot.PilotName</td>
-                <td>@(pilot.Status ? "Active" : "Inactive")</td>
+                <td>@pilot.StatusDes</td>
                 <td>
-                    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#pilotModal"
-                            onclick="setEditModal(@pilot.PilotId, '@pilot.PilotName', @pilot.Status.ToString().ToLower())">
-                        Edit
-                    </button>
+                    @*                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#pilotModal"
+                onclick="setEditModal(@pilot.PilotId, '@pilot.PilotName', @pilot.Status.ToString().ToLower())">
+                Edit
+                </button> *@
 
                     <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
                             onclick="setDeleteModal(@pilot.PilotId)">
@@ -59,9 +59,9 @@
                         <label asp-for="Pilot.PilotName" class="form-label"></label>
                         <input id="PilotName" asp-for="Pilot.PilotName" class="form-control" required />
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3" style="display:none;">
                         <label asp-for="Pilot.Status" class="form-label">Status</label>
-                        <input id="Status" type="checkbox" asp-for="Pilot.Status" />
+                        <input id="Status" type="checkbox" asp-for="Pilot.Status" checked disabled />
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -132,7 +132,7 @@
         }
 
         window.onload = function () {
-            var statusMessage = '@Model.StatusMessage';
+            var statusMessage = '@Html.Raw(Model.StatusMessage)';
             var isSuccess = '@Model.IsSuccess'.toLowerCase() === 'true';
 
             if (statusMessage) {

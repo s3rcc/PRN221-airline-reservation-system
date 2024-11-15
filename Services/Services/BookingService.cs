@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace Services.Services
 {
@@ -70,8 +71,41 @@ namespace Services.Services
 
         public async Task<IEnumerable<Booking>> GetAllBookingsAsync()
         {
-            return await _unitOfWork.Repository<Booking>().GetAllAsync(includes: x => x.User);
+            var bookings = await _unitOfWork.Repository<Booking>().GetAllAsync(
+                includes: new Expression<Func<Booking, object>>[]
+                {
+            x => x.User,              
+            x => x.Flight,
+            x => x.ReturnFlight       
+                });
+
+            foreach (var booking in bookings)
+            {
+                if (booking.ReturnFlight == null)
+                {
+                    booking.ReturnFlight = new Flight();  
+                    booking.ReturnFlight.FlightNumber = null;  
+                }
+            }
+
+            return bookings;
+            // return await _unitOfWork.Repository<Booking>().GetAllAsync(includes: x => x.User, orderBy: x => x.OrderByDescending(x => x.BookingDate));
         }
+
+        public async Task<IEnumerable<Booking>> GetAllBookingsAsync(int pageIndex, int pageSize)
+        {
+            var query = await _unitOfWork.Repository<Booking>()
+                .GetAllAsync(orderBy: x => x.OrderByDescending(x => x.BookingDate));
+
+            // Apply pagination using Skip and Take
+            var paginatedResults = query
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return paginatedResults;
+        }
+
 
         public async Task<IEnumerable<Booking>> GetBookingByFlightIdAsync(int flightId)
         {
@@ -93,13 +127,33 @@ namespace Services.Services
 
         public async Task<IEnumerable<Booking>> GetBookingByUserIdAsync(string userId)
         {
-            var booking = await _unitOfWork.Repository<Booking>().FindAsync(x => x.UserId.Equals(userId),
-                    includes:
-                    [
-                booking => booking.Tickets
-                    ]);
-            return booking;
+            var bookings = await _unitOfWork.Repository<Booking>().FindAsync(
+                x => x.UserId.Equals(userId),
+                includes: new Expression<Func<Booking, object>>[]
+                {
+            b => b.Tickets,
+            b => b.Flight.Destination,
+            b => b.Flight.Origin,
+            b => b.Flight,
+            b => b.ReturnFlight  
+                });
+
+            foreach (var booking in bookings)
+            {
+                if (booking.ReturnFlight != null)
+                {
+                    var flightNumber = booking.ReturnFlight.FlightNumber;
+                }
+                else
+                {
+                    booking.ReturnFlight = new Flight();
+                    booking.ReturnFlight.FlightNumber = null; // Gán FlightNumber là null
+                }
+            }
+
+            return bookings;
         }
+
 
 
         public async Task<IEnumerable<Booking>> GetBookings(DateTime startDate, DateTime endDate)

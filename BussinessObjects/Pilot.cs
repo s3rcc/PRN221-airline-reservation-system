@@ -13,4 +13,9 @@ namespace BussinessObjects
         // Navigation property
         public ICollection<Flight>? Flights { get; set; }
     }
+
+    public class PilotVM : Pilot
+    {
+        public string StatusDes { get; set; }
+    }
 }
