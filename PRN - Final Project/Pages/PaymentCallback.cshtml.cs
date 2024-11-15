@@ -43,7 +43,7 @@ namespace PRN___Final_Project.Pages
                     {
                         var ticket = new Ticket
                         {
-                            BookingId = bookingId.Value > 0 ? bookingId.Value : ticketData.BookingId,
+                            BookingId = bookingId.HasValue ? bookingId.Value : ticketData.BookingId,
                             SeatNumber = ticketData.SeatNumber,
                             TicketType = ticketData.TicketType,
                             CustomerName = ticketData.CustomerName,
