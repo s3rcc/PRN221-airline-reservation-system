@@ -39,6 +39,7 @@ namespace PRN___Final_Project.Pages
             };
 
             HttpContext.Session.SetObjectAsJson("FlightData", flightData);
+            HttpContext.Session.Remove("BookingId");
 
             return RedirectToPage("/CRUD/FlightManager/OutboundFlights");
         }

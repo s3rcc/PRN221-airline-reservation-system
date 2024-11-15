@@ -32,6 +32,7 @@
                 <th>Total Price</th>
                 <th>Show Ticket</th>
                 <th>Payment</th>
+
             </tr>
         </thead>
         <tbody>
@@ -57,7 +58,8 @@
                     <td>
                         @if (!(booking.PaymentStatus == "Paid"))
                         {
-                            <a asp-page="/Payment" asp-route-id="@booking.BookingId" class="btn btn-success">Go to Payment</a>
+                            <a asp-page="/CRUD/BookingManager/BookingDetail" asp-route-id="@booking.BookingId" class="btn btn-success">Go to Payment</a>
+
                         }
                     </td>
                 </tr>
