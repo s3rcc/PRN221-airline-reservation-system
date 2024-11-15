@@ -50,6 +50,17 @@ namespace PRN___Final_Project
                 };
 
             });
+
+            builder.Services.Configure<Microsoft.AspNetCore.Mvc.MvcOptions>(options =>
+            {
+                options.RespectBrowserAcceptHeader = true;
+                options.OutputFormatters.Clear();
+                options.OutputFormatters.Add(new Microsoft.AspNetCore.Mvc.Formatters.StringOutputFormatter
+                {
+                    SupportedEncodings = { System.Text.Encoding.UTF8 }
+                });
+            });
+
             builder.Services.Configure<ClassTypesConfig>(
     builder.Configuration.GetSection("ClassTypes"));
             builder.Services.Configure<PaymentStatusConfig>(

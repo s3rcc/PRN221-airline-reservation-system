@@ -200,7 +200,7 @@ namespace Services.Services
         {
             try
             {
-                return await _unitOfWork.Repository<Payment>().GetAllAsync();
+                return await _unitOfWork.Repository<Payment>().GetAllAsync(includes: x => x.User);
             }
             catch
             {

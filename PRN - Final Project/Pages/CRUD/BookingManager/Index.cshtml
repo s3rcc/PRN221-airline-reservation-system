@@ -20,11 +20,10 @@
             <th>Booking Date</th>
             <th>Total Price</th>
             <th>Payment Status</th>
-            <th>Status</th>
             <th>Adult Number</th>
             <th>Child Number</th>
             <th>Baby Number</th>
-            <th>User</th>
+            <th>User Name</th>
             <th>Flight</th>
             <th>Class Type</th>
             <th>Return Flight</th>
@@ -40,14 +39,13 @@
                 <td>@booking.BookingDate</td>
                 <td>@booking.TotalPrice</td>
                 <td>@booking.PaymentStatus</td>
-                <td>@booking.Status</td>
                 <td>@booking.AdultNum</td>
                 <td>@booking.ChildNum</td>
                 <td>@booking.BabyNum</td>
-                <td>@booking.UserId</td>
-                <td>@booking.FlightId</td>
+                <td>@booking.User.UserName </td>
+                <td>@booking.Flight.FlightNumber</td>
                 <td>@booking.ClassType</td>
-                <td>@booking.ReturnFlightId</td>
+                <td>@booking.ReturnFlight.FlightNumber</td>
                 <td>@booking.ReturnClassType</td>
                 @* <td>
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#bookingModal"
