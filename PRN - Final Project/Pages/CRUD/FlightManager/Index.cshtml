@@ -108,6 +108,7 @@
                     <input type="hidden" id="FlightId" asp-for="Flight.FlightId" />
                     <input type="hidden" id="availableNormalSeat" asp-for="Flight.AvailableNormalSeat" />
                     <input type="hidden" id="availableVipSeat" asp-for="Flight.AvailableVipSeat" />
+                    <input type="hidden" id="Status" asp-for="Flight.Status" value="true" />
                     <div class="mb-3">
                         <label asp-for="Flight.FlightNumber" class="form-label">Flight Number</label>
                         <input id="FlightNumber" asp-for="Flight.FlightNumber" class="form-control" required />
@@ -139,14 +140,15 @@
                     </div> *@
 
 
-                    <div >
-                        <label asp-for="Flight.Status" class="form-label" required hidden >Flight Status</label>
-                        <select id="Status" asp-for="Flight.Status" class="form-select" required hidden>
-                            <option value="true" selected>On Time</option>  <!-- Mặc định chọn On Time -->
+                    @* <div>
+                        <label asp-for="Flight.Status" class="form-label">Flight Status</label>
+                        <select id="Status" asp-for="Flight.Status" class="form-select" readonly>
+                            <option value="true" selected>On Time</option>
                             <option value="false">Delayed</option>
                         </select>
                         <span asp-validation-for="Flight.Status" class="text-danger"></span>
-                    </div>
+                    </div> *@
+
 
 
                     <div class="mb-3">

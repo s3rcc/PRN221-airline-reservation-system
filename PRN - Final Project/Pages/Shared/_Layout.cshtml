@@ -50,12 +50,12 @@
                             <a class="nav-link fs-4" asp-page="/Dashboard">Dashboard</a>
                         </li>
                     }
-                    @if (User.IsInRole("Member"))
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link fs-4" asp-page="/BookingCheck">Check In</a>
-                        </li>
-                    }
+                     @* @if (User.IsInRole("Member"))
+                     {
+                         <li class="nav-item">
+                             <a class="nav-link fs-4" asp-page="/BookingCheck">Check In</a>
+                         </li>
+                     } *@
                     <li class="fw-bold fs-4">
                         @await Html.PartialAsync("_LoginPartial")
                     </li>

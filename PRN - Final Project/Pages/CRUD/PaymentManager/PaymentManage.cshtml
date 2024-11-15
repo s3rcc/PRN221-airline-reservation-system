@@ -30,7 +30,7 @@
             <tr>
                 <td>@payment.BookingId</td>
                 <td>@payment.User.UserName</td>
-                <td>@payment.Amount.ToString("C")</td>
+                <td>@(string.Format("{0:N0}", payment.Amount * 1000)) đ</td>
                 <td>@payment.PaymentDate</td>
 @*                 <td>
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#paymentModal"

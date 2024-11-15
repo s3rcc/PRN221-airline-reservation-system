@@ -13,7 +13,7 @@
             <div class="card text-white bg-primary mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Total Revenue</h5>
-                    <p class="card-text">@Model.TotalRevenue.ToString("C")</p>
+                    <p class="card-text">@(string.Format("{0:N0}", Model.TotalRevenue * 1000)) đ</p>
                 </div>
             </div>
         </div>

@@ -37,7 +37,7 @@
         {
             <tr>
                 <td>@booking.BookingDate</td>
-                <td>@booking.TotalPrice</td>
+                <td>@(string.Format("{0:N0}", booking.TotalPrice * 1000)) đ</td>
                 <td>@booking.PaymentStatus</td>
                 <td>@booking.AdultNum</td>
                 <td>@booking.ChildNum</td>
