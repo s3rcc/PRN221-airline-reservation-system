@@ -39,7 +39,6 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
         public string ErrorMessage { get; set; }
         public class InputModel
         {
-
             [Required]
             [EmailAddress]
             public string Email { get; set; }
@@ -76,10 +75,15 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(Input.Email);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Email does not exist.");
+                    return Page();
+                }
 
                 if (user != null && !user.EmailConfirmed)
                 {
-                    ModelState.AddModelError(string.Empty, "Tài khoản của bạn chưa được xác thực email. Vui lòng kiểm tra hộp thư và xác nhận tài khoản.");
+                    ModelState.AddModelError(string.Empty, "Your account has not been verified via email. Please check your inbox and confirm your account.");
                     return Page();
                 }
 
@@ -88,7 +92,7 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User logged in.");
 
-                    // Kiểm tra role của người dùng
+                    // Check user's roles
                     var roles = await _userManager.GetRolesAsync(user);
 
                     if (roles.Contains("Member"))
@@ -103,7 +107,7 @@ namespace PRN___Final_Project.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Thông tin đăng nhập không chính xác.");
+                    ModelState.AddModelError(string.Empty, "Invalid login information.");
                     return Page();
                 }
             }
