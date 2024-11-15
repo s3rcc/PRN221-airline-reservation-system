@@ -201,13 +201,14 @@ namespace Services.Services
         {
             try
             {
-                return await _unitOfWork.Repository<Payment>().GetAllAsync(orderBy: x => x.OrderByDescending(x => x.PaymentDate));
+                return await _unitOfWork.Repository<Payment>().GetAllAsync(orderBy: x => x.OrderByDescending(x => x.PaymentDate), includes: x => x.User);
             }
             catch
             {
                 throw new ErrorException(StatusCodes.Status500InternalServerError, ErrorCode.INTERNAL_SERVER_ERROR, "Error getting payment.");
             }
         }
+
 
         public async Task<Payment> GetPaymentByUserId(string userId)
         {

@@ -8,7 +8,7 @@
 
 <h2>Manage Flights</h2>
 <div class="mb-3">
-    <input type="text" id="searchKey" class="form-control" placeholder="Search by FlightId or Plane or Pilot" onkeyup="searchBy()" />
+    <input type="text" id="searchKey" class="form-control" placeholder="Search by Flight Number or Plane or Pilot" onkeyup="searchBy()" />
 </div>
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#flightModal" onclick="clearModal()">
     Add New Flight
@@ -325,12 +325,12 @@
             let rows = table.getElementsByTagName("tr");
 
             for (let i = 1; i < rows.length; i++) { // Start from 1 to skip table header
-                let flightIdCell = rows[i].getElementsByTagName("td")[0];
+                let flightNumberCell = rows[i].getElementsByTagName("td")[1];
                 let planeCell = rows[i].getElementsByTagName("td")[7];
                 let pilotCell = rows[i].getElementsByTagName("td")[8];
 
-                if (flightIdCell && planeCell && pilotCell) {
-                    let flightId = flightIdCell.textContent || flightIdCell.innerText;
+                if (flightNumberCell && planeCell && pilotCell) {
+                    let flightId = flightNumberCell.textContent || flightNumberCell.innerText;
                     let plane = planeCell.textContent || planeCell.innerText;
                     let pilot = pilotCell.textContent || pilotCell.innerText;
 

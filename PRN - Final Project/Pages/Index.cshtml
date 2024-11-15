@@ -90,13 +90,13 @@
                             <!-- Departure Date -->
                             <div class="col-md-6">
                                 <label for="departure" class="form-label">Departure date:</label>
-                                <input type="text" id="departure" name="departureDate" class="form-control date" required onfocus="this.type='date'" onblur="if(!this.value) this.type='text'" placeholder="dd/mm/yyyy" />
+                                <input type="date" id="departure" name="departureDate" class="form-control date" required />
                             </div>
 
                             <!-- Return Date -->
                             <div class="col-md-6" id="returnDateField" style="display:none;">
                                 <label for="return" class="form-label">Return date:</label>
-                                <input type="text" id="return" name="returnDate" class="form-control date" onfocus="this.type='date'" onblur="if(!this.value) this.type='text'" placeholder="dd/mm/yyyy" />
+                                <input type="date" id="return" name="returnDate" class="form-control date" />
                             </div>
 
                             <!-- Passenger Dropdown -->
@@ -269,10 +269,58 @@
             }
         }
 
-        // Call the toggleReturnDate function on page load to ensure the correct state
-        window.onload = function () {
-            var oneWaySelected = document.getElementById("oneWay").checked;
-            toggleReturnDate(oneWaySelected);
+        // Function to set minimum dates for departure and return date inputs
+        function setMinimumDates() {
+            const today = new Date();
+
+            // Ngày mai cho DepartureDate
+            const departureMinDate = new Date(today);
+            departureMinDate.setDate(today.getDate() + 1); // Ngày mai
+
+            // Ngày lớn hơn 2 ngày hiện tại cho ReturnDate
+            const returnMinDate = new Date(today);
+            returnMinDate.setDate(today.getDate() + 2); // Sau 2 ngày
+
+            // Format the dates to YYYY-MM-DD
+            const formattedDepartureDate = departureMinDate.toISOString().split('T')[0];
+            const formattedReturnDate = returnMinDate.toISOString().split('T')[0];
+
+            // Set the min attributes for departure and return date inputs
+            document.getElementById('departure').setAttribute('min', formattedDepartureDate);
+            document.getElementById('return').setAttribute('min', formattedReturnDate);
         }
+
+        // Call the setMinimumDates function on page load
+        window.onload = function () {
+            setMinimumDates(); // Set the minimum date for date inputs
+            var oneWaySelected = document.getElementById("oneWay").checked;
+            toggleReturnDate(oneWaySelected); // Ensure the return date field visibility is correct
+        };
+
+        function toggleReturnDate(isOneWay) {
+            var returnDateField = document.getElementById("returnDateField");
+            var isOneWayInput = document.getElementById("isOneWay");
+
+            if (isOneWay) {
+                returnDateField.style.display = "none";
+                document.getElementById("return").value = ""; // Clear return date nếu chọn One Way
+                isOneWayInput.value = "true";  // Set IsOneWay = true
+            } else {
+                returnDateField.style.display = "block";
+                document.getElementById("return").setAttribute('min', document.getElementById("departure").value); // Cập nhật 'min' cho ngày về
+                isOneWayInput.value = "false"; // Set IsOneWay = false
+            }
+        }
+
+        // Lắng nghe sự kiện thay đổi ngày đi để cập nhật ngày về
+        document.getElementById("departure").addEventListener("change", function () {
+            const departureDate = this.value;
+            const returnDateInput = document.getElementById("return");
+
+            // Cập nhật 'min' cho ngày về
+            if (returnDateInput) {
+                returnDateInput.setAttribute("min", departureDate);
+            }
+        });
     </script>
 }
