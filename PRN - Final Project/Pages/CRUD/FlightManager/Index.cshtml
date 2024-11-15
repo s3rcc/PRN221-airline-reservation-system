@@ -70,6 +70,30 @@
         }
     </tbody>
 </table>
+<!-- Pagination Controls -->
+<div class="pagination-controls">
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <!-- Previous Page Link -->
+            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="?pageIndex=@(Model.CurrentPage - 1)&pageSize=@Model.PageSize">Previous</a>
+            </li>
+
+            <!-- Page Numbers -->
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                    <a class="page-link" href="?pageIndex=@i&pageSize=@Model.PageSize">@i</a>
+                </li>
+            }
+
+            <!-- Next Page Link -->
+            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link" href="?pageIndex=@(Model.CurrentPage + 1)&pageSize=@Model.PageSize">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
 
 <!-- Create/Edit Modal -->
 <div class="modal fade" id="flightModal" tabindex="-1" aria-labelledby="flightModalLabel" aria-hidden="true">
@@ -248,7 +272,7 @@
         }
 
         window.onload = function () {
-            var statusMessage = '@Model.StatusMessage';
+            var statusMessage = '@Html.Raw(Model.StatusMessage)';
             var isSuccess = '@Model.IsSuccess'.toLowerCase() === 'true';
 
             if (statusMessage) {

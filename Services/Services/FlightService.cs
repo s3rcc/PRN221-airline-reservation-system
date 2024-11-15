@@ -134,7 +134,8 @@ namespace Services.Services
                 flight => flight.Pilot,
                 flight => flight.Origin,
                 flight => flight.Destination
-            ]);
+            ],
+                orderBy: x => x.OrderByDescending(x => x.DepartureDateTime));
             }
             catch
             {
@@ -177,13 +178,41 @@ namespace Services.Services
                 flight => flight.Pilot,
                 flight => flight.Origin,
                 flight => flight.Destination
-            ]);
+            ],
+            orderBy: x => x.OrderByDescending(x => x.DepartureDateTime)
+            );
             }
             catch
             {
                 throw new Exception("An error occured while retrieving flights.");
             }
         }
+
+        public async Task<IEnumerable<Flight>> GetAllFlightsWithPagitationAsync(int pageIndex, int pageSize)
+        {
+            var query = await _unitOfWork.Repository<Flight>()
+                .GetAllAsync(orderBy: x => x.OrderByDescending(x => x.DepartureDateTime));
+
+            // Apply pagination using Skip and Take
+            var paginatedResults = query
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+
+            // Apply real-time condition on the paginated flights
+            foreach (var flight in paginatedResults)
+            {
+                if (DateTime.Now > flight.ArrivalDateTime)
+                {
+                    await SetUnAvailableStatusForFlight(flight);
+                }
+            }
+
+
+            return paginatedResults;
+        }
+
 
         public async Task<IEnumerable<Flight>> GetAllFLightWithRealTimeCondition()
         {
@@ -346,19 +375,21 @@ namespace Services.Services
         public async Task<string?> ValidateFlightScheduleAsync(Flight flightCreate)
         {
             string errors = null;
+            // Get pilot by id
             var pilot = await _unitOfWork.Repository<Pilot>().GetByIdAsync(flightCreate.PilotId);
 
             if (pilot == null)
             {
                 return "Pilot not found.";
             }
-
+            // Get location By id
             var oriLoc = await _unitOfWork.Repository<Location>().GetByIdAsync(flightCreate.OriginID);
             var oriLocName = oriLoc.LocationName;
 
+            // Filter flight have the same pilot and the flight is previouus to the flight want to create
             var flights = await _unitOfWork.Repository<Flight>()
                 .FindAsync(f => f.PilotId == flightCreate.PilotId && f.ArrivalDateTime <= flightCreate.DepartureDateTime);
-             
+            // The previous flight compare to create flight
             var flightLast = flights
                 .OrderByDescending(f => f.ArrivalDateTime)
                 .FirstOrDefault();
@@ -366,6 +397,7 @@ namespace Services.Services
             if (flightLast == null)
                 return null;
 
+            // Check time between 2 flight 
             TimeSpan timeDifference = flightCreate.DepartureDateTime - flightLast.ArrivalDateTime;
             string formattedTimeDifference = $"{Math.Floor(timeDifference.TotalHours):F0} hours and {timeDifference.Minutes} minutes";
 

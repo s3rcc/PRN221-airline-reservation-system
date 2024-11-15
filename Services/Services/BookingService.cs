@@ -89,6 +89,21 @@ namespace Services.Services
             }
 
             return bookings;
+            // return await _unitOfWork.Repository<Booking>().GetAllAsync(includes: x => x.User, orderBy: x => x.OrderByDescending(x => x.BookingDate));
+        }
+
+        public async Task<IEnumerable<Booking>> GetAllBookingsAsync(int pageIndex, int pageSize)
+        {
+            var query = await _unitOfWork.Repository<Booking>()
+                .GetAllAsync(orderBy: x => x.OrderByDescending(x => x.BookingDate));
+
+            // Apply pagination using Skip and Take
+            var paginatedResults = query
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return paginatedResults;
         }
 
 

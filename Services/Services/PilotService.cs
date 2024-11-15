@@ -210,8 +210,6 @@ namespace Services.Services
                         .FirstOrDefault();
 
 
-
-
                     if (lastFlight != null)
                     {
 

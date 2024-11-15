@@ -5,6 +5,7 @@ namespace Services.Interfaces
     public interface IFlightService
     {
         Task<IEnumerable<Flight>> GetAllFlightsAsync();
+        Task<IEnumerable<Flight>> GetAllFlightsWithPagitationAsync(int pageIndex, int pageSize);
         Task<IEnumerable<Flight>> GetAllAvailableFlightsAsync();
         Task<Flight> GetFlightByIdAsync(int id);
         Task<Flight> GetReturnFlightByIdAsync(int? id);
