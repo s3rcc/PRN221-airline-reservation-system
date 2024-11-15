@@ -29,9 +29,9 @@
         {
             <tr>
                 <td>@payment.BookingId</td>
-                <td>@payment.UserId</td>
+                <td>@payment.User.UserName</td>
                 <td>@payment.Amount.ToString("C")</td>
-                <td>@payment.PaymentDate.ToShortDateString()</td>
+                <td>@payment.PaymentDate</td>
 @*                 <td>
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#paymentModal"
                             onclick="setEditModal('@payment.PaymentId', '@payment.BookingId', '@payment.UserId', '@payment.Amount', '@payment.PaymentDate.ToString("yyyy-MM-dd")')">

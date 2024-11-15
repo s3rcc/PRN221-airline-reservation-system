@@ -23,7 +23,6 @@
             <th>Arrival Time</th>
             <th>Duration</th>
             <th>Base Price - VND</th>
-            <th>Status</th>
             <th>Plane</th>
             <th>Pilot</th>
             <th>Available Normal Seats</th>
@@ -51,7 +50,6 @@
                     }
                 </td>
                 <td>@string.Format("{0:N0}", item.BasePrice)</td>
-                <td>@(item.Status ? "Available" : "Un Available")</td>
                 <td>@item.Plane.PlaneName</td>
                 <td>@item.Pilot.PilotName</td>
                 <td>@item.AvailableNormalSeat</td>

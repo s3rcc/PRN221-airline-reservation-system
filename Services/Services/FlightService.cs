@@ -414,11 +414,11 @@ namespace Services.Services
 
                 // Case where 9 hours are required between flights
                 true when timeDifference.TotalHours < 9 =>
-                    $"Pilot ID {pilot.PilotId}, Name {piName}: Requires 9 hours rest for flights from {desLocName} to {oriLocName}. Last arrival at {lastArrivalFormatted}. Only {formattedTimeDifference} have passed.",
+                    $"Pilot ID {pilot.PilotId} - Name {piName}: Requires 9 hours rest after a flight from {desLocName}. Last arrival was at {lastArrivalFormatted} (only {formattedTimeDifference} have passed).",
 
-                // Case where 24 hours are required between flights
                 false when timeDifference.TotalHours < 24 =>
-                    $"Pilot ID {pilot.PilotId}, Name {piName}: Requires 24 hours rest after arriving at destination {desLocName}. Last arrival at {lastArrivalFormatted}. Only {formattedTimeDifference} have passed.",
+                    $"Pilot ID {pilot.PilotId} - Name {piName}: Needs 24 hours for pilot to move if the flight did not start from {desLocName}. Last arrival was at {lastArrivalFormatted} (only {formattedTimeDifference} have passed).",
+
 
                 _ => null
             };

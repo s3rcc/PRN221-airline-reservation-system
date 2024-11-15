@@ -168,7 +168,7 @@ namespace Services.Services
                 if (flight.DepartureDateTime <= currentDateTime && flight.ArrivalDateTime >= currentDateTime)
                 {
                     string flightDetails = $"Flight ID: {flight.FlightId}, Departure: {flight.DepartureDateTime.ToString("dd/MM/yyyy hh:mm tt")}, Arrival: {flight.ArrivalDateTime.ToString("dd/MM/yyyy hh:mm tt")}";
-                    return $"Pilot ID {pilot.PilotId} Name {pilot.PilotName}: Currently flying on {flightDetails}. Cannot delete while active flight is in progress.";
+                    return $"Pilot ID {pilot.PilotId} Name {pilot.PilotName}: Currently flying on {flightDetails}. Cannot delete while flight is in progress.";
                 }
             }
 

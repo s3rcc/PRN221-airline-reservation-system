@@ -25,9 +25,13 @@
             <tr>
                 <th>Booking ID</th>
                 <th>Date</th>
-                <th>Payment Status</th>
+                <th>Total Seat(s)</th>
+                <th>FlightId</th>
+                <th>Return FlightId</th>
+                <th>Path</th>
                 <th>Total Price</th>
                 <th>Show Ticket</th>
+                <th>Payment</th>
             </tr>
         </thead>
         <tbody>
@@ -35,8 +39,11 @@
             {
                 <tr data-payment-status="@booking.PaymentStatus">
                     <td>@booking.BookingId</td>
-                    <td>@booking.BookingDate.ToShortDateString()</td>
-                    <td>@booking.PaymentStatus</td>
+                    <td>@booking.BookingDate</td>
+                    <td>@(booking.AdultNum + booking.ChildNum + booking.BabyNum)</td>
+                    <td>@booking.Flight.FlightNumber</td>
+                    <td>@booking.ReturnFlight.FlightNumber</td>
+                    <td>@booking.Flight.Origin.LocationName --- @booking.Flight.Destination.LocationName</td>
                     <td>@booking.TotalPrice</td>
                     <td>
                         @if (booking.Tickets != null && booking.Tickets.Any())
@@ -45,6 +52,12 @@
                                 <input type="hidden" id="bookingId" name="bookingId" value="@booking.BookingId"/>
                                 <button type="submit" class="btn btn-primary">View</button>
                             </form>
+                        }
+                    </td>
+                    <td>
+                        @if (!(booking.PaymentStatus == "Paid"))
+                        {
+                            <a asp-page="/Payment" asp-route-id="@booking.BookingId" class="btn btn-success">Go to Payment</a>
                         }
                     </td>
                 </tr>
