@@ -112,7 +112,15 @@ namespace Services.Services
 
         public async Task<List<string>> GetBookedSeatsByFlightIdAsync(int flightId, string flightType)
         {
-            var bookings = await _unitOfWork.Repository<Booking>().FindAsync(booking => booking.FlightId == flightId);
+            IEnumerable<Booking> bookings = new List<Booking>();
+            if (flightType == _ticketTypesConfig.OutBoundFlight)
+            {
+                bookings = await _unitOfWork.Repository<Booking>().FindAsync(booking => booking.FlightId == flightId);
+            }
+            else
+            {
+                bookings = await _unitOfWork.Repository<Booking>().FindAsync(booking => booking.ReturnFlightId == flightId);
+            }
 
             var bookedTickets = new List<Ticket>();
             foreach (var booking in bookings)

@@ -13,31 +13,55 @@
     <div class="">
         @foreach (var ticket in Model.Tickets)
         {
+            var originLocation = ticket.Booking.Flight.Origin.LocationName;
+            var destinationLocation = ticket.Booking.Flight.Destination.LocationName;
+
+            if (ticket.TicketType == "ReturnFlight")
+            {
+                var temp = originLocation;
+                originLocation = destinationLocation;
+                destinationLocation = temp;
+            }
+
             <div class="py-5">
                 <div class="box">
                     <div class="ticket">
                         <div class="py-2 d-flex">
-                                <div class="px-5 col-8 d-flex align-items-center justify-content-between">
-                                    <span class="airline">PRN221 Airline</span>
-                                    <span class="boarding">Boarding pass</span>
-                                </div>
-                                <div class="col-4 d-flex align-items-center justify-content-center gap-3">
-                                    <span class="airline airlineslip">@ticket.ClassType</span>
-                                </div>
+                            <div class="px-5 col-8 d-flex align-items-center justify-content-between">
+                                <span class="airline">PRN221 Airline</span>
+                                <span class="boarding">Boarding pass</span>
                             </div>
+                            <div class="col-4 d-flex align-items-center justify-content-center gap-3">
+                                <span class="airline airlineslip">@ticket.ClassType</span>
+                            </div>
+                        </div>
                         <div class="content">
                             <div class="d-flex align-items-center">
                                 <div class="col-8 d-flex align-items-center justify-content-center gap-5">
-                                    <span class="jfk">@ticket.Booking.Flight.Origin.LocationName</span>
-                                    <span class="plane"><?xml version="1.0" ?>
-                                    <svg clip-rule="evenodd" fill-rule="evenodd" height="70" width="70" image-rendering="optimizeQuality" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"><g stroke="#222"><line fill="none" stroke-linecap="round" stroke-width="30" x1="300" x2="55" y1="390" y2="390" /><path d="M98 325c-9 10 10 16 25 6l311-156c24-17 35-25 42-50 2-15-46-11-78-7-15 1-34 10-42 16l-56 35 1-1-169-31c-14-3-24-5-37-1-10 5-18 10-27 18l122 72c4 3 5 7 1 9l-44 27-75-15c-10-2-18-4-28 0-8 4-14 9-20 15l74 63z" fill="#222" stroke-linejoin="round" stroke-width="10" /></g></svg></span>
-                                    <span class="sfo">@ticket.Booking.Flight.Destination.LocationName</span>
+                                    <span class="jfk">@originLocation</span>
+                                    <span class="plane">
+                                        <?xml version="1.0" ?>
+                                        <svg clip-rule="evenodd" fill-rule="evenodd" height="70" width="70" image-rendering="optimizeQuality" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+                                            <g stroke="#222">
+                                                <line fill="none" stroke-linecap="round" stroke-width="30" x1="300" x2="55" y1="390" y2="390" />
+                                                <path d="M98 325c-9 10 10 16 25 6l311-156c24-17 35-25 42-50 2-15-46-11-78-7-15 1-34 10-42 16l-56 35 1-1-169-31c-14-3-24-5-37-1-10 5-18 10-27 18l122 72c4 3 5 7 1 9l-44 27-75-15c-10-2-18-4-28 0-8 4-14 9-20 15l74 63z" fill="#222" stroke-linejoin="round" stroke-width="10" />
+                                            </g>
+                                        </svg>
+                                    </span>
+                                    <span class="sfo">@destinationLocation</span>
                                 </div>
                                 <div class="col-4 d-flex align-items-center justify-content-center gap-3">
-                                    <span class="jfk jfkslip">@ticket.Booking.Flight.Origin.LocationName</span>
-                                    <span class="plane planeslip"><?xml version="1.0" ?>
-                                    <svg clip-rule="evenodd" fill-rule="evenodd" height="30" width="30" image-rendering="optimizeQuality" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"><g stroke="#222"><line fill="none" stroke-linecap="round" stroke-width="30" x1="300" x2="55" y1="390" y2="390" /><path d="M98 325c-9 10 10 16 25 6l311-156c24-17 35-25 42-50 2-15-46-11-78-7-15 1-34 10-42 16l-56 35 1-1-169-31c-14-3-24-5-37-1-10 5-18 10-27 18l122 72c4 3 5 7 1 9l-44 27-75-15c-10-2-18-4-28 0-8 4-14 9-20 15l74 63z" fill="#222" stroke-linejoin="round" stroke-width="10" /></g></svg></span>
-                                    <span class="sfo sfoslip">@ticket.Booking.Flight.Destination.LocationName</span>
+                                    <span class="jfk jfkslip">@originLocation</span>
+                                    <span class="plane planeslip">
+                                        <?xml version="1.0" ?>
+                                        <svg clip-rule="evenodd" fill-rule="evenodd" height="30" width="30" image-rendering="optimizeQuality" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+                                            <g stroke="#222">
+                                                <line fill="none" stroke-linecap="round" stroke-width="30" x1="300" x2="55" y1="390" y2="390" />
+                                                <path d="M98 325c-9 10 10 16 25 6l311-156c24-17 35-25 42-50 2-15-46-11-78-7-15 1-34 10-42 16l-56 35 1-1-169-31c-14-3-24-5-37-1-10 5-18 10-27 18l122 72c4 3 5 7 1 9l-44 27-75-15c-10-2-18-4-28 0-8 4-14 9-20 15l74 63z" fill="#222" stroke-linejoin="round" stroke-width="10" />
+                                            </g>
+                                        </svg>
+                                    </span>
+                                    <span class="sfo sfoslip">@destinationLocation</span>
                                 </div>
                             </div>
                             <div class="sub-content">
@@ -48,20 +72,20 @@
                                                 <div class="flight row">FLIGHT N&deg;</div>
                                                 <h4 class="row fw-bold">@ticket.Booking.Flight.FlightNumber</h4>
                                             </div>
-                                            <div class ="d-flex flex-column align-items-center">
+                                            <div class="d-flex flex-column align-items-center">
                                                 <div class="gate row">FLIGHT TYPE</div>
                                                 <h4 class="row fw-bold">@ticket.TicketType</h4>
                                             </div>
-                                            <div>
+                                            <div class="d-flex flex-column align-items-end">
                                                 <div class="boardingtime row">BOARDING TIME</div>
-                                                <h4 class="row fw-bold">@ticket.Booking.Flight.DepartureDateTime</h4>
+                                                <h4 class="row fw-bold">@ticket.Booking.Flight.DepartureDateTime.ToString("dd-MM-yyyy hh:mm tt")</h4>
                                             </div>
                                         </div>
                                         <div class="px-5 col-4 d-flex align-items-center justify-content-between">
                                             <div class="d-flex flex-column align-items-center">
                                                 <div class="flight flightslip row">FLIGHT N&deg;</div>
                                                 <h4 class="row fw-bold">@ticket.Booking.Flight.FlightNumber</h4>
-                                            </div class="d-flex flex-column align-items-center">
+                                            </div>
                                             <div>
                                                 <div class="seat seatslip row">SEAT</div>
                                                 <h4 class="row fw-bold">@ticket.SeatNumber</h4>
@@ -74,7 +98,6 @@
                                                 <div class="name row">PASSENGER NAME</div>
                                                 <h4 class="row fw-bold">@ticket.CustomerName</h4>
                                             </div>
-                                            
                                             <div>
                                                 <div class="seat row">SEAT</div>
                                                 <h4 class="row fw-bold">@ticket.SeatNumber</h4>

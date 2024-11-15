@@ -28,6 +28,7 @@
                 <th>Payment Status</th>
                 <th>Total Price</th>
                 <th>Show Ticket</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -45,6 +46,12 @@
                                 <input type="hidden" id="bookingId" name="bookingId" value="@booking.BookingId"/>
                                 <button type="submit" class="btn btn-primary">View</button>
                             </form>
+                        }
+                    </td>
+                    <td>
+                        @if (!(booking.PaymentStatus == "Paid"))
+                        {
+                            <a asp-page="/CRUD/BookingManager/BookingDetail" asp-route-id="@booking.BookingId" class="btn btn-success">Go to Payment</a>
                         }
                     </td>
                 </tr>

@@ -1,5 +1,6 @@
+using BussinessObjects;
 using BussinessObjects.Config;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
@@ -13,17 +14,22 @@ namespace PRN___Final_Project.Pages
         private readonly IBookingService _bookingService;
         private readonly ITicketService _ticketService;
         private readonly TicketTypesConfig _ticketTypesConfig;
+        private readonly UserManager<User> _userManager;
 
-        public BookingCheckModel(IFlightService flightService, IBookingService bookingService, ITicketService ticketService, IOptions<TicketTypesConfig> ticketTypesConfig)
+        public BookingCheckModel(IFlightService flightService, IBookingService bookingService, ITicketService ticketService, IOptions<TicketTypesConfig> ticketTypesConfig, UserManager<User> userManager)
         {
             _flightService = flightService;
             _bookingService = bookingService;
             _ticketService = ticketService;
             _ticketTypesConfig = ticketTypesConfig.Value;
+            _userManager = userManager;
         }
 
         [BindProperty]
         public int BookingId { get; set; }
+
+        [BindProperty]
+        public string PassengerName { get; set; }
 
         [BindProperty]
         public bool IsOutboundFlight { get; set; }
@@ -38,10 +44,10 @@ namespace PRN___Final_Project.Pages
 
             if (!User.IsInRole("Member"))
             {
-                return RedirectToPage("/Errors/404"); 
+                return RedirectToPage("/Errors/404");
             }
 
-   
+
             return Page();
         }
 
@@ -54,13 +60,22 @@ namespace PRN___Final_Project.Pages
 
             if (!User.IsInRole("Member"))
             {
-                
-                return RedirectToPage("/Errors/404"); 
+                return RedirectToPage("/Errors/404");
             }
+
             var booking = await _bookingService.GetBookingByIdAsync(BookingId);
+            var user = _userManager.GetUserAsync(User);
+
             if (booking == null)
             {
                 ModelState.AddModelError(string.Empty, "Booking not found.");
+                return Page();
+            }
+
+
+            if (booking.UserId != user.Id.ToString())
+            {
+                ModelState.AddModelError(string.Empty, "This booking is not belong to this user.");
                 return Page();
             }
 
@@ -80,11 +95,11 @@ namespace PRN___Final_Project.Pages
                 return Page();
             }
 
-            //if (booking.PaymentStatus == "UnPaid")
-            //{
-            //    ModelState.AddModelError(string.Empty, $"Cannot check in, please pay for your booking.");
-            //    return Page();
-            //}
+            if (booking.PaymentStatus == "UnPaid")
+            {
+                ModelState.AddModelError(string.Empty, $"Cannot check in, please pay for your booking.");
+                return Page();
+            }
 
             var flight = await _flightService.GetFlightByIdAsync(flightId.Value);
             if (flight == null || flight.PlaneId == 0)

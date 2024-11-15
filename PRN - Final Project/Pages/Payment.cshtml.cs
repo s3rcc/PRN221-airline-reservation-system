@@ -36,11 +36,6 @@ namespace PRN___Final_Project.Pages
             {
                 BookingId = id.Value;
             }
-            else
-            {
-                return RedirectToPage("/Errors/404");
-
-            }
             var booking = await _bookingService.GetBookingByIdAsync(BookingId);
             if (booking == null)
             {

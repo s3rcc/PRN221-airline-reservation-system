@@ -1,0 +1,44 @@
+﻿@page
+@model PRN___Final_Project.Pages.CRUD.BookingManager.BookingDetailModel
+@{
+}
+
+<h1 class="display-3 fw-bold py-5">Passenger Information</h1>
+<hr />
+<form method="post" class="container mt-5">
+    <div class="row">
+        @for (int i = 0; i < Model.AdultNum + Model.ChildNum + Model.BabyNum; i++)
+        {
+            var isReadOnly = i == 0;
+            var passengerType = i < Model.AdultNum ? "Adult" : i < Model.AdultNum + Model.ChildNum ? "Child" : "Baby";
+            var totalPassengers = Model.AdultNum + Model.ChildNum + Model.BabyNum;
+            var columnClass = totalPassengers == 1 ? "col-md-6 offset-md-3" : "col-md-6";
+
+            <div class="@columnClass mb-4 d-flex justify-content-center">
+                <div class="card w-50 mx-auto">
+                    <div class="card-header">
+                        <strong>@passengerType</strong> - Passenger @((i + 1).ToString())
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3 d-flex align-items-center gap-3">
+                            <label for="customerName_@i" class="col m-0 form-label">Name:</label>
+                            <input type="text" class="col form-control" id="customerName_@i" name="TicketData[@i].CustomerName"
+                                   value="@(isReadOnly ? Model.UserName : "")" @(isReadOnly ? "readonly" : "") required>
+                        </div>
+                        <div class="mb-3 d-flex align-items-center gap-3">
+                            <label for="carryluggage_@i" class="col m-0 form-label">Carry Baggage (kg):</label>
+                            <input type="number" class="col form-control" id="carryluggage_@i" name="TicketData[@i].Carryluggage"
+                                   min="0" step="0.1" required>
+                        </div>
+                        <div class="mb-3 d-flex align-items-center gap-3">
+                            <label for="baggage_@i" class="col m-0 form-label">Baggage (kg):</label>
+                            <input type="number" class="col form-control" id="baggage_@i" name="TicketData[@i].Baggage"
+                                   min="0" step="0.1" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <button type="submit" class="btn btn-primary">Next</button>
+</form>
