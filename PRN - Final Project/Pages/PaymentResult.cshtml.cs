@@ -7,20 +7,19 @@ namespace PRN___Final_Project.Pages
 {
     public class PaymentResultModel : PageModel
     {
+        [BindProperty(SupportsGet = true)]
+        public string Status { get; set; }
 
-            [BindProperty(SupportsGet = true)]
-            public string Status { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public string Message { get; set; }
 
-            [BindProperty(SupportsGet = true)]
-            public string Message { get; set; }
-
-            public void OnGet()
+        public void OnGet()
+        {
+            if (string.IsNullOrEmpty(Status))
             {
-                if (string.IsNullOrEmpty(Status))
-                {
-                    Status = "failed";
-                    Message = "Không có thông tin k?t qu? thanh toán.";
-                }
+                Status = "failed";
+                Message = "No payment result information available.";
             }
         }
     }
+}
