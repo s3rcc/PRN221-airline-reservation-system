@@ -53,7 +53,7 @@ namespace PRN___Final_Project.Pages
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null || !await _userManager.IsInRoleAsync(user, "admin"))
+            if (user == null || !await _userManager.IsInRoleAsync(user, "Admin"))
             {
                 // Tr? v? trang 404 n?u ng??i dùng không ph?i là admin
                 return RedirectToPage("/Errors/404");
