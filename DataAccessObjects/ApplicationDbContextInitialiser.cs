@@ -88,6 +88,7 @@ namespace DataAccessObjects.SeedData
             await SeedUsersAsync();
             await SeedBookingsAsync();
             await SeedTicketsAsync();
+            await SeedPaymentsAsync();
 
             _logger.LogInformation("Data seeding completed.");
         }
@@ -305,6 +306,7 @@ namespace DataAccessObjects.SeedData
 
 
         #endregion Flights
+
         #region User
         private async Task SeedUsersAsync()
         {

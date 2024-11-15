@@ -9,9 +9,9 @@
 <h2>Manage Payments</h2>
 
 <!-- Button to open the modal for adding a new Payment -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#paymentModal" onclick="clearModal()">
+@* <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#paymentModal" onclick="clearModal()">
     Add New Payment
-</button>
+</button> *@
 
 <!-- Payment List -->
 <table class="table">
@@ -21,8 +21,8 @@
             <th>User ID</th>
             <th>Amount</th>
             <th>Payment Date</th>
-            <th>Actions</th>
-        </tr>
+@*             <th>Actions</th>
+ *@        </tr>
     </thead>
     <tbody>
         @foreach (var payment in Model.Payments)
@@ -32,7 +32,7 @@
                 <td>@payment.UserId</td>
                 <td>@payment.Amount.ToString("C")</td>
                 <td>@payment.PaymentDate.ToShortDateString()</td>
-                <td>
+@*                 <td>
                     <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#paymentModal"
                             onclick="setEditModal('@payment.PaymentId', '@payment.BookingId', '@payment.UserId', '@payment.Amount', '@payment.PaymentDate.ToString("yyyy-MM-dd")')">
                         Edit
@@ -41,7 +41,7 @@
                             onclick="setDeleteModal('@payment.PaymentId')">
                         Delete
                     </button>
-                </td>
+                </td> *@
             </tr>
         }
     </tbody>
