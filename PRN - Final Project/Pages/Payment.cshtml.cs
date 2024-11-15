@@ -39,7 +39,7 @@ namespace PRN___Final_Project.Pages
             var booking = await _bookingService.GetBookingByIdAsync(BookingId);
             if (booking == null)
             {
-                ModelState.AddModelError(string.Empty, "Không tìm th?y thông tin Booking v?i mã này.");
+                ModelState.AddModelError(string.Empty, "Booking information with this code was not found.");
                 return Page();
             }
 
