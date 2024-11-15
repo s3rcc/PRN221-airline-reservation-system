@@ -1,0 +1,221 @@
+﻿@page
+@model PRN___Final_Project.Pages.CRUD.BookingManager.ChooseOutboundFlightSeatModel
+@{
+    int vipSeatsLeft = Model.AirPlane.VipSeatNumber;
+    int normalSeatsLeft = Model.AirPlane.NormalSeatNumber;
+    string allowedClassType = Model.AllowedClassType;
+    var vipClassType = Model.ClassTypesConfig.Business;
+    var normalClassType = Model.ClassTypesConfig.Economy;
+}
+
+<h1 class="display-3 fw-bold py-5">Choose Outbound Flight Seat</h1>
+<hr/>
+<form method="post" class="py-3">
+    <input type="hidden" id="selectedSeatsInput" name="SelectedSeats" />
+    <button type="submit" class="text-white btn btn-primary"><h4 class="fw-bold">Next</h4></button>
+</form>
+
+<h2 class="text-center py-3">Seats Selected: <span id="selectedCount">0</span>/@Model.AllowedSeats</h2>
+
+<div class="selected-seats-info py-3">
+    <div id="passengerCards" class="d-flex flex-column align-items-center">
+    </div>
+</div>
+
+<!-- Legend for seat colors -->
+<div class="d-flex justify-content-center align-items-center gap-3 py-3">
+    <div class="d-flex justify-content-center align-items-center mb-2">
+        <div class="btn btn-danger mx-2"></div>
+        <span>Booked Seat</span>
+    </div>
+    <div class="d-flex justify-content-center align-items-center mb-2">
+        <div class="btn btn-dark mx-2"></div>
+        <span>Non-selectable Seat</span>
+    </div>
+    <div class="d-flex justify-content-center align-items-center mb-2">
+        <div class="btn btn-outline-primary mx-2"></div>
+        <span>Economy Class Seat</span>
+    </div>
+    <div class="d-flex justify-content-center align-items-center mb-2">
+        <div class="btn btn-outline-success mx-2"></div>
+        <span>Business Class Seat</span>
+    </div>
+</div>
+
+<div class="seat-map text-center">
+    <!-- Seat labels -->
+    <div class="seat-labels mb-2">
+        <span>A</span>
+        <span>B</span>
+        <span>C</span>
+        <span class="mx-4">&nbsp;</span> <!-- Spacer between ABC and DEF -->
+        <span>D</span>
+        <span>E</span>
+        <span>F</span>
+    </div>
+
+    @for (int row = 1; row <= Model.TotalRows; row++)
+    {
+        <div class="seat-row d-flex justify-content-center align-items-center mb-2">
+            <span class="row-number" style="margin-right: 10px;">@row</span>
+            @for (int col = 0; col < 6; col++)
+            {
+                string seatNumber = (vipSeatsLeft > 0 ? "V" : "N") + $"{row}{(char)('A' + col)}";
+                string realSeatNumber = $"{row}{(char)('A' + col)}";
+                bool isBooked = Model.BookedSeats.Contains(realSeatNumber);
+
+                if (isBooked)
+                {
+                    if (seatNumber.StartsWith("V"))
+                    {
+                        vipSeatsLeft--;
+                    }
+                    else
+                    {
+                        normalSeatsLeft--;
+                    }
+                    <button type="button" class="seat btn btn-danger disabled" disabled>
+                        &nbsp;
+                    </button>
+                }
+
+                else if (vipSeatsLeft > 0)
+
+                {
+                    if (allowedClassType == vipClassType)
+                    {
+                        <button type="button" class="seat btn btn-outline-success seat-vip" data-seat-number="@seatNumber" data-seat-type="Business" onclick="toggleSeat(this)">
+                            &nbsp;
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" class="seat btn btn-dark disabled" disabled>&nbsp;</button>
+                    }
+
+                    vipSeatsLeft--;
+                }
+
+                else if (normalSeatsLeft > 0)
+
+                {
+                    if (allowedClassType == normalClassType)
+                    {
+                        <button type="button" class="seat btn btn-outline-primary seat-normal" data-seat-number="@seatNumber" data-seat-type="Economy" onclick="toggleSeat(this)">
+                            &nbsp;
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" class="seat btn btn-dark disabled" disabled>&nbsp;</button>
+                    }
+                    normalSeatsLeft--;
+                }
+
+                if (col == 2)
+                {
+                    <div class="mx-2">&nbsp;</div> <!-- Spacer between ABC and DEF -->
+                }
+            }
+        </div>
+    }
+</div>
+
+<script>
+    const maxSeats = @Model.AllowedSeats;
+    const vipClass = "@Model.ClassTypesConfig.Business";
+    const normalClass = "@Model.ClassTypesConfig.Economy";
+    let selectedSeats = []; // Array to hold the selected seat numbers
+
+    function toggleSeat(seatButton) {
+        const seatNumber = seatButton.getAttribute("data-seat-number");
+        const seatType = seatButton.getAttribute("data-seat-type");
+
+        if (seatType !== "@Model.AllowedClassType") {
+            return; // Prevent selecting seats not allowed by class type
+        }
+
+        if (seatButton.classList.contains('selected')) {
+            // Deselect seat
+            seatButton.classList.remove('selected');
+            seatButton.classList.remove('btn-primary', 'btn-success');
+            seatButton.classList.add(seatType === 'Business' ? 'btn-outline-primary' : 'btn-outline-secondary');
+            selectedSeats = selectedSeats.filter(seat => seat !== seatNumber);
+        } else if (selectedSeats.length < maxSeats) {
+            // Select seat
+            seatButton.classList.add('selected');
+            seatButton.classList.remove('btn-outline-primary', 'btn-outline-secondary');
+            seatButton.classList.add(seatType === 'Business' ? 'btn-success' : 'btn-primary');
+            selectedSeats.push(seatNumber);
+        }
+
+        document.getElementById("selectedCount").innerText = selectedSeats.length;
+        document.getElementById("selectedSeatsInput").value = selectedSeats.join(',');
+
+        // Cập nhật thông tin hành khách và ghế đã chọn
+        updatePassengerCards();
+    }
+
+    function updatePassengerCards() {
+        const passengerNames = @Html.Raw(Json.Serialize(Model.PassengerNames)); // Lấy danh sách tên hành khách từ model
+        const passengerCardsContainer = document.getElementById('passengerCards');
+        passengerCardsContainer.innerHTML = ''; // Xóa các thẻ card cũ
+
+        selectedSeats.forEach((seatNumber, index) => {
+            if (index < passengerNames.length) {
+                const card = document.createElement('div');
+                card.classList.add('card', 'mb-2');
+                // Loại bỏ ký tự đầu tiên của số ghế chỉ khi hiển thị
+                const displaySeatNumber = seatNumber.substring(1); // Bỏ ký tự đầu tiên
+                card.innerHTML = `
+                    <div class="card-body">
+                        <h5 class="card-title">${passengerNames[index]}</h5>
+                        <p class="card-text">Seat: ${displaySeatNumber}</p>
+                    </div>
+                `;
+                passengerCardsContainer.appendChild(card);
+            }
+        });
+    }
+</script>
+
+<style>
+    .selected-seats-info .card {
+        width: 300px;
+    }
+
+    .selected-seats-info .card-title {
+        font-weight: bold;
+    }
+
+    .seat-map {
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .seat {
+        width: 40px;
+        height: 40px;
+        margin: 2px;
+    }
+
+    .btn-dark {
+        background-color: #000000 !important; /* Black for non-selectable seats */
+        color: white;
+        cursor: not-allowed;
+    }
+
+    .btn-danger {
+        background-color: #dc3545 !important;
+        color: white;
+    }
+
+    .seat-labels span {
+        margin: 0 15px;
+        font-weight: bold;
+    }
+
+    .seat-labels span, .row-number {
+        font-weight: bold;
+    }
+</style>

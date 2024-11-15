@@ -13,6 +13,12 @@
         <span asp-validation-for="BookingId" class="text-danger"></span>
     </div>
 
+    <div class="d-flex flex-column justify-content-center align-items-center form-group gap-3">
+        <h4 for="PassengerName" class="fw-bold">Passenger Name</h4>
+        <input type="text" asp-for="PassengerName" class="w-25 text-center form-control" id="PassengerName" required />
+        <span asp-validation-for="PassengerName" class="text-danger"></span>
+    </div>
+
     <div class="form-group">
         <h4 class="fw-bold">Select Flight Type</h4><br />
         <input type="radio" asp-for="IsOutboundFlight" value="true" id="OutboundFlight" checked />

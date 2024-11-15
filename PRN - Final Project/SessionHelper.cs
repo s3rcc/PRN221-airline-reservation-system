@@ -42,11 +42,25 @@ namespace PRN___Final_Project
         public bool IsOneWay { get; set; }
         public int OutboundFlightId { get; set; }
         public int? ReturnFlightId { get; set; }
+        public decimal OutboundTotalPrice { get; set; }
+        public decimal ReturnTotalPrice { get; set; }
         public decimal TotalPrice { get; set; }
         public int AdultNum { get; set; }
         public int ChildNum { get; set; }
         public int BabyNum { get; set; }
         public string ClassType { get; set; }
         public string? ReturnClassType { get; set; }
+    }
+
+    public class TicketData
+    {
+        public string SeatNumber { get; set; }
+        public string TicketType { get; set; }
+        public string CustomerName { get; set; }
+        public decimal Carryluggage { get; set; }
+        public decimal Baggage { get; set; }
+        public string ClassType { get; set; }
+
+        public int BookingId { get; set; }
     }
 }

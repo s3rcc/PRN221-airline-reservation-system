@@ -48,6 +48,8 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
         public string OriginLocation { get; set; } = default!;
         [BindProperty]
         public string DestinationLocation { get; set; } = default!;
+        [BindProperty]
+        public string FlightType { get; set; } = default!;
 
         public FlightData FlightData { get; set; } = default!;
 
@@ -92,6 +94,15 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
             OriginLocation = originLocation.LocationName;
             DestinationLocation = destinationLocation.LocationName;
 
+            if (FlightData.IsOneWay)
+            {
+                FlightType = "One Way";
+            }
+            else
+            {
+                FlightType = "Round Trip";
+            }
+
             TempData.Remove("ErrorMessage");
             Booking.FlightId = FlightData.OutboundFlightId;
             Booking.ReturnFlightId = FlightData.ReturnFlightId;
@@ -113,16 +124,26 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
         public async Task<IActionResult> OnPostAsync()
         {
             HttpContext.Session.Remove("FlightData");
-            Booking.TotalPrice = PriceAfterDiscount;
+            Booking.TotalPrice = PriceAfterDiscount / 1000;
             Booking.BookingId = await _bookingService.CreateBookingAsync(Booking);
+            List<TicketData> ticketDatas = HttpContext.Session.GetObjectFromJson<List<TicketData>>("TicketData");
+
             if (Booking.BookingId > 0)
             {
+                foreach (var ticketData in ticketDatas)
+                {
+                    ticketData.BookingId = Booking.BookingId;
+                }
+
+                HttpContext.Session.SetObjectAsJson("TicketData", ticketDatas);
+
                 return RedirectToPage("/Payment", new { id = Booking.BookingId });
             }
+
             ModelState.AddModelError(string.Empty, "Không thể tạo booking. Vui lòng thử lại.");
             return Page();
-
         }
+
     }
 
 }

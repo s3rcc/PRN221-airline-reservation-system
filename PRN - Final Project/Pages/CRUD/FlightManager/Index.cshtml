@@ -326,8 +326,10 @@
 
             for (let i = 1; i < rows.length; i++) { // Start from 1 to skip table header
                 let flightNumberCell = rows[i].getElementsByTagName("td")[1];
+
                 let planeCell = rows[i].getElementsByTagName("td")[6];
                 let pilotCell = rows[i].getElementsByTagName("td")[7];
+
 
                 if (flightNumberCell && planeCell && pilotCell) {
                     let flightId = flightNumberCell.textContent || flightNumberCell.innerText;

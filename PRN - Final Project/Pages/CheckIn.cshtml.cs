@@ -86,7 +86,6 @@ namespace PRN___Final_Project.Pages
             var ticketType = HttpContext.Session.GetString("FlightType");
             var user = await _userManager.GetUserAsync(User);
 
-            // Split the SelectedSeats string into a list
             SelectedSeats = Request.Form["SelectedSeats"].ToString().Split(',').ToList();
 
             var tickets = new List<Ticket>();
