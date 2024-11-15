@@ -225,13 +225,13 @@ namespace DataAccessObjects.SeedData
 
             var planes = new List<AirPlane>
         {
-            new AirPlane { PlaneName = "Boeing 737", VipSeatNumber = 20, NormalSeatNumber = 150 },
-            new AirPlane { PlaneName = "Airbus A320", VipSeatNumber = 15, NormalSeatNumber = 160 },
-            new AirPlane { PlaneName = "Boeing 747", VipSeatNumber = 25, NormalSeatNumber = 300 },
-            new AirPlane { PlaneName = "Airbus A380", VipSeatNumber = 30, NormalSeatNumber = 400 },
-            new AirPlane { PlaneName = "Boeing 787", VipSeatNumber = 20, NormalSeatNumber = 250 },
-            new AirPlane { PlaneName = "Airbus A321", VipSeatNumber = 10, NormalSeatNumber = 190 },
-            new AirPlane { PlaneName = "Boeing 777", VipSeatNumber = 25, NormalSeatNumber = 300 }
+            new AirPlane { PlaneName = "Boeing 737", VipSeatNumber = 20, NormalSeatNumber = 80 },
+            new AirPlane { PlaneName = "Airbus A320", VipSeatNumber = 15, NormalSeatNumber = 100 },
+            new AirPlane { PlaneName = "Boeing 747", VipSeatNumber = 25, NormalSeatNumber = 100 },
+            new AirPlane { PlaneName = "Airbus A380", VipSeatNumber = 20, NormalSeatNumber = 120 },
+            new AirPlane { PlaneName = "Boeing 787", VipSeatNumber = 20, NormalSeatNumber = 120 },
+            new AirPlane { PlaneName = "Airbus A321", VipSeatNumber = 10, NormalSeatNumber = 80 },
+            new AirPlane { PlaneName = "Boeing 777", VipSeatNumber = 25, NormalSeatNumber = 100 }
         };
             if (!_context.AirPlanes.Any())
             {
