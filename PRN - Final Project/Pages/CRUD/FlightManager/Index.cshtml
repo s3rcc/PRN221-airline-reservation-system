@@ -139,15 +139,15 @@
                     </div> *@
 
 
-                    <div class="mb-3">
-                        <label asp-for="Flight.Status" class="form-label">Flight Status</label>
-                        <select id="Status" asp-for="Flight.Status" class="form-select" required>
-                            <option value="">-- Select Status --</option>
-                            <option value="true">On Time</option>
+                    <div >
+                        <label asp-for="Flight.Status" class="form-label" required hidden >Flight Status</label>
+                        <select id="Status" asp-for="Flight.Status" class="form-select" required hidden>
+                            <option value="true" selected>On Time</option>  <!-- Mặc định chọn On Time -->
                             <option value="false">Delayed</option>
                         </select>
                         <span asp-validation-for="Flight.Status" class="text-danger"></span>
                     </div>
+
 
                     <div class="mb-3">
                         <label asp-for="Flight.PlaneId" class="form-label">Plane Name</label>
@@ -326,8 +326,10 @@
 
             for (let i = 1; i < rows.length; i++) { // Start from 1 to skip table header
                 let flightNumberCell = rows[i].getElementsByTagName("td")[1];
-                let planeCell = rows[i].getElementsByTagName("td")[7];
-                let pilotCell = rows[i].getElementsByTagName("td")[8];
+
+                let planeCell = rows[i].getElementsByTagName("td")[6];
+                let pilotCell = rows[i].getElementsByTagName("td")[7];
+
 
                 if (flightNumberCell && planeCell && pilotCell) {
                     let flightId = flightNumberCell.textContent || flightNumberCell.innerText;

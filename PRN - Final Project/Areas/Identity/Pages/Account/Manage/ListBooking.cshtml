@@ -61,6 +61,10 @@
                             <a asp-page="/CRUD/BookingManager/BookingDetail" asp-route-id="@booking.BookingId" class="btn btn-success">Go to Payment</a>
 
                         }
+                        else
+                        {
+                            @booking.PaymentStatus
+                        }
                     </td>
                 </tr>
             }
