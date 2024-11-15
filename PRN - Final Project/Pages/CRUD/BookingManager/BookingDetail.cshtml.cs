@@ -25,7 +25,7 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
         public string UserName { get; set; }
         public List<TicketData> TicketDatas { get; set; } = new List<TicketData>();
 
-        public async Task OnGetAsync(int id)
+        public async Task<IActionResult> OnGetAsync(int id)
         {
             var flightData = HttpContext.Session.GetObjectFromJson<FlightData>("FlightData");
 
@@ -38,11 +38,14 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
                 BabyNum = booking.BabyNum;
             }
             
-            var user = _userManager.GetUserAsync(User);
-
-            if(user != null)
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || !await _userManager.IsInRoleAsync(user, "Member"))
             {
-                UserName = user.Result.UserName;
+                return RedirectToPage("/Errors/404");
+            }
+            if (user != null)
+            {
+                UserName = user.UserName;
             }
 
             if (flightData != null)
@@ -51,6 +54,7 @@ namespace PRN___Final_Project.Pages.CRUD.BookingManager
                 ChildNum = flightData.ChildNum;
                 BabyNum = flightData.BabyNum;
             }
+            return Page();  
         }
 
         public async Task<IActionResult> OnPostAsync(List<TicketData> ticketData)

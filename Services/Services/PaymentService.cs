@@ -73,7 +73,7 @@ namespace Services.Services
             bool isValidSignature = vnpay.ValidateSignature(inputHash, vnpHashSecret);
             if (!isValidSignature)
             {
-                throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Chữ ký không hợp lệ!");
+                throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Invalid signature!");
             }
             string responseCode = vnpay.GetResponseData("vnp_ResponseCode");
             if (responseCode == "00") // Successful payment
@@ -84,7 +84,7 @@ namespace Services.Services
 
                 if (booking == null)
                 {
-                    throw new ErrorException(StatusCodes.Status404NotFound, ErrorCode.NOT_FOUND, "Không tìm thấy booking.");
+                    throw new ErrorException(StatusCodes.Status404NotFound, ErrorCode.NOT_FOUND, "Booking not found.");
                 }
 
                 // Retrieve the flight and validate available seats
@@ -93,11 +93,11 @@ namespace Services.Services
 
                 if (booking.ClassType.Equals(_classTypesConfig.Economy) && flight.AvailableNormalSeat < requiredSeats)
                 {
-                    throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Không đủ ghế thường.");
+                    throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Not enough economy seats.");
                 }
                 if (booking.ClassType.Equals(_classTypesConfig.Business) && flight.AvailableVipSeat < requiredSeats)
                 {
-                    throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Không đủ ghế VIP.");
+                    throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Not enough VIP seats.");
                 }
 
                 // Check for return flight seat availability if applicable
@@ -106,11 +106,11 @@ namespace Services.Services
                     var returnFlight = await _flightService.GetFlightByIdAsync(booking.ReturnFlightId.Value);
                     if (booking.ReturnClassType.Equals(_classTypesConfig.Economy) && returnFlight.AvailableNormalSeat < requiredSeats)
                     {
-                        throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Không đủ ghế thường cho chuyến bay về.");
+                        throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Not enough economy seats for the return flight.");
                     }
                     if (booking.ReturnClassType.Equals(_classTypesConfig.Business) && returnFlight.AvailableVipSeat < requiredSeats)
                     {
-                        throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Không đủ ghế VIP cho chuyến bay về.");
+                        throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.BADREQUEST, "Not enough VIP seats for the return flight.");
                     }
                 }
 
@@ -162,12 +162,12 @@ namespace Services.Services
                 var booking = await _bookingService.GetBookingByIdAsync(bookingId);
                 if (booking == null)
                 {
-                    throw new ErrorException(StatusCodes.Status404NotFound, ErrorCode.NOT_FOUND, "Không tìm thấy booking.");
+                    throw new ErrorException(StatusCodes.Status404NotFound, ErrorCode.NOT_FOUND, "Booking not found.");
                 }
                 booking.PaymentStatus = _paymentStatusConfig.Unpaid;
                 await _bookingService.UpdateBookingAsync(booking);
                 await _unitOfWork.SaveChangeAsync();
-                throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.FAILED, $"Thanh toán không thành công, mã lỗi: {responseCode}");
+                throw new ErrorException(StatusCodes.Status400BadRequest, ErrorCode.FAILED, $"Payment failed, error code: {responseCode}");
             }
 
         }

@@ -23,7 +23,7 @@ namespace PRN___Final_Project.Pages
             }
             var user = await _userManager.GetUserAsync(User);
             var roles = await _userManager.GetRolesAsync(user);
-            if (!roles.Contains("Admin") && !roles.Contains("Staff"))
+            if (!(await _userManager.IsInRoleAsync(user, "Admin") || await _userManager.IsInRoleAsync(user, "Staff")))
             {
                 return RedirectToPage("/Errors/404");
             }

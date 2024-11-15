@@ -1,14 +1,14 @@
 ﻿@page
 @model PRN___Final_Project.Pages.PaymentResultModel
-<h2>Kết quả thanh toán</h2>
+<h2>Payment Result</h2>
 
 @if (Model.Status == "success")
 {
-    <p class="text-success">Thanh toán thành công! Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</p>
+    <p class="text-success">Payment successful! Thank you for using our service.</p>
 }
 else if (Model.Status == "failed")
 {
-    <p class="text-danger">Thanh toán thất bại: @Model.Message</p>
+    <p class="text-danger">Payment failed: @Model.Message</p>
 }
 
-<a asp-page="/Index">Quay lại trang chủ</a>
+<a asp-page="/Index">Return to homepage</a>

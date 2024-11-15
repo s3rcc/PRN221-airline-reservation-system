@@ -2,7 +2,7 @@
 @model LoginModel
 
 @{
-    ViewData["Title"] = "ĐĂNG NHẬP";
+    ViewData["Title"] = "LOGIN";
 }
 @if (TempData.ContainsKey("ErrorMessage"))
 {
@@ -15,7 +15,7 @@
     <div class="col-md-6 mx-auto">
         <section>
             <form id="account" method="post">
-                <h4>Điền thông tin để đăng nhập.</h4>
+                <h4>Enter information to log in.</h4>
                 <hr />
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="form-group">
@@ -37,14 +37,14 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Đăng nhập</button>
+                    <button type="submit" class="btn btn-primary">Log in</button>
                 </div>
                 <div class="form-group">
                     <p>
-                        <a id="forgot-password" asp-page="./ForgotPassword">Bạn quyên mật khẩu?</a>
+                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
                     </p>
                     <p>
-                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Chưa có tài khoản, đăng ký mới</a>
+                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Don't have an account? Register now</a>
                     </p>
                 </div>
             </form>
