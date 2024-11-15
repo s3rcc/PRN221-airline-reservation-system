@@ -394,7 +394,7 @@ namespace DataAccessObjects.SeedData
     {
         (new User
             {
-                UserName = "admin@example.com",
+                UserName = "admin",
                 Email = "admin@example.com",
                 Gender = "Male",
                 DoB = new DateTime(1980, 1, 1),
@@ -404,7 +404,7 @@ namespace DataAccessObjects.SeedData
             }, "Admin"),
         (new User
             {
-                UserName = "staff@example.com",
+                UserName = "staff",
                 Email = "staff@example.com",
                 Gender = "Female",
                 DoB = new DateTime(1990, 2, 1),
@@ -414,7 +414,7 @@ namespace DataAccessObjects.SeedData
             }, "Staff"),
         (new User
         {
-                UserName = "staff2@example.com",
+                UserName = "staff2",
                 Email = "staff2@example.com",
                 Gender = "Female",
                 DoB = new DateTime(1990, 2, 1),
@@ -424,7 +424,7 @@ namespace DataAccessObjects.SeedData
         },"Staff"),
         (new User
             {
-                UserName = "member@example.com",
+                UserName = "member",
                 Email = "member@example.com",
                 Gender = "Male",
                 DoB = new DateTime(2000, 3, 1),
@@ -434,7 +434,7 @@ namespace DataAccessObjects.SeedData
             }, "Member"),
                 (new User
             {
-                UserName = "member2@example.com",
+                UserName = "member2",
                 Email = "member2@example.com",
                 Gender = "Male",
                 DoB = new DateTime(2000, 3, 1),
