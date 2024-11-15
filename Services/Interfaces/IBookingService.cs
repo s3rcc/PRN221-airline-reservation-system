@@ -10,6 +10,7 @@ namespace Services.Interfaces
     public interface IBookingService
     {
         Task<IEnumerable<Booking>> GetAllBookingsAsync();
+        Task<IEnumerable<Booking>> GetAllBookingsAsync(int pageIndex, int pageSize);
         Task<Booking> GetBookingByIdAsync(int id);
         Task<IEnumerable<Booking>> GetBookingByUserIdAsync(string userId);
         Task<int> CreateBookingAsync(Booking booking);

@@ -121,6 +121,7 @@ namespace Services.Services
                     Amount = booking.TotalPrice,
                     PaymentDate = DateTime.Now
                 };
+
                 booking.PaymentStatus = _paymentStatusConfig.Paid;
                 await CreatePaymentAsync(payment);
                 await _bookingService.UpdateBookingAsync(booking);
@@ -200,7 +201,7 @@ namespace Services.Services
         {
             try
             {
-                return await _unitOfWork.Repository<Payment>().GetAllAsync();
+                return await _unitOfWork.Repository<Payment>().GetAllAsync(orderBy: x => x.OrderByDescending(x => x.PaymentDate));
             }
             catch
             {

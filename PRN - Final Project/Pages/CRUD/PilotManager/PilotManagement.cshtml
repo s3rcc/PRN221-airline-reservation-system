@@ -132,7 +132,7 @@
         }
 
         window.onload = function () {
-            var statusMessage = '@Model.StatusMessage';
+            var statusMessage = '@Html.Raw(Model.StatusMessage)';
             var isSuccess = '@Model.IsSuccess'.toLowerCase() === 'true';
 
             if (statusMessage) {
